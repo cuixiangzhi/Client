@@ -1,0 +1,147 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using LuaInterface;
+using System.IO;
+
+namespace GF
+{
+    public static class LuaManager
+    {
+        private static LuaState mLuaState = null;
+
+        private static LuaFileReader mLuaReader = null;
+
+        private static LuaBeatEvent mUpdateBeat = null;
+
+        private static LuaBeatEvent mLateUpdateBeat = null;
+
+        private static LuaBeatEvent mFixedUpdateBeat = null;
+
+        private class LuaFileReader : LuaFileUtils
+        {
+            public LuaFileReader()
+            {
+                instance = this;
+                beZip = false;
+            }
+
+            public override LuaByteBuffer ReadFile(string fileName)
+            {
+#if UNITY_EDITOR
+                return base.ReadFile(fileName);
+#else
+                //读取LUA字节码
+                return ResManager.LoadBytes(fileName);
+#endif
+            }
+
+            public override string FindFileError(string fileName)
+            {
+                return string.Empty;
+            }
+        }
+
+        public static void Init()
+        {
+            //创建LUA文件读取器
+            mLuaReader = new LuaFileReader();
+
+            //创建LUA虚拟机
+            mLuaState = new LuaState();
+
+            //lua protobuf 库
+            mLuaState.OpenLibs(LuaDLL.luaopen_pb);
+
+            //导出C# API
+            LuaBinder.Bind(mLuaState);
+            DelegateFactory.Init();
+
+            //启动虚拟机
+            mLuaState.Start();
+
+            //创建LUA更新事件
+            mUpdateBeat = GetEvent("UpdateBeat");
+            mLateUpdateBeat = GetEvent("UpdateBeat");
+            mFixedUpdateBeat = GetEvent("UpdateBeat");
+        }
+
+        public static void Loop()
+        {
+            if (mLuaState.LuaUpdate(Time.deltaTime, Time.unscaledDeltaTime) != 0)
+            {
+                ThrowException();
+            }
+
+            mLuaState.LuaPop(1);
+            mLuaState.Collect();
+        }
+
+        public static void LateLoop()
+        {
+            if (mLuaState.LuaLateUpdate() != 0)
+            {
+                ThrowException();
+            }
+
+            mLuaState.LuaPop(1);
+        }
+
+        public static void FixedLoop()
+        {
+            if (mLuaState.LuaFixedUpdate(Time.fixedDeltaTime) != 0)
+            {
+                ThrowException();
+            }
+
+            mLuaState.LuaPop(1);
+        }
+
+        public static void Exit()
+        {
+            mUpdateBeat.Dispose();
+            mUpdateBeat = null;
+            mLateUpdateBeat.Dispose();
+            mLateUpdateBeat = null;
+            mFixedUpdateBeat.Dispose();
+            mFixedUpdateBeat = null;
+            mLuaState.Dispose();
+            mLuaState = null;
+            mLuaReader.Dispose();
+            mLuaReader = null;
+        }
+
+        private static LuaBeatEvent GetEvent(string name)
+        {
+            LuaTable table = mLuaState.GetTable(name);
+
+            if (table == null)
+            {
+                throw new LuaException(string.Format("Lua table {0} not exists", name));
+            }
+
+            LuaBeatEvent e = new LuaBeatEvent(table);
+            table.Dispose();
+            table = null;
+            return e;
+        }
+
+        private static void ThrowException()
+        {
+            string error = mLuaState.LuaToString(-1);
+            mLuaState.LuaPop(2);
+            throw new LuaException(error, LuaException.GetLastError());
+        }
+
+        public static LuaState GetLuaState()
+        {
+            return mLuaState;
+        }
+
+        public static void DoFile(string fileName)
+        {
+            mLuaState.DoFile(fileName);
+        }
+    }
+}
+
