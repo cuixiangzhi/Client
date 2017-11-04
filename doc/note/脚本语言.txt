@@ -1,0 +1,57 @@
+PInvoke方式实现静态方法调用
+			C++使用__cdecl __declspec(dllexport)导出API
+			C#使用DllImport("dll") static extern调用API
+			参数: 基本类型直接传递int float bool uint long
+				  字符串string对应char* byte[]对应unsigned char*,传递时需要使用Marshal.Copy用于在托管与非托管之间转换内存 Marshal.Copy(src, start, dst, len);  Marshal.Copy(src, dst, start, len);
+				  函数指针C#方法MonoPInvoke声明 MonoPInvokeCallback(typeof(C#CallBack))
+			      结构体和类传递需要给C#结构体或者类添加StructLayout特性,用来标记这个对象的内存布局,使得传递给C++之后,C++可以直接转换为C++对象  StructLayout(LayoutKind.Sequential),RequiredByNativeCode
+				  结构体或者类指针传递加上ref或者out标记
+			
+				  
+				  
+[MethodImpl(MethodImplOptions.InternalCall), WrapperlessIcall] 实现类方法调用			  
+C++使用mono运行C# DLL,需要mono提供的库和头文件,注意c# dll需要使用 mono命令来生成, msc *.cs -t:library
+	#include <mono/jit/jit.h>
+	#include <mono/metadata/assembly.h>
+	#include <mono/metadata/class.h>
+	#include <mono/metadata/debug-helpers.h>
+	#include <mono/metadata/mono-config.h>
+
+	int main()
+	{
+		//初始化MONO运行环境,类似于创建lua虚拟机
+		MonoDomain* domain = mono_jit_init("UNITY_MANAGED");
+		//加载托管程序集,类似于LUA加载LUA脚本
+		MonoAssembly* assembly = mono_domain_assembly_open(domain, "DLL_PATH");
+		MonoImage* image = mono_assembly_get_image(assembly);
+
+		//获取类和字段
+		MonoClass* mono_class = mono_class_from_name(image,"DLL_NAME", "CLASS_NAME");
+		MonoClassField mono_field = mono_class_get_field_from_name(mono_class, "FIELD_NAME")
+		//获取要调用的方法
+		MonoMethodDesc* entry_point_method_desc = mono_method_desc_new("DLL_NAME.CLASS_NAME:Main()", true);
+		MonoMethod* entry_point_method = mono_method_desc_search_in_class(entry_point_method_desc, main_class);
+		mono_method_desc_free(entry_point_method_desc);
+		//调用方法
+		mono_runtime_invoke(entry_point_method, NULL, NULL, NULL);
+		//注册C++方法到C#中
+		mono_add_internal_call("DLL_NAME.CLASS_NAME::METHOD_NAME", reinterpret_cast<void*>(C++_METHOD_PTR));
+		
+		//创建C#数组
+		MonoArray* array = mono_array_new(domain, mono_class, COUNT);
+		//创建C#类
+		MonoObject* obj = mono_object_new(domain, mono_class);
+		mono_runtime_object_init(obj);
+        void* mono_field_value = &Components[i];  //Components是在C++中创建的,给C#对应字段赋值,这个字段是C++对象指针
+        mono_field_set_value(obj, mono_field, &mono_field_value);
+        mono_array_set(array, MonoObject*, i, obj);
+		C#类对象转换为C++结构体指针,C#对象只保存了C++结构体的指针,就是上面创建对象时给字段赋的值
+		Component* component;	
+		mono_field_get_value(obj, mono_field, reinterpret_cast<void*>(&Component));
+		
+		//释放应用域
+		mono_jit_cleanup(domain);
+
+		return 0;
+	}
+	

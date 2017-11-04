@@ -1,0 +1,174 @@
+SQL  结构化查询语言
+    数据类型: INT BIGINT TEXT FLOAT UNSIGNED
+    创建数据库  CREATE DATABASE name
+	删除数据库	DROP DATABASE name
+	创建表      CREATE TABLE name (KEY TYPE,约束)
+			字段约束  primary key主键
+					  not null非空
+					  unique 非重复
+					  foreign key reference tableName(key) 外键引用
+					  check 条件判断
+					  default 设置默认值
+	复制表     CREATE TABLE name SELECT * FROM name
+	           SELECT * INTO name in db from name
+	修改表     ALTER TABLE name
+	         添加列  ADD COLUMN name type 约束
+			 删除列  DROP COLUMN name
+			 修改列  MODIFY COLUMN name type 约束
+			 
+	插入数据 INSERT INFO name (keys) VALUES(...)
+	修改数据 UPDATE name SET key=val WHERE key=val
+	删除数据 DELETE FROM name WHERE key=val
+	
+	查询数据 SELECT key.. FROM name WHERE ...
+			 WHERE后可以是 ORDERBY key DESC|ASC
+						   IN枚举
+						   AND OR	
+						   LIKE _代表至少一个字符 %代表任意字符
+			 前N个 SELECT TOP number||percent colname FROM ...
+			 多表限制 	INNER JOIN name ON
+						INNER JOIN：如果表中有至少一个匹配，则返回行
+						LEFT JOIN：即使右表中没有匹配，也从左表返回所有的行
+						RIGHT JOIN：即使左表中没有匹配，也从右表返回所有的行
+						FULL JOIN：只要其中一个表中存在匹配，则返回行
+			 非重复限制 SELECT DISTINCT	
+	
+	更新操作会对数据表加排它锁,互斥访问
+	查询操作会加共享锁,可以并发访问
+	
+	SQL函数 AVG() AS name 计算平均值,并以别名name显示
+			COUNT 统计行数
+			FIRST LAST MIN MAX SUM HAVING
+		    GROUP BY 分组排序,相同的行在一块
+			
+	索引  没有索引查询时会进行全表扫描
+		  索引是一个二叉搜索树BTree或者哈希表,因为是一颗平衡二叉树或HASH计算,比顺序搜索效率要高
+		  索引是对列数据进行处理的数据结构
+		  执行SQL时会检查目标列是否建立了索引
+		  
+		  create index name on table(key);
+		  drop index name on table;
+		  
+		  查询时加上where限定
+		  
+	事务  原子操作、一致性、隔离性、持久化
+			开始事务：  begin
+			  执行过程中的SQL语句返回错误,可以记录,用于判断是提交还是回滚
+			提交事务： commit
+			回滚事务： rollback
+		  mysql中调用set autocommit = 0 或1 来开启关闭自动提交事务
+			开启手动后,commit或rollback提交或者回滚该事务
+	创建存储过程
+			声明分隔符,;默认会被执行
+			delimiter //
+			drop procedure name//
+	        create procedure name(var)
+			begin
+			   declare name type;
+			   set name = 1;
+			   start transaction;
+				   if end if;
+			   commit;
+			end //;
+			delimiter ;
+			可以这样写SQL语句 name @var1=xx,@var2=xx
+			SQL语句可以加一些系统函数  abs min max time_to_sec now concat(s1,s2,s3) concat_ws(;,s1,s2,s3)  
+			                mod  case xx when r1 do  when r2 do else do end
+	创建触发器
+	注释    创建key是后面加上comment ''
+	条件判断 drop table if exists xx;
+
+	
+主流数据库 
+	MYSQL   硬盘数据库,C/S模式
+			server  服务器端
+			workbench 服务端图形化管理工具
+			notifier  状态栏控制图标,简化管理数据库实例
+			forexcel  excel和mysql互操作
+			instance  对应IP PORT,一个数据库服务器,可以拥有N个数据库
+			connector 数据库操作API
+			数据库操作  show databases; 显示所有数据库
+						use dbname;     选择某个库
+						show tables;    显示所有表
+						show columns from name 显示表列
+						show variables like "character_set_database" 显示数据库编码
+						mysql -u root -p 登录mysql
+						mysqladmin -u root -p shutdown关闭mysql服务器
+						use mysql; select update insert等修改mysql数据库添加用户更改配置
+	REDIS   内存数据库,RDB AOF 定时fork子进程写
+	MONGODB 内存数据库,利用mmap文件映射实现  
+	共享内存 内存数据库,本地进程共享,一台物理机只有一个共享内存服务器,事务不会出现死锁情况
+			自己实现锁, 共享内存+死循环 只有在标记位FREE的时候可以LOCK LOCK之后修改标记位,在判断是否一致,再继续执行,否则就是被别人LOCK了
+	sqlite  轻量级硬盘数据库,适用于客户端保存临时数据
+	
+API
+	ODBC 是对数据库的封装,具体的数据库实现作为ODBC数据源进行配置,配置的时候可以选择IP、PORT、NAME、PASSWORD,连接时可以选择数据源
+	     windows配置,配置好数据源即可,控制面板->管理工具->数据源64位,API头文件 sql.h sqlext.h
+		 linux配置,安装unixODBC
+		 返回值 SQLRETURN  成功返回SQL_SUCCESS SQL_SUCCESS_WITHINFO
+		 连接数据库 SQLRETURN result = SQLConnect(hDbc,odbcSourceName,SQL_NTS,userName,SQL_NTS,pwd,SQL_NTS);
+		                        参数一是ODBC内核对象句柄, 创建数据库环境句柄 SQLHENV hEnv;
+								                                             SQLAllocHandle(SQL_HANDLE_ENV,SQL_NULL_HANDLE,&hEnv);
+														  设置数据库环境版本 SQLSetEnvAttr(hEnv,SQL_ATTR_ODBC_VERSION,(SQLPOINTER)SQL_OV_ODBC3,SQL_IS_INTEGER);
+														  创建数据库连接句柄 SQLHDBC hDbc;
+																			 SQLAllocHandle(SQL_HANDLE_DBC,hEnv,&hDbc);
+		 执行SQL语句 SQLRETURN result = SQLExecDirect(hStmt,sql,SQL_NTS)
+								参数一是状态句柄 SQLHSTMT hStmt; SQLAllocHandle(SQL_HANDLE_STMT,hDbc,&hStmt);
+		 执行结果    SQLRowCount(hStmt,&affectRows);  改变了多少行
+		             SQLNumResultCols(hStmt,&colCount); 结果有多少列,为0表示没有结果
+					 
+		 获取结果    SQLFetch(hStmt)  来移动光标,遍历所有行 ,没有数据返回SQL_NO_DATA
+					 SQLGetData(hStmt,第几列,SQL_C_TYPE,buff,buffLen,refLen) ,没有数据返回SQL_NO_DATA
+					 SQLBindCol(hStmt,第几列,SQL_C_TYPE,buff,buffLen,refLen) ,调用这个绑定函数后,每次SQLFetch会自动把数据传递到指定的buff,比每次SQLGetData效率高
+					 SQLDescribeCol(hStmt,第几列,buff,buffLen,NULL,NULL,NULL,NULL,NULL); 获取列名
+					 
+		 断开连接 	SQLCloseCursor(hStmt); SQLFreeStmt(hStmt, SQL_UNBIND); SQLFreeHandle(SQL_HANDLE_STMT,hStmt);
+					SQLFreeHandle(SQL_HANDLE_DBC,hDbc); SQLDisconnect(hDbc);
+					SQLFreeHandle(SQL_HANDLE_ENV,hEnv);
+		 清理		SQLCloseCursor(hStmt); SQLFreeStmt(hStmt, SQL_UNBIND);
+		 错误       SQLGetDiagRec(SQL_HANDLE_STMT, stmt,  1, UCHAR errstate[5], &errnative, UCHAR errmsg[255], sizeof(errmsg), &errmsglen);
+		 切换事务提交方式
+		            SQLSetConnectAttr(hDbc, SQL_ATTR_AUTOCOMMIT, SQL_FALSE, SQL_NTS);
+					自动提交模式下,一条sql语句就是一个事务
+					手动提交模式下,调用SQLExecDirect后在调用SQLEndTrans()提交事务
+					或者对sql语句做处理,利用procedure执行事务
+	sqlite C#
+	     连接数据库 SqliteConnection connect = new SqliteConnection("data source=XX.db");
+		
+		 断开连接   connect.Close();
+		 
+		 执行SQL    SqliteCommand cmd = connect.CreateCommand(); 
+		            cmd..CommandText = sql;
+					SqliteDataReader reader = cmd.ExecuteReader();
+		 读取数据   reader.NextResult();
+					reader.GetXX();
+		 清理       cmd.Dispose();  reader.close();
+		 
+	mysql c++
+	     创建mysql对象  MYSQL mysql;
+						MYSQL* result = mysql_init(&mysql);
+		 连接数据库     
+						MYSQL* result = mysql_real_connect(&mysql,IP,USR,PWD,DB,PORT,NULL,0); 出错返回空指针
+						
+		 执行SQL        mysql_query(&mysql,sql);
+		 获取执行结果   MYSQL_RES* res = mysql_store_result(&mysql);
+						结果行数  mysql_num_rows(res);
+						结果列数  mysql_num_fields(res);
+						获取某一行的某列数据 MYSQL_FIELD* field = mysql_fetch_field_direct(ret,row)
+									field->name字段名字
+						获取下一条 MYSQL_ROW row = mysql_fetch_row(ret);
+						
+						受影响的行数  mysql_affect_rows(&mysql);
+						
+						释放结果  mysql_free_result(ret);
+		 是否自动提交   mysql_autocommit
+		 关闭数据库     MYSQL* result = mysql_close(&mysql);
+		 错误           const char* error = mysql_error(&mysql);
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 

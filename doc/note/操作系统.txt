@@ -1,0 +1,213 @@
+LINUX
+	杂项
+		发行版是指内核和一些软件打包后的LINUX
+		微内核:核心功能被划分成多个独立的过程,独立运行,模块交互使用进程通信
+		单内核:核心功能在一起,模块交互使用函数调用
+		模块实现:需要引用kernel.h和module.h,函数包括init_module() 和 cleanup_module
+		         insmod命令加载模块
+				 rmmod命令卸载模块
+				 lsmod打印模块
+		核心态和用户态:都有自己独立的内存空间和寄存器,拥有不同的运行级别(可执行的指令)
+		               转换时机:系统调用、设备中断、异常
+        标准: IOSC 语言标准  POSIX 操作系统标准  MACOS LINUX 都是符合POSIX标准的UNIX系统
+		      fopen系列API是C语言标准库,带缓冲的IO,可以减少系统调用次数
+		库文件 动态链接库 linux&android .so  
+		                  mac .bundle
+						  windows .dll
+			   静态库  linux&android&ios libxx.a
+			           windows .lib
+		GCC命令 -c 编译为目标文件
+		        -I 包含目录				
+				-L 链接lib或者dll,后跟lib目录 -static -lxx 
+				-std=c++11 c99  C++版本
+				-g 生成gdb调试符号,可以使用gdb xx运行调试
+				
+				-fPIC 编译后的代码没有绝对地址,因此可用于动态链接库
+				-shared 编译.so .dll文件
+				link阶段把dll文件作为输入或者把lib作为输入
+				-Wl 链接时的命令参数 -Wl,--whole-archive xx.a -Wl,--no-whole-archive -static-libgcc
+
+	    交叉编译: 在x86平台编译,在arm上运行
+		        msys2和mingw64和mingw32编译结果不一样
+				ar命令:生成静态库.a,该类型只能在linux下使用
+					   ar rcs libxx.a xx.o xx.o
+			    gcc命令:生成.exe  gcc -o xx.exe xx.lib xx.a xx.so xx.cc -L ./xx/xx -static -lxx -I ./xx/xx -g -lstdc++ -std=c++11
+				        生成.so   gcc -o xx.so -shared
+		mk      :makefile的一部分,语法和makefile一致,makefile伪目标.PHONY标记的必定会执行
+		        shell中 #*/ ##*/ 去掉第一个 最后一个/及其左边的字符串
+				shell中 %*/ %%*/ 去掉第一个 最后一个/及其右边的字符串
+				makefile中使用$(subst .cc,.o,$$VAR) $(patsubst %.cc,%.o,$$VAR)
+		        常用语法: LOCAL_PATH := $(call my-dir) 即当前mk文件的目录						  
+						  include $(CLEAR_VARS) 清空所有预定义变量的值
+						  LOCAL_MODULE := module_name  当前模块的名字
+												  
+						  LOCAL_CFLAGS :=  gcc编译选项				
+						  LOCAL_CPPFLAGS := $(LOCAL_CFLAGS)							  
+						  LOCAL_LDLIBS +=  链接选项 -L目录 -l库名
+						  
+						  LOCAL_CPP_EXTENSION := 源文件扩展名
+						  LOCAL_C_INCLUDES := 头文件包含目录
+						  LOCAL_SRC_FILES := 所有的源文件						  
+						  
+						  $(call import-add-path, $(LOCAL_PATH)/) 添加模块搜索路径
+						  LOCAL_WHOLE_STATIC_LIBRARIES += 引用某个模块
+						  
+						  include $(BUILD_STATIC_LIBRARY) 当前模块是一个静态库 .lib or .a
+						  include $(BUILD_SHARED_LIBRARY) 当前模块是一个动态库 .dll or .so
+						  include $(BUILD_EXECUTABLE)     当前模块是一个可执行程序
+						  include $(PREBUILT_STATIC_LIBRARY) 当前模块是一个预先编译好的静态库
+						  include $(PREBUILT_SHARED_LIBRARY) 当前模块是一个预先编译好的动态库
+						  
+						  $(call import-module,../../xxx)    导入引用的模块
+						  
+				保留变量: LOCAL_  NDK_  APP_  PRIVATE_
+				在Application.mk内添加编译选项,平台等设置
+					APP_STL := gnustl_static
+					APP_ABI := armeabi-v7a x86
+					APP_OPTIM := release
+					OPT_CFLAGS :=
+					OPT_CPPFLAGS := $(OPT_CFLAGS)
+					APP_CFLAGS := 
+					APP_CPPFLAGS := 
+				
+		shell  C语言写的程序,可执行操作系统调用,执行脚本等等,类似于VM
+			   脚本开头 #!后跟解释当前脚本的SH程序 例如:#!/bin/bash
+			   echo命令: 打印字符串或者变量
+			   var=xxx : 变量声明, $(var)使用变量  unset删除变量
+			   for循环 : for file in xx do done核心编程
+			   while   : while() do  done
+			   if      : if then else done [x1 -eq x2] [ -f x1]
+			   :=和=   : =是最后被指定的值 :=取决于位置 ?=判空
+			   管道    : 命令不是一次性输出完毕在读取的
+	    嵌入式 : ABI,二进制接口,允许编译好的代码不做修改的移植到其他系统 调用约定,参数传递,返回值,ABI包括了系统API的实现约定
+		         与API不同,API是源代码调用接口,ABI是系统二进制接口
+				
+	文件系统 VFS是对硬盘设备的抽象,管理硬盘分区,以目录+文件的形式   
+	        应用程序->系统调用->VFS->文件系统->硬件驱动->硬件
+			
+			硬盘由扇区组成,扇区大小为512字节
+			操作系统读取扇区时是一次性读取N个扇区,一个块通常为4KB,由8个连续扇区组成
+			储存文件基本信息的结构叫做inode,索引节点,包含字节数、UID、GID、WRX、CMA时间戳、链接数、偏移值,不包含文件名,INODE节点存储区与硬盘数据区分开存储
+			打开文件时首先根据文件名找到INODE编号,根据INODE编号找到INODE数据,根据block偏移读取数据
+			目录也是一种文件,目录文件数据是一系列文件列表,文件名与INODE编号的对应关系
+			INODE数据块读取需要执行权限,读取文件名只需要读权限
+			ln创建硬链接,即多个文件名引用同一个INODE编号
+			ln -s 软链接指向文件名而不是INODE编号,INODE引用数不变
+			stat返回INODE信息 lstat返回符号链接信息
+			
+			文件有7种, 普通文件、目录、块文件(带缓冲访问设备)、字符文件(不带缓冲访问设备)、FIFO(管道文件)、socket(网络通信文件)、符号链接
+			实际用户、有效用户、设置用户, 有效用户用来控制实际用户没有权限时,修改该配置来访问文件
+	进程线程
+			每个进程都有一个task_struct存储进程信息,即PCB,有一个文件表项file_struct,指向当前进程打开的文件,包含文件操作的函数指针
+	用户标识
+	系统调用
+		启动流程: 通电->CPU执行跳转指令->执行BIOS程序->从磁盘读取MBR(包含分区表信息)->BootLoader(对硬件建立内存映射表)->加载操作系统内核->start_kernel
+				  启动init进程(/sbin/init /etc/inittab)
+			
+		内核模块: 进程管理 内存管理 文件管理 网络管理 进程通信
+		
+		
+Windows  VS工具,调用WIN API,它的返回值描述可以使用VS的工具下的错误查找来查看,注意查找之前要确保把对应的API的dll加到了列表内
+		 
+		 编码：
+				字符分为编码方式和存储方式,unicode是编码方式,UTF-8是存储方式
+				Unicode编码区间为Uxx0000-UxxFFFF,xx代表字符平面,00代表基础多语言平面,最常用的字符集
+		 
+				 C# string编码和文件编码有关系,对string进行初始化会按照文件编码进行解码
+					文件内容和文件编码无关,文件内容读取时要和写入时使用的编码一致
+					printf打印时只是输出了字节,字节的解释是靠终端来进行的,因此终端编码和输出编码要一致
+					
+				C++ MSVC编译期处理C++字符串时会把文件编码格式的字符串转码为本地操作系统的编码格式,所以C++代码内最好别用中文,除非是日志。
+					GCC字符串编码和文件编码一样的
+					读取文件时或者接收网络数据时都是按照二进制接收的,所以二进制是UTF-8编码,那么接收到的也是UTF-8
+		内核对象 有系统内核创建,并且只能由内核访问,用户通过内核API传递对象句柄控制对象,句柄是与进程绑定的,类似于unix的文件描述符,内核对象有读写执行权限
+				 与文件操作类似,创建、打开、关闭、权限、共享
+				 
+进程管理  win进程包含一个内核对象和一个地址空间,地址空间包含代码和数据. 进程至少包含一个线程,执行代码,进程创建时自动创建第一个主线程
+                链接时可以指定入口点,该入口函数  获取指向新进程的完整代码指令的指针,环境变量指针,运行库初始化,堆初始化,全局对象初始化
+				main函数返回后调用exit,析构全局变量,系统kill掉进程
+				size命令可以查看程序 代码段数据段堆栈段的长度
+		  
+		  UNIX系统启动
+			  通电->CPU执行BIOS固定地址跳转指令->BIOS程序启动->POST加电自检->必要硬件BIOS初始化->次要硬件初始化->磁盘读取MBR,加载kernel,启动init进程,
+			  启动fork->exec(getty)登录终端,getty调用open打开终端等待用户输入用户名,启动login进程等待输入密码,
+			  登录成功,切换到当前用户主目录chdir,修改终端拥有者chown,修改终端权限chmod,设置进程组ID,
+			  远程登录命令 telnet,需要远程计算机开启telnet服务,监听socket连接
+		  进程控制
+			  fork函数创建子进程,父进程返回子进程ID,子进程返回0
+			  exec函数是在fork后执行新的程序代码段,这个时候不在创建新的进程,子进程内存空间被覆盖
+				int execl(const char *path, const char *arg, ...);
+				int execlp(const char *file, const char *arg, ...);
+				int execle(const char *path, const char *arg, ..., char *const envp[]);
+				int execv(const char *path, char *const argv[]);
+				int execvp(const char *file, char *const argv[]);
+				int execve(const char *path, char *const argv[], char *const envp[]);	
+			  exit主动退出 最后一个线程pthread_exit退出
+			  wait阻塞当前进程,检查子进程是否已终止变为僵尸进程,是则清理子进程
+			  waitpid等待指定子进程终止
+				 pid>0时，只等待进程ID等于pid的子进程，不管其它已经有多少子进程运行结束退出了，只要指定的子进程还没有结束，waitpid就会一直等下去。
+				 pid=-1时，等待任何一个子进程退出，没有任何限制，此时waitpid和wait的作用一模一样。
+				 pid=0时，等待同一个进程组中的任何子进程，如果子进程已经加入了别的进程组，waitpid不会对它做任何理睬。
+				 pid<-1时，等待一个指定进程组中的任何子进程，这个进程组的ID等于pid的绝对值。
+			  waittid等待指定子进程或者子进程组
+		  进程关系
+			  父子进程  进程组,组内进程可以接收到相同的终端信号,shell执行fork后exec子进程,设置组ID,
+		  进程环境
+			  extern char** environ;  const char* const *envir;
+		  守护进程
+			  fork->exec->setsid->umask设置文件默认权限,父进程exit,子进程死循环,这样就断开了终端连接,父进程是init进程,成为了守护进程
+		  进程组
+		      setpgid加入进程组,只能为自己或者子进程设置组ID,如果没有组ID,那么就是创建了进程组
+		  
+		  线程的创建、退出、等待
+			  pthread_create(&thread_handle,NULL,loop,param)创建线程,第一个参数是线程标识符,第二个参数是线程属性,第三个是函数指针,第四个是函数参数
+			  pthread_join(thread_handle,&result)用于等待线程结束,第一个参数是线程标识符,第二个参数存储等待线程的返回值
+			  pthread_self(thread_handle)获取当前线程的线程ID
+			  pthread_exit(thread_handle)用于退出当前线程
+			  pthread_cancel取消指定线程
+			  pthread_mutex_init(&mutex)初始化一个互斥锁, 类型是pthread_mutex_t,互斥锁属性默认赋值为NULL
+			  pthread_mutex_lock&unlock(&mutex),传入互斥锁
+			  pthread_mutex_trylock(&mutex)尝试锁住互斥量,不会阻塞
+			  
+			  pthread_rwlock_init&destroy         共享锁(读锁)、排它锁(写锁)
+			  pthread_rwlock_rdlock&wrlock&unlock
+			  
+			  线程锁使用操作系统API 进程锁自己实现一个死循环,判断标志位
+		  虚拟内存
+			  每个进程都有自己独立的虚拟内存空间,32位系统是4G,64位系统是16EB,这个地址是逻辑地址
+			  进程地址空间划分
+			    1.内核空间,存放所有进程共享的dll及其数据 32位一般为2G,64位为248TB
+				2.用户空间,真实可用的进程虚拟内存空间    32位一般为2G,64位为8TB
+			  内存分配
+					  预定 RESERVE 和 COMMIT两步,第一步预定虚拟地址空间,第二步分配并映射物理内存  PAGE_READWRITE 物理页面可读可写
+			  交换内存
+					  访问数据时,虚拟地址映射到内存,直接访问内存,
+					  不在内存中,发生页面错误,内存换出换入页面文件,换入换出越频繁,内存访问就越慢
+			  执行文件
+					  进程启动时,会把程序可执行文件映射到进程虚拟内存中,这样就不需要物理内存了
+		  线程同步
+			  使用fork创建子进程时如果当前进程有线程锁,这个锁也会被复制
+			  线程同步一般使用锁机制,单进程多线程
+		  守护进程
+			  无终端,周期性执行任务或者等待事件产生,作为系统服务存在,是个孤儿进程
+			  一般是fork子进程,然后父进程退出
+		  进程通信
+			  本地进程
+					pipe(&fds) fds[0]是读管道,fds[1]是写管道,匿名管道只能在父子进程间使用  unistd
+					popen,打开一个进程并传递一些数据,他不会阻塞进程,返回FILE*文件流        stdio
+					mkfifo("",)创建命名管道,不同进程以只读或者只写打开文件                 sys/types sys/stat
+					共享内存,同一块物理内存,进程分别映射到自己的逻辑地址,共享内存不提供同步机制,需要自己额外控制,共享内存由进程控制 sys/shm
+						  共享内存是一个对象需要的堆空间
+						  int shmget(key,size,666) 创建共享内存
+						  void* shmat(HANDLE,NULL,0)  把共享内存映射到进程逻辑地址,返回映射地址指针
+						  int shmdt(addr)		   取消映射
+						  shmctl(key,IPC_RMID,NULL)删除共享内存
+						  
+						  windows下使用文件映射
+						    handle = CreateFileMapping(INVALID_HANDLE_VALUE,NULL,PAGE_READWRITE,0,SIZE,"key对应的字符串");
+							handle = OpenFileMapping(FILE_MAP_ALL_ACCESS,TRUE,"KEY")
+							char* PTR = MapViewOfFile(handle,FILE_MAP_ALL_ACCESS,0,0,0)
+							UnMapViewOfFile(PTR);
+							CloseHandle(handle);
+					信号量,用于控制系统资源可用数量,互斥锁是非0即1的变量,只能控制线程资源 sys/sem.h
+						  int semget(key,1,IPC_CREAT)创建或者返回已有的信号量				
