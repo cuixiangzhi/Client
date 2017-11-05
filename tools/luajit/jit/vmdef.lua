@@ -186,7 +186,6 @@ ffnames = {
 "print",
 "coroutine.status",
 "coroutine.running",
-"coroutine.isyieldable",
 "coroutine.create",
 "coroutine.yield",
 "coroutine.resume",
