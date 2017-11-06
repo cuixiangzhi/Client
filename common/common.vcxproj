@@ -125,7 +125,6 @@
     <ClCompile Include="bsdiff\compress.c" />
     <ClCompile Include="bsdiff\crctable.c" />
     <ClCompile Include="bsdiff\decompress.c" />
-    <ClCompile Include="bsdiff\err.c" />
     <ClCompile Include="bsdiff\huffman.c" />
     <ClCompile Include="bsdiff\randtable.c" />
     <ClCompile Include="google\protobuf\any.cc" />
@@ -205,14 +204,12 @@
     <ClCompile Include="network\socket.cc" />
     <ClCompile Include="uuid\md5.cpp" />
     <ClCompile Include="uuid\uuid32.cpp" />
-    <ClCompile Include="wrap\common.cc" />
+    <ClCompile Include="wrap\export.cc" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="bsdiff\bsdiff.h" />
-    <ClInclude Include="bsdiff\bspatch.h" />
+    <ClInclude Include="bsdiff\bstype.h" />
     <ClInclude Include="bsdiff\bzlib.h" />
     <ClInclude Include="bsdiff\bzlib_private.h" />
-    <ClInclude Include="bsdiff\err.h" />
     <ClInclude Include="google\protobuf\any.h" />
     <ClInclude Include="google\protobuf\any.pb.h" />
     <ClInclude Include="google\protobuf\arena.h" />
@@ -342,7 +339,7 @@
     <ClInclude Include="uuid\cdatatype.h" />
     <ClInclude Include="uuid\md5.h" />
     <ClInclude Include="uuid\uuid32.h" />
-    <ClInclude Include="wrap\common.h" />
+    <ClInclude Include="wrap\export.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

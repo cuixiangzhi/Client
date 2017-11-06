@@ -28,16 +28,16 @@
 __FBSDID("$FreeBSD: src/usr.bin/bsdiff/bspatch/bspatch.c,v 1.1 2005/08/06 01:59:06 cperciva Exp $");
 #endif
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
+
+//#include <sys/types.h>
 #include <fcntl.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+//#include <unistd.h>
 
 #include "bzlib.h"
-#include "err.h"
-#include "bspatch.h"
-typedef int off_t;
-typedef int ssize_t;
+#include "bstype.h"
 
 static off_t offtin(u_char *buf)
 {
@@ -75,7 +75,7 @@ int _patch(int argc,char * argv[])
 	if(argc!=4) errx(1,"usage: %s oldfile newfile patchfile\n",argv[0]);
 
 	/* Open patch file */
-	if ((f = fopen(argv[3], "rb")) == NULL)
+	if ((f = fopen(argv[3], "r")) == NULL)
 		err(1, "fopen(%s)", argv[3]);
 
 	/*
@@ -115,21 +115,21 @@ int _patch(int argc,char * argv[])
 		err(1, "fclose(%s)", argv[3]);
 	if ((cpf = fopen(argv[3], "r")) == NULL)
 		err(1, "fopen(%s)", argv[3]);
-	if (fseek(cpf, 32, SEEK_SET))
-		err(1, "fseek(%s, %lld)", argv[3],
+	if (fseeko(cpf, 32, SEEK_SET))
+		err(1, "fseeko(%s, %lld)", argv[3],
 		    (long long)32);
 	if ((cpfbz2 = BZ2_bzReadOpen(&cbz2err, cpf, 0, 0, NULL, 0)) == NULL)
 		errx(1, "BZ2_bzReadOpen, bz2err = %d", cbz2err);
 	if ((dpf = fopen(argv[3], "r")) == NULL)
 		err(1, "fopen(%s)", argv[3]);
-	if (fseek(dpf, 32 + bzctrllen, SEEK_SET))
-		err(1, "fseek(%s, %lld)", argv[3],
+	if (fseeko(dpf, 32 + bzctrllen, SEEK_SET))
+		err(1, "fseeko(%s, %lld)", argv[3],
 		    (long long)(32 + bzctrllen));
 	if ((dpfbz2 = BZ2_bzReadOpen(&dbz2err, dpf, 0, 0, NULL, 0)) == NULL)
 		errx(1, "BZ2_bzReadOpen, bz2err = %d", dbz2err);
 	if ((epf = fopen(argv[3], "r")) == NULL)
 		err(1, "fopen(%s)", argv[3]);
-	if (fseek(epf, 32 + bzctrllen + bzdatalen, SEEK_SET))
+	if (fseeko(epf, 32 + bzctrllen + bzdatalen, SEEK_SET))
 		err(1, "fseeko(%s, %lld)", argv[3],
 		    (long long)(32 + bzctrllen + bzdatalen));
 	if ((epfbz2 = BZ2_bzReadOpen(&ebz2err, epf, 0, 0, NULL, 0)) == NULL)

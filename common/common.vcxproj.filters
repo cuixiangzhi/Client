@@ -36,9 +36,6 @@
     <ClCompile Include="bsdiff\decompress.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="bsdiff\err.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="bsdiff\huffman.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -276,24 +273,15 @@
     <ClCompile Include="uuid\uuid32.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="wrap\common.cc">
+    <ClCompile Include="wrap\export.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="bsdiff\bsdiff.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="bsdiff\bspatch.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="bsdiff\bzlib.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="bsdiff\bzlib_private.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="bsdiff\err.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="google\protobuf\any.h">
@@ -683,7 +671,10 @@
     <ClInclude Include="uuid\uuid32.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="wrap\common.h">
+    <ClInclude Include="bsdiff\bstype.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="wrap\export.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

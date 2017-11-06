@@ -28,15 +28,15 @@
 __FBSDID("$FreeBSD: src/usr.bin/bsdiff/bsdiff/bsdiff.c,v 1.1 2005/08/06 01:59:05 cperciva Exp $");
 #endif
 
+//#include <sys/types.h>
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+//#include <unistd.h>
 
 #include "bzlib.h"
-#include "err.h"
-#include "bsdiff.h"
-typedef long long off_t;
+#include "bstype.h"
 
 #define MIN(x,y) (((x)<(y)) ? (x) : (y))
 
@@ -248,7 +248,7 @@ int _diff(int argc,char *argv[])
 	eblen=0;
 
 	/* Create the patch file */
-	if ((pf = fopen(argv[3], "wb")) == NULL)
+	if ((pf = fopen(argv[3], "w")) == NULL)
 		err(1, "%s", argv[3]);
 
 	/* Header is
@@ -358,8 +358,8 @@ int _diff(int argc,char *argv[])
 		errx(1, "BZ2_bzWriteClose, bz2err = %d", bz2err);
 
 	/* Compute size of compressed ctrl data */
-	if ((len = ftell(pf)) == -1)
-		err(1, "ftell");
+	if ((len = ftello(pf)) == -1)
+		err(1, "ftello");
 	offtout(len-32, header + 8);
 
 	/* Write compressed diff data */
@@ -373,7 +373,7 @@ int _diff(int argc,char *argv[])
 		errx(1, "BZ2_bzWriteClose, bz2err = %d", bz2err);
 
 	/* Compute size of compressed diff data */
-	if ((newsize = ftell(pf)) == -1)
+	if ((newsize = ftello(pf)) == -1)
 		err(1, "ftello");
 	offtout(newsize - len, header + 16);
 
@@ -388,7 +388,7 @@ int _diff(int argc,char *argv[])
 		errx(1, "BZ2_bzWriteClose, bz2err = %d", bz2err);
 
 	/* Seek to the beginning, write the header, and close the file */
-	if (fseek(pf, 0, SEEK_SET))
+	if (fseeko(pf, 0, SEEK_SET))
 		err(1, "fseeko");
 	if (fwrite(header, 32, 1, pf) != 1)
 		err(1, "fwrite(%s)", argv[3]);
