@@ -273,7 +273,7 @@
     <ClCompile Include="uuid\uuid32.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="wrap\export.cc">
+    <ClCompile Include="wrap\wrap.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -674,7 +674,7 @@
     <ClInclude Include="bsdiff\bstype.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="wrap\export.h">
+    <ClInclude Include="wrap\wrap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

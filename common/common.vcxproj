@@ -204,7 +204,7 @@
     <ClCompile Include="network\socket.cc" />
     <ClCompile Include="uuid\md5.cpp" />
     <ClCompile Include="uuid\uuid32.cpp" />
-    <ClCompile Include="wrap\export.cc" />
+    <ClCompile Include="wrap\wrap.cc" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bsdiff\bstype.h" />
@@ -339,7 +339,7 @@
     <ClInclude Include="uuid\cdatatype.h" />
     <ClInclude Include="uuid\md5.h" />
     <ClInclude Include="uuid\uuid32.h" />
-    <ClInclude Include="wrap\export.h" />
+    <ClInclude Include="wrap\wrap.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
