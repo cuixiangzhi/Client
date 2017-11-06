@@ -15,7 +15,10 @@ DLLAPI int common_patch(char* oldpath, char* patchpath, char* newpath)
 
 DLLAPI void common_md5(char* data, char* outhash)
 {
-
+	_uuid_t uuid;
+	uuid_create_external(data,&uuid);
+	char* hash = uuid_to_string(&uuid);
+	strcpy(outhash, hash);
 }
 
 extern void encrypt(unsigned char* data, int len);
