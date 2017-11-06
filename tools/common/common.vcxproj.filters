@@ -276,6 +276,9 @@
     <ClCompile Include="wrap\wrap.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="uuid\bitcoder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bsdiff\bzlib.h">

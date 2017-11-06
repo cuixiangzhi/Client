@@ -202,6 +202,7 @@
     <ClCompile Include="google\protobuf\wire_format_lite.cc" />
     <ClCompile Include="google\protobuf\wrappers.pb.cc" />
     <ClCompile Include="network\socket.cc" />
+    <ClCompile Include="uuid\bitcoder.cpp" />
     <ClCompile Include="uuid\md5.cpp" />
     <ClCompile Include="uuid\uuid32.cpp" />
     <ClCompile Include="wrap\wrap.cc" />

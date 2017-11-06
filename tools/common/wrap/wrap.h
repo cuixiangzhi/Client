@@ -1,4 +1,14 @@
-//标准库头文件
-//标准类型自定义
-//异常处理
-//系统头文件
+#pragma once
+#ifdef _MSC_VER
+#define DLLAPI __declspec(dllexport)
+#else
+#endif
+
+extern "C"
+{
+	DLLAPI int common_diff(char* oldpath,char* newpath,char* patchpath);
+	DLLAPI int common_patch(char* oldpath, char* patchpath, char* newpath);
+	DLLAPI void common_md5(char* data,char* outhash);
+	DLLAPI void common_encode(unsigned char* data, int len);
+	DLLAPI void common_decode(unsigned char* data, int len);
+};
