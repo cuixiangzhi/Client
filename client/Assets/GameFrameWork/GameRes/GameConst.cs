@@ -17,5 +17,7 @@ namespace GF
 #else
         public static string LOG_PATH = Path.GetFullPath(Application.persistentDataPath + "/log");
 #endif
+        public static string LUA_LIB_NAME = "lualib";
+        public static string LUA_LOGIC_NAME = "lualogic";
     }
 }

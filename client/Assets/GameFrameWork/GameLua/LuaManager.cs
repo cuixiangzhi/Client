@@ -28,7 +28,7 @@ namespace GF
 
             public override LuaByteBuffer ReadFile(string fileName)
             {
-#if UNITY_EDITOR
+#if !UNITY_EDITOR
                 return base.ReadFile(fileName);
 #else
                 //读取LUA字节码
@@ -42,6 +42,26 @@ namespace GF
             }
         }
 
+        [AOT.MonoPInvokeCallback(typeof(LuaCSFunction))]
+        private static int luaopen_socket_core(System.IntPtr L)
+        {
+            return LuaDLL.luaopen_socket_core(L);
+        }
+
+        [AOT.MonoPInvokeCallback(typeof(LuaCSFunction))]
+        private static int luaopen_mime_core(System.IntPtr L)
+        {
+            return LuaDLL.luaopen_mime_core(L);
+        }
+
+        private static void OpenLuaSocket()
+        {
+            mLuaState.BeginPreLoad();
+            mLuaState.RegFunction("socket.core", luaopen_socket_core);
+            mLuaState.RegFunction("mime.core", luaopen_mime_core);
+            mLuaState.EndPreLoad();
+        }
+
         public static void Init()
         {
             //创建LUA文件读取器
@@ -50,8 +70,14 @@ namespace GF
             //创建LUA虚拟机
             mLuaState = new LuaState();
 
-            //lua protobuf 库
+            //lua protobuf库
             mLuaState.OpenLibs(LuaDLL.luaopen_pb);
+            //lua socket 和协议
+            OpenLuaSocket();
+            //lua c调用库
+            mLuaState.OpenLibs(LuaDLL.luaopen_ffi);
+            //lua 模式匹配库
+            mLuaState.OpenLibs(LuaDLL.luaopen_lpeg);
 
             //导出C# API
             LuaBinder.Bind(mLuaState);

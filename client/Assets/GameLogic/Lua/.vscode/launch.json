@@ -14,7 +14,7 @@
             "portDesc": "--必填 调试器的端口 可修改 与调用LuaDebug 的端口对应",
             "port": 7003,
             "printTypeDesc": "--必填 print打印方式 1 控制台和系统输出,2 控制台输出,3 系统输出",
-            "printType": 1
+            "printType": 3
         }
     ]
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Runtime.InteropServices;
 using AOT;
-using System;
+using System.Text;
 
 namespace GF
 {
@@ -12,15 +12,24 @@ namespace GF
 #if UNITY_IPHONE
         private const string DLLNAME = "__Internal";
 #else
-        private const string DLLNAME = "utils";
+        private const string DLLNAME = "common";
 #endif
-        private delegate void LOG_FUNC(string msg);
+
 
         [DllImport(DLLNAME)]
-        public static extern void dllinit(IntPtr logFunc);
+        private static extern void common_md5(string data,StringBuilder outdata);
+        private static StringBuilder mCacheMD5Result = new StringBuilder(64);
+        public static string common_md5(string data)
+        {
+            common_md5(data, mCacheMD5Result);
+            return mCacheMD5Result.ToString();
+        }
 
         [DllImport(DLLNAME)]
-        public static extern string gethashcode(string filePath);
+        public static extern void common_encode(byte[] data,int len);
+
+        [DllImport(DLLNAME)]
+        public static extern void common_decode(byte[] data, int len);
 
         public static void Init()
         {
@@ -30,12 +39,6 @@ namespace GF
         public static void Exit()
         {
 
-        }
-
-        [MonoPInvokeCallback(typeof(LOG_FUNC))]
-        private static void Log(string msg)
-        {
-            Logger.Log(msg);
         }
     }
 }

@@ -54,7 +54,7 @@ namespace LuaInterface
         public LuaByteBuffer(byte[] buf)
         {
             buffer = buf;
-            Length = buf.Length;            
+            Length = buf != null ? buf.Length : 0;            
         }
 
         public LuaByteBuffer(byte[] buf, int len)
@@ -79,7 +79,7 @@ namespace LuaInterface
         public int Length
         {
             get;
-            private set;
+            set;
         }    
     }   
 

@@ -1,10 +1,6 @@
 --游戏入口
-require "Debug.LuaDebug"
-local DEBUGGER_FILE = "LuaDebug";
-if jit then
-    DEBUGGER_FILE = "LuaDebugjit";
+require(jit and "debug.LuaDebugjit" or "debug.LuaDebug")("10.12.20.254",7003);
+local function Update()
+    print("hello lua");
 end
-local breakInfoFunc = require(DEBUGGER_FILE)(host or "localhost",port or 7003)
-local timer = Timer.New(breakInfoFunc,0.01,-1,1);
-timer:Start();
-print("hello lua");
+UpdateBeat:Add(Update);

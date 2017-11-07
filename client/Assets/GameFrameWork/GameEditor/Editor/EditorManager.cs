@@ -9,10 +9,16 @@ namespace GF
     //编辑器代码不能直接调用运行时的模块
     public static class EditorManager
     {
-        [MenuItem("工具/导出资源/脚本")]
-        public static void 导出脚本()
+        [MenuItem("工具/导出资源/TOLUA脚本")]
+        public static void ExportLib()
         {
-            ExportLua.Export();
+            ExportLua.ExportLib();
+        }
+
+        [MenuItem("工具/导出资源/LOGIC脚本")]
+        public static void ExportLogic()
+        {
+            ExportLua.ExportLogic();
         }
     }
 }
