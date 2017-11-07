@@ -33,7 +33,7 @@ namespace GF
                 Directory.Delete(LUA_TMP_PATH, true);
             }
             MakeByteCode(LUA_JIT_PATH, LUA_LOGIC_PATH + " " + LUA_TMP_PATH);
-            MakePackage(LUA_TMP_PATH, GameConst.LUA_LOGIC_NAME);
+            //MakePackage(LUA_TMP_PATH, GameConst.LUA_LOGIC_NAME);
         }
 
         private static void MakePackage(string path,string name)
