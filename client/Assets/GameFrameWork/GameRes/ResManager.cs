@@ -3,6 +3,7 @@ using UnityEngine;
 using System.IO;
 using LuaInterface;
 using UnityObj = UnityEngine.Object;
+using UnityEngine.Networking;
 
 namespace GF
 {
@@ -12,7 +13,7 @@ namespace GF
         {
             //初始化资源包路径
             //读取资源包信息
-
+            UnityWebRequest req = null;
         }
 
         public static void LateLoop()
@@ -32,7 +33,7 @@ namespace GF
 
         public static LuaByteBuffer LoadBytes(string filePath)
         {
-            return new LuaByteBuffer(Resources.Load<TextAsset>(filePath.Replace(".lua","") + "_64").bytes);
+            return new LuaByteBuffer(Resources.Load<TextAsset>(filePath.Replace(".lua","") + "_32").bytes);
         }
     }
 }
