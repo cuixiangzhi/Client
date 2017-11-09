@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "01C2FDDB1FB0BD2A003E6658"
+               BlueprintIdentifier = "0157BE761FB47E20003B83E6"
                BuildableName = "libcommon.a"
                BlueprintName = "common"
                ReferencedContainer = "container:common.xcodeproj">
@@ -33,7 +33,7 @@
       </AdditionalOptions>
    </TestAction>
    <LaunchAction
-      buildConfiguration = "Debug"
+      buildConfiguration = "Release"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       launchStyle = "0"
@@ -45,7 +45,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "01C2FDDB1FB0BD2A003E6658"
+            BlueprintIdentifier = "0157BE761FB47E20003B83E6"
             BuildableName = "libcommon.a"
             BlueprintName = "common"
             ReferencedContainer = "container:common.xcodeproj">
@@ -63,7 +63,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "01C2FDDB1FB0BD2A003E6658"
+            BlueprintIdentifier = "0157BE761FB47E20003B83E6"
             BuildableName = "libcommon.a"
             BlueprintName = "common"
             ReferencedContainer = "container:common.xcodeproj">

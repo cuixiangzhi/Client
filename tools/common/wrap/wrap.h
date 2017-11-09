@@ -2,6 +2,7 @@
 #ifdef _MSC_VER
 #define DLLAPI __declspec(dllexport)
 #else
+#define DLLAPI
 #endif
 
 extern "C"
