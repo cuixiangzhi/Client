@@ -12,12 +12,6 @@ namespace GF
 
         private static LuaFileReader mLuaReader = null;
 
-        private static LuaBeatEvent mUpdateBeat = null;
-
-        private static LuaBeatEvent mLateUpdateBeat = null;
-
-        private static LuaBeatEvent mFixedUpdateBeat = null;
-
         private class LuaFileReader : LuaFileUtils
         {
             public LuaFileReader()
@@ -85,11 +79,6 @@ namespace GF
 
             //启动虚拟机
             mLuaState.Start();
-
-            //创建LUA更新事件
-            mUpdateBeat = GetEvent("UpdateBeat");
-            mLateUpdateBeat = GetEvent("UpdateBeat");
-            mFixedUpdateBeat = GetEvent("UpdateBeat");
         }
 
         public static void Loop()
@@ -125,31 +114,10 @@ namespace GF
 
         public static void Exit()
         {
-            mUpdateBeat.Dispose();
-            mUpdateBeat = null;
-            mLateUpdateBeat.Dispose();
-            mLateUpdateBeat = null;
-            mFixedUpdateBeat.Dispose();
-            mFixedUpdateBeat = null;
             mLuaState.Dispose();
             mLuaState = null;
             mLuaReader.Dispose();
             mLuaReader = null;
-        }
-
-        private static LuaBeatEvent GetEvent(string name)
-        {
-            LuaTable table = mLuaState.GetTable(name);
-
-            if (table == null)
-            {
-                throw new LuaException(string.Format("Lua table {0} not exists", name));
-            }
-
-            LuaBeatEvent e = new LuaBeatEvent(table);
-            table.Dispose();
-            table = null;
-            return e;
         }
 
         private static void ThrowException()

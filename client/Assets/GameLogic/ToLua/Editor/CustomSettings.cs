@@ -35,6 +35,9 @@ public static class CustomSettings
         _GT(typeof(UnityEngine.Camera)),
 
         //框架
+        _GT(typeof(LuaDebugTool)),
+        _GT(typeof(LuaValueInfo)),
+        _GT(typeof(List<LuaValueInfo>)),
         _GT(typeof(GF.Logger)),
         _GT(typeof(GF.UIFollow)),
         _GT(typeof(GF.ResManager)),

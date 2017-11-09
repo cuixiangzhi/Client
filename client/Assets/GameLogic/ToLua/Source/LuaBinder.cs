@@ -9,6 +9,8 @@ public static class LuaBinder
 	{
 		float t = Time.realtimeSinceStartup;
 		L.BeginModule(null);
+		LuaDebugToolWrap.Register(L);
+		LuaValueInfoWrap.Register(L);
 		L.BeginModule("UnityEngine");
 		UnityEngine_ComponentWrap.Register(L);
 		UnityEngine_BehaviourWrap.Register(L);
@@ -19,13 +21,21 @@ public static class LuaBinder
 		L.RegFunction("CameraCallback", UnityEngine_Camera_CameraCallback);
 		L.EndModule();
 		L.EndModule();
+		L.BeginModule("System");
+		L.RegFunction("Action_LuaInterface_LuaByteBuffer", System_Action_LuaInterface_LuaByteBuffer);
+		L.RegFunction("Predicate_LuaValueInfo", System_Predicate_LuaValueInfo);
+		L.RegFunction("Action_LuaValueInfo", System_Action_LuaValueInfo);
+		L.RegFunction("Comparison_LuaValueInfo", System_Comparison_LuaValueInfo);
+		L.BeginModule("Collections");
+		L.BeginModule("Generic");
+		System_Collections_Generic_List_LuaValueInfoWrap.Register(L);
+		L.EndModule();
+		L.EndModule();
+		L.EndModule();
 		L.BeginModule("GF");
 		GF_LoggerWrap.Register(L);
 		GF_UIFollowWrap.Register(L);
 		GF_ResManagerWrap.Register(L);
-		L.EndModule();
-		L.BeginModule("System");
-		L.RegFunction("Action_LuaInterface_LuaByteBuffer", System_Action_LuaInterface_LuaByteBuffer);
 		L.EndModule();
 		L.EndModule();
 		GF.Logger.Log("Register lua type cost time: {0}", Time.realtimeSinceStartup - t);
@@ -75,6 +85,87 @@ public static class LuaBinder
 			{
 				LuaTable self = ToLua.CheckLuaTable(L, 2);
 				Delegate arg1 = DelegateTraits<System.Action<LuaInterface.LuaByteBuffer>>.Create(func, self);
+				ToLua.Push(L, arg1);
+			}
+			return 1;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int System_Predicate_LuaValueInfo(IntPtr L)
+	{
+		try
+		{
+			int count = LuaDLL.lua_gettop(L);
+			LuaFunction func = ToLua.CheckLuaFunction(L, 1);
+
+			if (count == 1)
+			{
+				Delegate arg1 = DelegateTraits<System.Predicate<LuaValueInfo>>.Create(func);
+				ToLua.Push(L, arg1);
+			}
+			else
+			{
+				LuaTable self = ToLua.CheckLuaTable(L, 2);
+				Delegate arg1 = DelegateTraits<System.Predicate<LuaValueInfo>>.Create(func, self);
+				ToLua.Push(L, arg1);
+			}
+			return 1;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int System_Action_LuaValueInfo(IntPtr L)
+	{
+		try
+		{
+			int count = LuaDLL.lua_gettop(L);
+			LuaFunction func = ToLua.CheckLuaFunction(L, 1);
+
+			if (count == 1)
+			{
+				Delegate arg1 = DelegateTraits<System.Action<LuaValueInfo>>.Create(func);
+				ToLua.Push(L, arg1);
+			}
+			else
+			{
+				LuaTable self = ToLua.CheckLuaTable(L, 2);
+				Delegate arg1 = DelegateTraits<System.Action<LuaValueInfo>>.Create(func, self);
+				ToLua.Push(L, arg1);
+			}
+			return 1;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int System_Comparison_LuaValueInfo(IntPtr L)
+	{
+		try
+		{
+			int count = LuaDLL.lua_gettop(L);
+			LuaFunction func = ToLua.CheckLuaFunction(L, 1);
+
+			if (count == 1)
+			{
+				Delegate arg1 = DelegateTraits<System.Comparison<LuaValueInfo>>.Create(func);
+				ToLua.Push(L, arg1);
+			}
+			else
+			{
+				LuaTable self = ToLua.CheckLuaTable(L, 2);
+				Delegate arg1 = DelegateTraits<System.Comparison<LuaValueInfo>>.Create(func, self);
 				ToLua.Push(L, arg1);
 			}
 			return 1;

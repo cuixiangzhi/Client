@@ -19,15 +19,27 @@ public class DelegateFactory
 		dict.Clear();
 		dict.Add(typeof(System.Action<LuaInterface.LuaByteBuffer>), factory.System_Action_LuaInterface_LuaByteBuffer);
 		dict.Add(typeof(UnityEngine.Camera.CameraCallback), factory.UnityEngine_Camera_CameraCallback);
+		dict.Add(typeof(System.Predicate<LuaValueInfo>), factory.System_Predicate_LuaValueInfo);
+		dict.Add(typeof(System.Action<LuaValueInfo>), factory.System_Action_LuaValueInfo);
+		dict.Add(typeof(System.Comparison<LuaValueInfo>), factory.System_Comparison_LuaValueInfo);
 
 		DelegateTraits<System.Action<LuaInterface.LuaByteBuffer>>.Init(factory.System_Action_LuaInterface_LuaByteBuffer);
 		DelegateTraits<UnityEngine.Camera.CameraCallback>.Init(factory.UnityEngine_Camera_CameraCallback);
+		DelegateTraits<System.Predicate<LuaValueInfo>>.Init(factory.System_Predicate_LuaValueInfo);
+		DelegateTraits<System.Action<LuaValueInfo>>.Init(factory.System_Action_LuaValueInfo);
+		DelegateTraits<System.Comparison<LuaValueInfo>>.Init(factory.System_Comparison_LuaValueInfo);
 
 		TypeTraits<System.Action<LuaInterface.LuaByteBuffer>>.Init(factory.Check_System_Action_LuaInterface_LuaByteBuffer);
 		TypeTraits<UnityEngine.Camera.CameraCallback>.Init(factory.Check_UnityEngine_Camera_CameraCallback);
+		TypeTraits<System.Predicate<LuaValueInfo>>.Init(factory.Check_System_Predicate_LuaValueInfo);
+		TypeTraits<System.Action<LuaValueInfo>>.Init(factory.Check_System_Action_LuaValueInfo);
+		TypeTraits<System.Comparison<LuaValueInfo>>.Init(factory.Check_System_Comparison_LuaValueInfo);
 
 		StackTraits<System.Action<LuaInterface.LuaByteBuffer>>.Push = factory.Push_System_Action_LuaInterface_LuaByteBuffer;
 		StackTraits<UnityEngine.Camera.CameraCallback>.Push = factory.Push_UnityEngine_Camera_CameraCallback;
+		StackTraits<System.Predicate<LuaValueInfo>>.Push = factory.Push_System_Predicate_LuaValueInfo;
+		StackTraits<System.Action<LuaValueInfo>>.Push = factory.Push_System_Action_LuaValueInfo;
+		StackTraits<System.Comparison<LuaValueInfo>>.Push = factory.Push_System_Comparison_LuaValueInfo;
 	}
     
     public static Delegate CreateDelegate(Type t, LuaFunction func = null)
@@ -249,6 +261,187 @@ public class DelegateFactory
 	}
 
 	void Push_UnityEngine_Camera_CameraCallback(IntPtr L, UnityEngine.Camera.CameraCallback o)
+	{
+		ToLua.Push(L, o);
+	}
+
+	class System_Predicate_LuaValueInfo_Event : LuaDelegate
+	{
+		public System_Predicate_LuaValueInfo_Event(LuaFunction func) : base(func) { }
+		public System_Predicate_LuaValueInfo_Event(LuaFunction func, LuaTable self) : base(func, self) { }
+
+		public bool Call(LuaValueInfo param0)
+		{
+			func.BeginPCall();
+			func.PushObject(param0);
+			func.PCall();
+			bool ret = func.CheckBoolean();
+			func.EndPCall();
+			return ret;
+		}
+
+		public bool CallWithSelf(LuaValueInfo param0)
+		{
+			func.BeginPCall();
+			func.Push(self);
+			func.PushObject(param0);
+			func.PCall();
+			bool ret = func.CheckBoolean();
+			func.EndPCall();
+			return ret;
+		}
+	}
+
+	public System.Predicate<LuaValueInfo> System_Predicate_LuaValueInfo(LuaFunction func, LuaTable self, bool flag)
+	{
+		if (func == null)
+		{
+			System.Predicate<LuaValueInfo> fn = delegate(LuaValueInfo param0) { return false; };
+			return fn;
+		}
+
+		if(!flag)
+		{
+			System_Predicate_LuaValueInfo_Event target = new System_Predicate_LuaValueInfo_Event(func);
+			System.Predicate<LuaValueInfo> d = target.Call;
+			target.method = d.Method;
+			return d;
+		}
+		else
+		{
+			System_Predicate_LuaValueInfo_Event target = new System_Predicate_LuaValueInfo_Event(func, self);
+			System.Predicate<LuaValueInfo> d = target.CallWithSelf;
+			target.method = d.Method;
+			return d;
+		}
+	}
+
+	bool Check_System_Predicate_LuaValueInfo(IntPtr L, int pos)
+	{
+		return TypeChecker.CheckDelegateType(typeof(System.Predicate<LuaValueInfo>), L, pos);
+	}
+
+	void Push_System_Predicate_LuaValueInfo(IntPtr L, System.Predicate<LuaValueInfo> o)
+	{
+		ToLua.Push(L, o);
+	}
+
+	class System_Action_LuaValueInfo_Event : LuaDelegate
+	{
+		public System_Action_LuaValueInfo_Event(LuaFunction func) : base(func) { }
+		public System_Action_LuaValueInfo_Event(LuaFunction func, LuaTable self) : base(func, self) { }
+
+		public void Call(LuaValueInfo param0)
+		{
+			func.BeginPCall();
+			func.PushObject(param0);
+			func.PCall();
+			func.EndPCall();
+		}
+
+		public void CallWithSelf(LuaValueInfo param0)
+		{
+			func.BeginPCall();
+			func.Push(self);
+			func.PushObject(param0);
+			func.PCall();
+			func.EndPCall();
+		}
+	}
+
+	public System.Action<LuaValueInfo> System_Action_LuaValueInfo(LuaFunction func, LuaTable self, bool flag)
+	{
+		if (func == null)
+		{
+			System.Action<LuaValueInfo> fn = delegate(LuaValueInfo param0) { };
+			return fn;
+		}
+
+		if(!flag)
+		{
+			System_Action_LuaValueInfo_Event target = new System_Action_LuaValueInfo_Event(func);
+			System.Action<LuaValueInfo> d = target.Call;
+			target.method = d.Method;
+			return d;
+		}
+		else
+		{
+			System_Action_LuaValueInfo_Event target = new System_Action_LuaValueInfo_Event(func, self);
+			System.Action<LuaValueInfo> d = target.CallWithSelf;
+			target.method = d.Method;
+			return d;
+		}
+	}
+
+	bool Check_System_Action_LuaValueInfo(IntPtr L, int pos)
+	{
+		return TypeChecker.CheckDelegateType(typeof(System.Action<LuaValueInfo>), L, pos);
+	}
+
+	void Push_System_Action_LuaValueInfo(IntPtr L, System.Action<LuaValueInfo> o)
+	{
+		ToLua.Push(L, o);
+	}
+
+	class System_Comparison_LuaValueInfo_Event : LuaDelegate
+	{
+		public System_Comparison_LuaValueInfo_Event(LuaFunction func) : base(func) { }
+		public System_Comparison_LuaValueInfo_Event(LuaFunction func, LuaTable self) : base(func, self) { }
+
+		public int Call(LuaValueInfo param0, LuaValueInfo param1)
+		{
+			func.BeginPCall();
+			func.PushObject(param0);
+			func.PushObject(param1);
+			func.PCall();
+			int ret = (int)func.CheckNumber();
+			func.EndPCall();
+			return ret;
+		}
+
+		public int CallWithSelf(LuaValueInfo param0, LuaValueInfo param1)
+		{
+			func.BeginPCall();
+			func.Push(self);
+			func.PushObject(param0);
+			func.PushObject(param1);
+			func.PCall();
+			int ret = (int)func.CheckNumber();
+			func.EndPCall();
+			return ret;
+		}
+	}
+
+	public System.Comparison<LuaValueInfo> System_Comparison_LuaValueInfo(LuaFunction func, LuaTable self, bool flag)
+	{
+		if (func == null)
+		{
+			System.Comparison<LuaValueInfo> fn = delegate(LuaValueInfo param0, LuaValueInfo param1) { return 0; };
+			return fn;
+		}
+
+		if(!flag)
+		{
+			System_Comparison_LuaValueInfo_Event target = new System_Comparison_LuaValueInfo_Event(func);
+			System.Comparison<LuaValueInfo> d = target.Call;
+			target.method = d.Method;
+			return d;
+		}
+		else
+		{
+			System_Comparison_LuaValueInfo_Event target = new System_Comparison_LuaValueInfo_Event(func, self);
+			System.Comparison<LuaValueInfo> d = target.CallWithSelf;
+			target.method = d.Method;
+			return d;
+		}
+	}
+
+	bool Check_System_Comparison_LuaValueInfo(IntPtr L, int pos)
+	{
+		return TypeChecker.CheckDelegateType(typeof(System.Comparison<LuaValueInfo>), L, pos);
+	}
+
+	void Push_System_Comparison_LuaValueInfo(IntPtr L, System.Comparison<LuaValueInfo> o)
 	{
 		ToLua.Push(L, o);
 	}
