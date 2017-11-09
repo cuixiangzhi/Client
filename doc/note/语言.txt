@@ -178,28 +178,6 @@ python
 				  cols = sheet.row_values(n)
 				  ctype = sheet.cell(row,col)
 				  value = sheet.cell_value(row,col);
-
-OpenGL  左手坐标系,Z轴朝里,指向屏幕内
-		M矩阵,从模型空间变换到世界空间,默认情况下模型和世界坐标空间重合,所以变换是先平移后旋转在缩放  trs矩阵 t即平移矩阵,r即旋转矩阵,s即缩放矩阵
-		1 0 0 Tx	Sx 0 0 0
-		0 1 0 Ty    0 Sy 0 0
-		0 0 1 Tz    0 0 Sz 0
-		0 0 0 1     0 0 0 1
-		四元数  轴角表达式, 轴向量v(x,y,z) 角度w  四元数为 (x,y,z)sin(w/2),cos(w/2)  API  欧拉角to四元数 四元数lerp 四元数乘法
-			对应于localToWorldMatrix
-		
-		V矩阵,从世界空间变换到摄像机空间,默认情况下模型和摄像机都有自己的坐标和旋转,把模型变换到摄像机下即模型施加摄像机变换的逆变换, 先逆平移,在逆旋转,这样摄像机与世界坐标系重合,模型变换到了摄像机空间下
-		    对应于worldToCameraMatrix
-		p矩阵,从摄像机空间到CVV立方体内,执行透视投影变换或者正交投影变换,
-			对应于projectionMatrix
-			x/x' = z/z' = z/-n  则x' = -n* x/z y'=-n* y/z;  p(x,y,z)投影后p'(x',y',-n);投影后z值始终为-n,由于深度计算需要Z,所以把p'记为（x',y',z),利用远近裁剪面,rect即viewport可以修改视口变换,区域
-
-		人眼立体成像,两只眼睛观察同一物体,物体上的点与两眼有个夹角,叫做视差角(深度信息),角度越小距离越远,越大距离越近
-		立体电影则是摄像机两个镜头模拟人的双眼,记录两幅图像,观看时使用3D眼镜
-		
-		OPENGL 是一个大状态机,它的渲染流程是否无法改变的,能修改的是渲染过程中的一些控制状态变量,从而修改渲染结果
-		openGL是一个规范,各个显卡硬件厂商制作遵循该规范的驱动程序
-		模型坐标系->世界坐标系->摄像机坐标系->CVV->裁剪->图元装配->
 lua API
 模块实现相关 module local self 
              tostring tonumber type 
@@ -224,7 +202,8 @@ lua API
        string 库  lower upper len format reverse sub gsub find gmatch byte char dump match rep
        table  库  insert concat maxn remove sort
 注册表: 所有lua_State共享的表
-全局环境: 独立的lua_State拥有的表
+全局环境: _G全局表
+栈帧:  分为函数栈帧和数据栈帧,每个函数的数据栈index属于不同的数据栈
        
 Lua CAPI
 后缀表达式:  建立符号栈,
