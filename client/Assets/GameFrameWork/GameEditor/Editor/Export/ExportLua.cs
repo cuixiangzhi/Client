@@ -37,12 +37,20 @@ namespace GF
         {
             FileStream package = new FileStream(Application.streamingAssetsPath + "/" + UtilDll.common_md5(name), FileMode.Create);
             //字节码写入文件并记录byte信息
-            string[] files = Directory.GetFiles(path, "*.bytes", SearchOption.AllDirectories);
-            List<FileByteData> fileInfo = new List<FileByteData>(files.Length);
-            List<string> fileUUID = new List<string>(files.Length / 2);
+            List<string> files = new List<string>(Directory.GetFiles(path, "*.bytes", SearchOption.AllDirectories));
+            files.Sort((a,b)=>
+            {
+                string aName = Path.GetFileNameWithoutExtension(a).ToLower();
+                string bName = Path.GetFileNameWithoutExtension(b).ToLower();
+                if (aName != bName || a == b)
+                    return aName.CompareTo(bName);
+                throw new Exception("file name equal!\n" + a + "\n" + b);
+            });
+            List<FileByteData> fileInfo = new List<FileByteData>(files.Count);
+            List<string> fileUUID = new List<string>(files.Count / 2);
 
             uint offset = 0;
-            for(int i = 0;i < files.Length;i++)
+            for(int i = 0;i < files.Count; i++)
             {
                 //读取数据并加密,写入包内
                 byte[] tmp = File.ReadAllBytes(files[i]);

@@ -13,6 +13,7 @@ namespace GF
         {
             //初始化资源包路径
             //读取资源包信息
+            AndroidJavaClass ajc = new AndroidJavaClass("com.unity3d.player");
         }
 
         public static void LateLoop()
