@@ -56,6 +56,16 @@ namespace GF
             mLuaState.EndPreLoad();
         }
 
+        private static void OpenCJson()
+        {
+            mLuaState.LuaGetField(LuaIndexes.LUA_REGISTRYINDEX, "_LOADED");
+            mLuaState.OpenLibs(LuaDLL.luaopen_cjson);
+            mLuaState.LuaSetField(-2, "cjson");
+
+            mLuaState.OpenLibs(LuaDLL.luaopen_cjson_safe);
+            mLuaState.LuaSetField(-2, "cjson.safe");
+        }
+
         public static void Init()
         {
             //创建LUA文件读取器
@@ -68,10 +78,15 @@ namespace GF
             mLuaState.OpenLibs(LuaDLL.luaopen_pb);
             //lua socket 和协议
             OpenLuaSocket();
+            //json 库
+            OpenCJson();
             //lua c调用库
             mLuaState.OpenLibs(LuaDLL.luaopen_ffi);
             //lua 模式匹配库
             mLuaState.OpenLibs(LuaDLL.luaopen_lpeg);
+#if UNITY_STANDALONE_OSX || UNITY_EDITOR_OSX
+            mLuaState.OpenLibs(LuaDLL.luaopen_bit);
+#endif
 
             //导出C# API
             LuaBinder.Bind(mLuaState);

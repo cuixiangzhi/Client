@@ -15,7 +15,7 @@ namespace GF
 #if UNITY_EDITOR
         public static string LOG_PATH = Path.GetFullPath(Application.dataPath + "/../Log");
 #else
-        public const string LOG_PATH = Path.GetFullPath(Application.persistentDataPath + "/Log");
+        public static string LOG_PATH = Path.GetFullPath(Application.persistentDataPath + "/Log");
 #endif
         public static string LUA_LIB_NAME = "lualib";
         public static string LUA_LOGIC_NAME = "lualogic";
