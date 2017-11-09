@@ -13,7 +13,6 @@ namespace GF
         {
             //初始化资源包路径
             //读取资源包信息
-            UnityWebRequest req = null;
         }
 
         public static void LateLoop()

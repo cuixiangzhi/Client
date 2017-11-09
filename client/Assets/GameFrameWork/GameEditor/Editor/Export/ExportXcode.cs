@@ -16,7 +16,7 @@ namespace Export
         private static string CONFIG_PATH = Application.dataPath + "/../SDK/iOS/";
 
         private static bool debug = true;
-        private static string companyName = "cyou";
+        private static string companyName = string.Empty;
         private static string appName = string.Empty;
         private static string bundleIdentifier = string.Empty;
         private static string bundleVersion = string.Empty;

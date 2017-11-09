@@ -8,9 +8,9 @@ namespace GF
 {
     public struct FileByteData
     {
-        public int mOffset32;
-        public int mLength32;
-        public int mOffset64;
-        public int mLength64;
+        public uint mOffset32;
+        public uint mLength32;
+        public uint mOffset64;
+        public uint mLength64;
     }
 }
