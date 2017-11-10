@@ -2,21 +2,18 @@
 using UnityEngine;
 using LuaInterface;
 using System;
+using UnityObj = UnityEngine.Object;
 
 namespace GF
 {
     public static class ResManager
     {
-        //管理AB,对不同资源的加载做封装,AB出来后转到各个资源的管理器内处理
-        //缓存
-        private static Dictionary<int, AssetBundle> CACHED_AB = null;
-        //回调
-        private static Action<AssetBundle> CALL_OF_AB = null;
-        private static Action<LuaByteBuffer> CALL_OF_BT = null;
-        private static Dictionary<int,List<int>> CALL_KEY_OF_AB = null;
-        private static Dictionary<int, List<int>> CALL_KEY_OF_BT = null;
-
         public static void Init()
+        {
+
+        }
+
+        public static void ReInit()
         {
 
         }
@@ -31,32 +28,17 @@ namespace GF
 
         }
 
-        public static void LoadUI(string filePath,int callKey,Action<UIBehaviour> callValue,bool sync)
+        public static void LoadAsset(string filePath, Action<UnityObj> callValue, bool sync, bool needComponent, Type t)
         {
-
+            
         }
 
-        public static void LoadModel(string filePath, int callKey, Action<UIBehaviour> callValue, bool sync)
+        public static LuaByteBuffer LoadAsset(string filePath, Action<LuaByteBuffer> callValue, bool sync)
         {
-
+            return null;
         }
 
-        public static void LoadEffect(string filePath, int callKey, Action<UIBehaviour> callValue, bool sync)
-        {
-
-        }
-
-        public static void LoadSound(string filePath, int callKey, Action<UIBehaviour> callValue, bool sync)
-        {
-
-        }
-
-        public static void LoadAsset(string filePath, int callKey, Action<LuaByteBuffer> callValue, bool sync)
-        {
-
-        }
-
-        public static void ClearAssets()
+        private static void LoadBundle(int key,AssetBundle ab)
         {
 
         }

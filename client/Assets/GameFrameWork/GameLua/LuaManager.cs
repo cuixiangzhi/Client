@@ -15,27 +15,19 @@ namespace GF
 
         private class LuaFileReader : LuaFileUtils
         {
-            private LuaByteBuffer mBuffer;
-            private Action<LuaByteBuffer> mCallBack;
-
             public LuaFileReader()
             {
                 instance = this;
                 beZip = false;
-                mCallBack = (data) =>
-                {
-                    mBuffer = data;
-                };
             }
 
             public override LuaByteBuffer ReadFile(string fileName)
             {
-#if UNITY_EDITOR
+#if !UNITY_EDITOR
                 return base.ReadFile(fileName);
 #else
-                //读取LUA字节码
-                ResManager.LoadAsset(fileName,-1, mCallBack,true);
-                return mBuffer;
+                //读取LUA字节码               
+                return ResManager.LoadAsset(fileName, null, true);
 #endif
             }
 

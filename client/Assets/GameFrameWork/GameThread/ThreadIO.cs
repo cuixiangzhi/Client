@@ -65,12 +65,12 @@ namespace GF
             return false;
         }
 
-        public static void AddIOTask(string path,Action<AssetBundle> callback,bool sync)
+        public static void AddIOTask(string path,int callKey,Action<AssetBundle> callValue, bool sync)
         {
 
         }
 
-        public static void AddIOTask(string path, Action<LuaByteBuffer> callback, bool sync)
+        public static void AddIOTask(string path, int callKey, Action<LuaByteBuffer> callValue, bool sync)
         {
 
         }

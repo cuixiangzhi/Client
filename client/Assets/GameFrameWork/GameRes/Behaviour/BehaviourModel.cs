@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace GF
 {
-    public sealed class UIBehaviour : MonoBehaviour
+    public class BehaviourModel : MonoBehaviour
     {
 
     }
