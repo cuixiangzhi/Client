@@ -2,7 +2,7 @@
 using UnityEngine;
 using LuaInterface;
 using System;
-using UnityObj = UnityEngine.Object;
+using UnityObject = UnityEngine.Object;
 
 namespace GF
 {
@@ -25,22 +25,22 @@ namespace GF
 
         public static void Exit()
         {
-
-        }
-
-        public static void LoadAsset(string filePath, Action<UnityObj> callValue, bool sync, bool needComponent, Type t)
-        {
             
         }
 
-        public static LuaByteBuffer LoadAsset(string filePath, Action<LuaByteBuffer> callValue, bool sync)
+        public static UnityObject LoadAsset(string path, int type, Action<string, UnityObject> callBack, bool sync)
         {
             return null;
         }
 
-        private static void LoadBundle(int key,AssetBundle ab)
+        public static LuaByteBuffer LoadAsset(string path, Action<string, LuaByteBuffer> callBack = null, bool sync = true)
         {
+            return null;
+        }
 
+        private static void OnBundleLoad(string path, AssetBundle ab)
+        {
+            
         }
     }
 }

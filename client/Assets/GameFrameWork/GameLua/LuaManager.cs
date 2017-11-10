@@ -23,11 +23,11 @@ namespace GF
 
             public override LuaByteBuffer ReadFile(string fileName)
             {
-#if !UNITY_EDITOR
+#if UNITY_EDITOR
                 return base.ReadFile(fileName);
 #else
                 //读取LUA字节码               
-                return ResManager.LoadAsset(fileName, null, true);
+                return ResManager.LoadAsset(fileName);
 #endif
             }
 
