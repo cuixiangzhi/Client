@@ -105,6 +105,7 @@ public class LuaDebugTool
             }
             catch (Exception e)
             {
+                GF.Logger.Log(e.Message + "\n" + e.StackTrace);
                 values.Add(new LuaValueInfo()
                 {
                     name = pinfo.Name,
@@ -147,7 +148,7 @@ public class LuaDebugTool
             }
             catch (Exception e)
             {
-                var d = e.ToString();
+                GF.Logger.Log(e.Message + "\n" + e.StackTrace);
             }
         }
         return values;

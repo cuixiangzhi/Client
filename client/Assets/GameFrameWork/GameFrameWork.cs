@@ -46,6 +46,10 @@ namespace GF
             Logger.Log("game start: manager init");
 
             //运行环境初始化
+            UEP.BeginSample("ThreadManager.Init();");
+            ThreadManager.Init();
+            UEP.EndSample();
+
             UEP.BeginSample("ResManager.Init();");
             ResManager.Init();
             UEP.EndSample();
@@ -84,6 +88,10 @@ namespace GF
 
             UEP.BeginSample("ResManager.LateLoop();");
             ResManager.LateLoop();
+            UEP.EndSample();
+
+            UEP.BeginSample("ThreadManager.LateLoop();");
+            ThreadManager.LateLoop();
             UEP.EndSample();
 
             //游戏逻辑循环后处理
@@ -142,6 +150,10 @@ namespace GF
 
             UEP.BeginSample("ResManager.Exit();");
             ResManager.Exit();
+            UEP.EndSample();
+
+            UEP.BeginSample("ThreadManager.Exit();");
+            ThreadManager.Exit();
             UEP.EndSample();
 
             //工具类退出

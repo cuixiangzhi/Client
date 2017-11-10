@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using LuaInterface;
 using System.IO;
+using System;
 
 namespace GF
 {
@@ -14,10 +15,17 @@ namespace GF
 
         private class LuaFileReader : LuaFileUtils
         {
+            private LuaByteBuffer mBuffer;
+            private Action<LuaByteBuffer> mCallBack;
+
             public LuaFileReader()
             {
                 instance = this;
                 beZip = false;
+                mCallBack = (data) =>
+                {
+                    mBuffer = data;
+                };
             }
 
             public override LuaByteBuffer ReadFile(string fileName)
@@ -26,7 +34,8 @@ namespace GF
                 return base.ReadFile(fileName);
 #else
                 //读取LUA字节码
-                return ResManager.LoadBytes(fileName);
+                ResManager.LoadAsset(fileName,-1, mCallBack,true);
+                return mBuffer;
 #endif
             }
 

@@ -4,9 +4,19 @@ using UnityEngine;
 
 namespace GF
 {
-    public static class UIManager
+    public static class ThreadManager
     {
+        public static void StartThread<T>() where T : ThreadBase
+        {
+
+        }
+
         public static void Init()
+        {
+
+        }
+
+        public static void LateLoop()
         {
 
         }
