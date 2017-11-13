@@ -127,6 +127,7 @@
     <ClCompile Include="bsdiff\decompress.c" />
     <ClCompile Include="bsdiff\huffman.c" />
     <ClCompile Include="bsdiff\randtable.c" />
+    <ClCompile Include="export.cc" />
     <ClCompile Include="google\protobuf\any.cc" />
     <ClCompile Include="google\protobuf\any.pb.cc" />
     <ClCompile Include="google\protobuf\arena.cc" />
@@ -205,12 +206,12 @@
     <ClCompile Include="uuid\bitcoder.cpp" />
     <ClCompile Include="uuid\md5.cpp" />
     <ClCompile Include="uuid\uuid32.cpp" />
-    <ClCompile Include="wrap\wrap.cc" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bsdiff\bstype.h" />
     <ClInclude Include="bsdiff\bzlib.h" />
     <ClInclude Include="bsdiff\bzlib_private.h" />
+    <ClInclude Include="export.h" />
     <ClInclude Include="google\protobuf\any.h" />
     <ClInclude Include="google\protobuf\any.pb.h" />
     <ClInclude Include="google\protobuf\arena.h" />
@@ -340,7 +341,6 @@
     <ClInclude Include="uuid\cdatatype.h" />
     <ClInclude Include="uuid\md5.h" />
     <ClInclude Include="uuid\uuid32.h" />
-    <ClInclude Include="wrap\wrap.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
