@@ -110,9 +110,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		011AA1071FB9C223003E38E2 /* libcommon.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libcommon.a; path = "/Users/cuixiangzhi/Desktop/trunk/tools/common/build/Release-iphoneos/libcommon.a"; sourceTree = "<absolute>"; };
 		011AA1081FB9C297003E38E2 /* export.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = export.cc; sourceTree = "<group>"; };
 		011AA1091FB9C297003E38E2 /* export.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = export.h; sourceTree = "<group>"; };
+		0157BF621FB9D499003B83E6 /* libcommon.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libcommon.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		01C2FCF11FB0BCF7003E6658 /* blocksort.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = blocksort.c; sourceTree = "<group>"; };
 		01C2FCF21FB0BCF7003E6658 /* bsdiff.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = bsdiff.c; sourceTree = "<group>"; };
 		01C2FCF31FB0BCF7003E6658 /* bspatch.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = bspatch.c; sourceTree = "<group>"; };
@@ -354,6 +354,7 @@
 				01C2FDCB1FB0BD05003E6658 /* network */,
 				01C2FCFD1FB0BCFE003E6658 /* google */,
 				01C2FCF01FB0BCF7003E6658 /* bsdiff */,
+				0157BF621FB9D499003B83E6 /* libcommon.a */,
 			);
 			sourceTree = "<group>";
 		};
@@ -669,7 +670,7 @@
 			);
 			name = common;
 			productName = common;
-			productReference = 011AA1071FB9C223003E38E2 /* libcommon.a */;
+			productReference = 0157BF621FB9D499003B83E6 /* libcommon.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
@@ -845,7 +846,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -853,6 +854,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
 				USER_HEADER_SEARCH_PATHS = "";
 			};
 			name = Debug;
@@ -893,13 +895,14 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
 				USER_HEADER_SEARCH_PATHS = "";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -909,7 +912,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD)";
+				ARCHS = arm64;
+				ENABLE_BITCODE = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				HEADER_SEARCH_PATHS = "~/Desktop/trunk/tools/common/";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
@@ -922,7 +927,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD)";
+				ARCHS = arm64;
+				ENABLE_BITCODE = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				HEADER_SEARCH_PATHS = "~/Desktop/trunk/tools/common/";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
