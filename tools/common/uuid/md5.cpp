@@ -171,28 +171,28 @@ void MD5_fini(unsigned char digest[16], MD5_CTX * context)
 
 char* MD5_sign (const unsigned char *str, unsigned int len)
 {
-    int i;
-    MD5_CTX     md5;
-    static char md5_str[MD5STR_LEN+1];
-    unsigned char hash[16];
-	char tmp[3];
-    md5_str[0] = 0;
-            
-    MD5_init(&md5);
-    MD5_update (&md5, str, len);
-    MD5_fini (hash, &md5);
-        
-    for ( i = 0 ; i < 16 ; i++ )
-    {
-        sprintf((char *)hash[i], tmp , 16);
+//     int i;
+//     MD5_CTX     md5;
+//     static char md5_str[MD5STR_LEN+1];
+//     unsigned char hash[16];
+// 	char tmp[3];
+//     md5_str[0] = 0;
+//             
+//     MD5_init(&md5);
+//     MD5_update (&md5, str, len);
+//     MD5_fini (hash, &md5);
+//         
+//     for ( i = 0 ; i < 16 ; i++ )
+//     {
+//         sprintf((char *)hash[i], tmp , 16);
+// 
+//         if (tmp[1] == 0){
+//             tmp[2]=0;    tmp[1]=tmp[0]; tmp[0]='0';
+//         }
+//         strcat(md5_str, tmp);
+//     }
 
-        if (tmp[1] == 0){
-            tmp[2]=0;    tmp[1]=tmp[0]; tmp[0]='0';
-        }
-        strcat(md5_str, tmp);
-    }
-
-    return md5_str;
+    return NULL;
 }
 
 #pragma warning(pop)    /* C4996 */

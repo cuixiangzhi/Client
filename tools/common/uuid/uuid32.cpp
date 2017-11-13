@@ -105,12 +105,18 @@ BOOL is_uuid_string(const char *uuid)
     static const char fmt[] = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx";
     int i;
     assert(uuid != NULL);
-    for (i = 0; i < sizeof(fmt); i++)
-        if (fmt[i] == 'x')
-            if (!is_xdigit(uuid[i]))
-                return FALSE;
-        else if (uuid[i] != fmt[i])
-            return FALSE;
+	for (i = 0; i < sizeof(fmt); i++)
+	{
+		if (fmt[i] == 'x')
+		{
+			if (!is_xdigit(uuid[i]))
+				return FALSE;
+		}
+		else if (uuid[i] != fmt[i])
+		{
+			return FALSE;
+		}
+	}
 
     return TRUE;
 }
@@ -216,7 +222,7 @@ char *uuid_to_string(const _uuid_t*  u)
 
 #pragma warning(push)    /* C4996 */
 #pragma warning( disable : 4996 )
-    sprintf(uuid_str, "%08lx-%04x-%04x-%04x-%04x%08lx", 
+    sprintf(uuid_str, "%08lx-%04x-%04x-%04x-%04x%08x", 
                 u->data1,
                 u->data2,
                 u->data3,
