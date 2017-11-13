@@ -2,14 +2,9 @@ LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
 LOCAL_MODULE := common
 
-#LOCAL_C_FLAGS := -lstdc++
+LOCAL_CFLAGS := -frtti -DHAVE_PTHREAD
 
-LOCAL_C_INCLUDES := \
-../ \
-../bsdiff/ \
-../uuid/ \
-../network/ \
-
+LOCAL_C_INCLUDES := ..
 LOCAL_SRC_FILES := \
 $(wildcard ../*.cc) \
 $(wildcard ../bsdiff/*.c) \
@@ -19,7 +14,8 @@ $(wildcard ../google/protobuf/*.cc) \
 $(wildcard ../google/protobuf/io/*.cc) \
 $(wildcard ../google/protobuf/compiler/*.cc) \
 $(wildcard ../google/protobuf/stubs/*.cc) \
-$(wildcard ../google/protobuf/util/*.cc)
+$(wildcard ../google/protobuf/util/*.cc) \
+$(wildcard ../google/protobuf/util/internal/*.cc)
 
 #添加静态库
 #生成动态库

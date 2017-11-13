@@ -271,7 +271,7 @@ void  uuid_create_external(const char *external, _uuid_t* u)
  **/
 void uuid_to_timestamp(const _uuid_t* u, timestamp_t* t)
 {
-    time_t   time, t2, t3;
+    int64   time, t2, t3;
     struct  tm*  p;
     assert(u);
 
@@ -288,7 +288,8 @@ void uuid_to_timestamp(const _uuid_t* u, timestamp_t* t)
     
 #pragma warning(push)    /* C4996 */
 #pragma warning( disable : 4996 )
-    p = localtime(&time);
+	time_t tt = static_cast<time_t>(time);
+    p = localtime(&tt);
 #pragma warning(pop)    /* C4996 */
     
     t->tm_hour = p->tm_hour;
