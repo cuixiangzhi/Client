@@ -5,7 +5,7 @@ using System.IO;
 using System.Text;
 using System.Reflection;
 
-namespace GF
+namespace GameFrameWork
 {
     public static class Logger
     {

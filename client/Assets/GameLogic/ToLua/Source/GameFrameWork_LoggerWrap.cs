@@ -2,7 +2,7 @@
 using System;
 using LuaInterface;
 
-public class GF_LoggerWrap
+public class GameFrameWork_LoggerWrap
 {
 	public static void Register(LuaState L)
 	{
@@ -22,7 +22,7 @@ public class GF_LoggerWrap
 		try
 		{
 			ToLua.CheckArgsCount(L, 0);
-			GF.Logger.Init();
+			GameFrameWork.Logger.Init();
 			return 0;
 		}
 		catch (Exception e)
@@ -37,7 +37,7 @@ public class GF_LoggerWrap
 		try
 		{
 			ToLua.CheckArgsCount(L, 0);
-			GF.Logger.LateLoop();
+			GameFrameWork.Logger.LateLoop();
 			return 0;
 		}
 		catch (Exception e)
@@ -52,7 +52,7 @@ public class GF_LoggerWrap
 		try
 		{
 			ToLua.CheckArgsCount(L, 0);
-			GF.Logger.Exit();
+			GameFrameWork.Logger.Exit();
 			return 0;
 		}
 		catch (Exception e)
@@ -71,7 +71,7 @@ public class GF_LoggerWrap
 			if (count == 1 && TypeChecker.CheckTypes<object>(L, 1))
 			{
 				object arg0 = ToLua.ToVarObject(L, 1);
-				GF.Logger.Log(arg0);
+				GameFrameWork.Logger.Log(arg0);
 				return 0;
 			}
 			else if (TypeChecker.CheckTypes<string, object>(L, 1) && TypeChecker.CheckParamsType<object>(L, 3, count - 2))
@@ -79,12 +79,12 @@ public class GF_LoggerWrap
 				string arg0 = ToLua.ToString(L, 1);
 				object arg1 = ToLua.ToVarObject(L, 2);
 				object[] arg2 = ToLua.ToParamsObject(L, 3, count - 2);
-				GF.Logger.Log(arg0, arg1, arg2);
+				GameFrameWork.Logger.Log(arg0, arg1, arg2);
 				return 0;
 			}
 			else
 			{
-				return LuaDLL.luaL_throw(L, "invalid arguments to method: GF.Logger.Log");
+				return LuaDLL.luaL_throw(L, "invalid arguments to method: GameFrameWork.Logger.Log");
 			}
 		}
 		catch (Exception e)
@@ -103,7 +103,7 @@ public class GF_LoggerWrap
 			if (count == 1 && TypeChecker.CheckTypes<object>(L, 1))
 			{
 				object arg0 = ToLua.ToVarObject(L, 1);
-				GF.Logger.LogError(arg0);
+				GameFrameWork.Logger.LogError(arg0);
 				return 0;
 			}
 			else if (TypeChecker.CheckTypes<string, object>(L, 1) && TypeChecker.CheckParamsType<object>(L, 3, count - 2))
@@ -111,12 +111,12 @@ public class GF_LoggerWrap
 				string arg0 = ToLua.ToString(L, 1);
 				object arg1 = ToLua.ToVarObject(L, 2);
 				object[] arg2 = ToLua.ToParamsObject(L, 3, count - 2);
-				GF.Logger.LogError(arg0, arg1, arg2);
+				GameFrameWork.Logger.LogError(arg0, arg1, arg2);
 				return 0;
 			}
 			else
 			{
-				return LuaDLL.luaL_throw(L, "invalid arguments to method: GF.Logger.LogError");
+				return LuaDLL.luaL_throw(L, "invalid arguments to method: GameFrameWork.Logger.LogError");
 			}
 		}
 		catch (Exception e)
@@ -135,7 +135,7 @@ public class GF_LoggerWrap
 			if (count == 1 && TypeChecker.CheckTypes<object>(L, 1))
 			{
 				object arg0 = ToLua.ToVarObject(L, 1);
-				GF.Logger.LogWarning(arg0);
+				GameFrameWork.Logger.LogWarning(arg0);
 				return 0;
 			}
 			else if (TypeChecker.CheckTypes<string, object>(L, 1) && TypeChecker.CheckParamsType<object>(L, 3, count - 2))
@@ -143,12 +143,12 @@ public class GF_LoggerWrap
 				string arg0 = ToLua.ToString(L, 1);
 				object arg1 = ToLua.ToVarObject(L, 2);
 				object[] arg2 = ToLua.ToParamsObject(L, 3, count - 2);
-				GF.Logger.LogWarning(arg0, arg1, arg2);
+				GameFrameWork.Logger.LogWarning(arg0, arg1, arg2);
 				return 0;
 			}
 			else
 			{
-				return LuaDLL.luaL_throw(L, "invalid arguments to method: GF.Logger.LogWarning");
+				return LuaDLL.luaL_throw(L, "invalid arguments to method: GameFrameWork.Logger.LogWarning");
 			}
 		}
 		catch (Exception e)

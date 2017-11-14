@@ -5,23 +5,10 @@ using UnityEditor;
 using UnityEditor.Callbacks;
 using System.IO;
 
-namespace GF
+namespace GameFrameWork
 {
     public sealed class ExportAndroid
     {
-        private static string CONFIG_PREFIX = "XU_";
-        private static string CONFIG_PATH = Application.dataPath + "/../SDK/Android/";
-
-        private static bool debug = true;
-        private static string companyName = "cyou";
-        private static string appName = string.Empty;
-        private static string bundleIdentifier = string.Empty;
-        private static string bundleVersion = string.Empty;
-        private static string signTeamID = string.Empty;
-        private static string exportPath = string.Empty;
-        private static string splashImagePath = string.Empty;
-        private static string appIconPath = string.Empty;
-
         public static void Export()
         {
 #if !UNITY_ANDROID
@@ -33,14 +20,14 @@ namespace GF
             {
                 Debug.LogError(commands[i]);
             }
-            appName = commands[10];
-            bundleIdentifier = commands[11];
-            bundleVersion = commands[12];
-            signTeamID = commands[13].Replace("_", " ");
-            exportPath = commands[14];
-            splashImagePath = commands[15];
-            appIconPath = commands[16];
-            debug = commands[17].ToLower() == "true" || commands[17].ToLower() == "1";
+            string appName = commands[10];
+            string companyName = commands[11].Split('.')[1];
+            string bundleIdentifier = commands[11];
+            string bundleVersion = commands[12];
+            string exportPath = commands[14];
+            string splashImagePath = commands[15];
+            string appIconPath = commands[16];
+            bool debug = commands[17].ToLower() == "true" || commands[17].ToLower() == "1";
 
             //旋转方向
             PlayerSettings.defaultInterfaceOrientation = UIOrientation.AutoRotation;
@@ -116,7 +103,7 @@ namespace GF
                 levels.Add(scene.path);
             }
 
-            //导出XCODE工程
+            //导出APK
             System.DateTime now = System.DateTime.Now;
             if (!Directory.Exists(exportPath))
             {

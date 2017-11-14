@@ -3,51 +3,49 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 using System;
+using System.Text;
 using LuaInterface;
 
-namespace GF
+namespace GameFrameWork
 {
     public sealed class ThreadIO : ThreadBase
     {
-        //文件名
-        private static string LUA_LIB_NAME = null;
-        private static string LUA_LOGIC_NAME = null;
-        //缓冲区
-        private static byte[] LUA_BUFFER = null;
-        //文件流
-        private static AndroidJavaObject LUA_LIB_STREAM_ANDROID = null;
-        private static FileStream LUA_LIB_STREAM_FILE = null;
-        private static AndroidJavaObject LUA_LOGIC_STREAM_ANDROID = null;
-        private static AndroidJavaObject LUA_LOGIC_STREAM_FILE = null;
+#if UNITY_EDITOR
+        private string persistentPath = Application.dataPath + "/../";
+#else
+        private string persistentPath = Application.persistentDataPath + "/";
+#endif
+        //LUA脚本包信息
+        private byte[] mBuffer = new byte[1024 * 1024];
+        private FileStream mLuaPackageFile = null;
+        private Dictionary<int, FileByteData> mLuaPackageData = new Dictionary<int, FileByteData>(1024);
 
         public void Init()
         {
-            FileStream fs = new FileStream(Application.persistentDataPath + "/test", FileMode.Create);
-            byte[] bbb = new byte[1024 * 1024 * 200];
-            fs.Write(bbb, 0, bbb.Length);
-            fs.Flush();
-            fs.Close();
-
-            fs = new FileStream(Application.persistentDataPath + "/test", FileMode.Open);
-            int len = 1;
-            while (len != 0)
+            if (File.Exists(persistentPath + UtilDll.common_md5(GameConst.PACKAGE_LUA_NAME)))
             {
-                Logger.Log("read begin" + Time.realtimeSinceStartup);
-                len = fs.Read(bbb, 0, 1024 * 1024 * 10);
-                Logger.Log("read finish" + Time.realtimeSinceStartup);
+                mLuaPackageFile = File.OpenRead(persistentPath + UtilDll.common_md5(GameConst.PACKAGE_LUA_NAME));
             }
-
-
-
-            LUA_LIB_NAME = UtilDll.common_md5(GameConst.LUA_LIB_NAME);
-            LUA_LOGIC_NAME = UtilDll.common_md5(GameConst.LUA_LOGIC_NAME);
-
-
-            //读取资源包信息
-            AndroidJavaClass player = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
-            AndroidJavaObject context = player.GetStatic<AndroidJavaObject>("currentActivity");
-            AndroidJavaObject assets = context.Call<AndroidJavaObject>("getAssets");
-            AndroidJavaObject stream = assets.Call<AndroidJavaObject>("open", "20170621_256");
+            else
+            {
+                mLuaPackageFile = File.OpenRead(Application.streamingAssetsPath + "/" + UtilDll.common_md5(GameConst.PACKAGE_LUA_NAME));
+            }
+            if(mLuaPackageFile != null)
+            {
+                mLuaPackageFile.Seek(4, SeekOrigin.End);
+                mLuaPackageFile.Read(mBuffer, 0, 4);
+                int fileDataLength = (int)ByteUtil.ToUInt32(mBuffer, 0) * 52;
+                mLuaPackageFile.Seek(fileDataLength, SeekOrigin.Current);
+                mLuaPackageFile.Read(mBuffer, 0, fileDataLength);
+                for(int i = 0;i < mBuffer.Length;i += 52)
+                {
+                    string md5 = Encoding.UTF8.GetString(mBuffer, i, 36);
+                    uint offset32 = ByteUtil.ToUInt32(mBuffer, i + 36);
+                    uint length32 = ByteUtil.ToUInt32(mBuffer, i + 36);
+                    uint offset64 = ByteUtil.ToUInt32(mBuffer, i + 36);
+                    uint length64 = ByteUtil.ToUInt32(mBuffer, i + 36);
+                }
+            }
         }
 
         public void Loop()
@@ -65,14 +63,14 @@ namespace GF
             return false;
         }
 
-        public static void AddIOTask(string path,int callKey,Action<AssetBundle> callValue, bool sync)
+        public static void LoadBundle(string path,Action<string,AssetBundle> callBack, bool sync)
         {
 
         }
 
-        public static void AddIOTask(string path, int callKey, Action<LuaByteBuffer> callValue, bool sync)
+        public static LuaByteBuffer LoadBytes(string path, Action<string,LuaByteBuffer> callBack, bool sync)
         {
-
+            return null;
         }
     }
 }

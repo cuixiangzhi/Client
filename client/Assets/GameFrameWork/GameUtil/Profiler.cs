@@ -3,7 +3,7 @@ using System.IO;
 using System.Diagnostics;
 using UEP = UnityEngine.Profiling.Profiler;
 
-namespace GF
+namespace GameFrameWork
 {
     public static class Profiler
     {

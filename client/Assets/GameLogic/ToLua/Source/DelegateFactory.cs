@@ -17,25 +17,29 @@ public class DelegateFactory
 	public static void Register()
 	{
 		dict.Clear();
-		dict.Add(typeof(System.Action<LuaInterface.LuaByteBuffer>), factory.System_Action_LuaInterface_LuaByteBuffer);
+		dict.Add(typeof(System.Action<int,LuaInterface.LuaByteBuffer>), factory.System_Action_int_LuaInterface_LuaByteBuffer);
+		dict.Add(typeof(System.Action<int,UnityEngine.Object>), factory.System_Action_int_UnityEngine_Object);
 		dict.Add(typeof(UnityEngine.Camera.CameraCallback), factory.UnityEngine_Camera_CameraCallback);
 		dict.Add(typeof(System.Predicate<LuaValueInfo>), factory.System_Predicate_LuaValueInfo);
 		dict.Add(typeof(System.Action<LuaValueInfo>), factory.System_Action_LuaValueInfo);
 		dict.Add(typeof(System.Comparison<LuaValueInfo>), factory.System_Comparison_LuaValueInfo);
 
-		DelegateTraits<System.Action<LuaInterface.LuaByteBuffer>>.Init(factory.System_Action_LuaInterface_LuaByteBuffer);
+		DelegateTraits<System.Action<int,LuaInterface.LuaByteBuffer>>.Init(factory.System_Action_int_LuaInterface_LuaByteBuffer);
+		DelegateTraits<System.Action<int,UnityEngine.Object>>.Init(factory.System_Action_int_UnityEngine_Object);
 		DelegateTraits<UnityEngine.Camera.CameraCallback>.Init(factory.UnityEngine_Camera_CameraCallback);
 		DelegateTraits<System.Predicate<LuaValueInfo>>.Init(factory.System_Predicate_LuaValueInfo);
 		DelegateTraits<System.Action<LuaValueInfo>>.Init(factory.System_Action_LuaValueInfo);
 		DelegateTraits<System.Comparison<LuaValueInfo>>.Init(factory.System_Comparison_LuaValueInfo);
 
-		TypeTraits<System.Action<LuaInterface.LuaByteBuffer>>.Init(factory.Check_System_Action_LuaInterface_LuaByteBuffer);
+		TypeTraits<System.Action<int,LuaInterface.LuaByteBuffer>>.Init(factory.Check_System_Action_int_LuaInterface_LuaByteBuffer);
+		TypeTraits<System.Action<int,UnityEngine.Object>>.Init(factory.Check_System_Action_int_UnityEngine_Object);
 		TypeTraits<UnityEngine.Camera.CameraCallback>.Init(factory.Check_UnityEngine_Camera_CameraCallback);
 		TypeTraits<System.Predicate<LuaValueInfo>>.Init(factory.Check_System_Predicate_LuaValueInfo);
 		TypeTraits<System.Action<LuaValueInfo>>.Init(factory.Check_System_Action_LuaValueInfo);
 		TypeTraits<System.Comparison<LuaValueInfo>>.Init(factory.Check_System_Comparison_LuaValueInfo);
 
-		StackTraits<System.Action<LuaInterface.LuaByteBuffer>>.Push = factory.Push_System_Action_LuaInterface_LuaByteBuffer;
+		StackTraits<System.Action<int,LuaInterface.LuaByteBuffer>>.Push = factory.Push_System_Action_int_LuaInterface_LuaByteBuffer;
+		StackTraits<System.Action<int,UnityEngine.Object>>.Push = factory.Push_System_Action_int_UnityEngine_Object;
 		StackTraits<UnityEngine.Camera.CameraCallback>.Push = factory.Push_UnityEngine_Camera_CameraCallback;
 		StackTraits<System.Predicate<LuaValueInfo>>.Push = factory.Push_System_Predicate_LuaValueInfo;
 		StackTraits<System.Action<LuaValueInfo>>.Push = factory.Push_System_Action_LuaValueInfo;
@@ -151,59 +155,120 @@ public class DelegateFactory
         return obj;
     }
 
-	class System_Action_LuaInterface_LuaByteBuffer_Event : LuaDelegate
+	class System_Action_int_LuaInterface_LuaByteBuffer_Event : LuaDelegate
 	{
-		public System_Action_LuaInterface_LuaByteBuffer_Event(LuaFunction func) : base(func) { }
-		public System_Action_LuaInterface_LuaByteBuffer_Event(LuaFunction func, LuaTable self) : base(func, self) { }
+		public System_Action_int_LuaInterface_LuaByteBuffer_Event(LuaFunction func) : base(func) { }
+		public System_Action_int_LuaInterface_LuaByteBuffer_Event(LuaFunction func, LuaTable self) : base(func, self) { }
 
-		public void Call(LuaInterface.LuaByteBuffer param0)
+		public void Call(int param0, LuaInterface.LuaByteBuffer param1)
 		{
 			func.BeginPCall();
 			func.Push(param0);
+			func.Push(param1);
 			func.PCall();
 			func.EndPCall();
 		}
 
-		public void CallWithSelf(LuaInterface.LuaByteBuffer param0)
+		public void CallWithSelf(int param0, LuaInterface.LuaByteBuffer param1)
 		{
 			func.BeginPCall();
 			func.Push(self);
 			func.Push(param0);
+			func.Push(param1);
 			func.PCall();
 			func.EndPCall();
 		}
 	}
 
-	public System.Action<LuaInterface.LuaByteBuffer> System_Action_LuaInterface_LuaByteBuffer(LuaFunction func, LuaTable self, bool flag)
+	public System.Action<int,LuaInterface.LuaByteBuffer> System_Action_int_LuaInterface_LuaByteBuffer(LuaFunction func, LuaTable self, bool flag)
 	{
 		if (func == null)
 		{
-			System.Action<LuaInterface.LuaByteBuffer> fn = delegate(LuaInterface.LuaByteBuffer param0) { };
+			System.Action<int,LuaInterface.LuaByteBuffer> fn = delegate(int param0, LuaInterface.LuaByteBuffer param1) { };
 			return fn;
 		}
 
 		if(!flag)
 		{
-			System_Action_LuaInterface_LuaByteBuffer_Event target = new System_Action_LuaInterface_LuaByteBuffer_Event(func);
-			System.Action<LuaInterface.LuaByteBuffer> d = target.Call;
+			System_Action_int_LuaInterface_LuaByteBuffer_Event target = new System_Action_int_LuaInterface_LuaByteBuffer_Event(func);
+			System.Action<int,LuaInterface.LuaByteBuffer> d = target.Call;
 			target.method = d.Method;
 			return d;
 		}
 		else
 		{
-			System_Action_LuaInterface_LuaByteBuffer_Event target = new System_Action_LuaInterface_LuaByteBuffer_Event(func, self);
-			System.Action<LuaInterface.LuaByteBuffer> d = target.CallWithSelf;
+			System_Action_int_LuaInterface_LuaByteBuffer_Event target = new System_Action_int_LuaInterface_LuaByteBuffer_Event(func, self);
+			System.Action<int,LuaInterface.LuaByteBuffer> d = target.CallWithSelf;
 			target.method = d.Method;
 			return d;
 		}
 	}
 
-	bool Check_System_Action_LuaInterface_LuaByteBuffer(IntPtr L, int pos)
+	bool Check_System_Action_int_LuaInterface_LuaByteBuffer(IntPtr L, int pos)
 	{
-		return TypeChecker.CheckDelegateType(typeof(System.Action<LuaInterface.LuaByteBuffer>), L, pos);
+		return TypeChecker.CheckDelegateType(typeof(System.Action<int,LuaInterface.LuaByteBuffer>), L, pos);
 	}
 
-	void Push_System_Action_LuaInterface_LuaByteBuffer(IntPtr L, System.Action<LuaInterface.LuaByteBuffer> o)
+	void Push_System_Action_int_LuaInterface_LuaByteBuffer(IntPtr L, System.Action<int,LuaInterface.LuaByteBuffer> o)
+	{
+		ToLua.Push(L, o);
+	}
+
+	class System_Action_int_UnityEngine_Object_Event : LuaDelegate
+	{
+		public System_Action_int_UnityEngine_Object_Event(LuaFunction func) : base(func) { }
+		public System_Action_int_UnityEngine_Object_Event(LuaFunction func, LuaTable self) : base(func, self) { }
+
+		public void Call(int param0, UnityEngine.Object param1)
+		{
+			func.BeginPCall();
+			func.Push(param0);
+			func.Push(param1);
+			func.PCall();
+			func.EndPCall();
+		}
+
+		public void CallWithSelf(int param0, UnityEngine.Object param1)
+		{
+			func.BeginPCall();
+			func.Push(self);
+			func.Push(param0);
+			func.Push(param1);
+			func.PCall();
+			func.EndPCall();
+		}
+	}
+
+	public System.Action<int,UnityEngine.Object> System_Action_int_UnityEngine_Object(LuaFunction func, LuaTable self, bool flag)
+	{
+		if (func == null)
+		{
+			System.Action<int,UnityEngine.Object> fn = delegate(int param0, UnityEngine.Object param1) { };
+			return fn;
+		}
+
+		if(!flag)
+		{
+			System_Action_int_UnityEngine_Object_Event target = new System_Action_int_UnityEngine_Object_Event(func);
+			System.Action<int,UnityEngine.Object> d = target.Call;
+			target.method = d.Method;
+			return d;
+		}
+		else
+		{
+			System_Action_int_UnityEngine_Object_Event target = new System_Action_int_UnityEngine_Object_Event(func, self);
+			System.Action<int,UnityEngine.Object> d = target.CallWithSelf;
+			target.method = d.Method;
+			return d;
+		}
+	}
+
+	bool Check_System_Action_int_UnityEngine_Object(IntPtr L, int pos)
+	{
+		return TypeChecker.CheckDelegateType(typeof(System.Action<int,UnityEngine.Object>), L, pos);
+	}
+
+	void Push_System_Action_int_UnityEngine_Object(IntPtr L, System.Action<int,UnityEngine.Object> o)
 	{
 		ToLua.Push(L, o);
 	}

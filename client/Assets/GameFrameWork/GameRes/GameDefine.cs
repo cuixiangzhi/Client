@@ -4,7 +4,7 @@ using UnityEngine;
 using System;
 using UnityObj = UnityEngine.Object;
 
-namespace GF
+namespace GameFrameWork
 {
     public struct FileByteData
     {

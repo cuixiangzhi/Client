@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UEP = UnityEngine.Profiling.Profiler;
 
-namespace GF
+namespace GameFrameWork
 {
     public sealed class GameFrameWork : MonoBehaviour
     {
@@ -132,7 +132,7 @@ namespace GF
         private void OnApplicationQuit()
         {
             Logger.Log("game quit: manager exit");
-
+#if UNITY_EDITOR
             //游戏逻辑退出
             UEP.BeginSample("GameLogic.Exit();");
             mLogic.Exit();
@@ -176,7 +176,6 @@ namespace GF
             UEP.BeginSample("UtilDll.Exit();");
             UtilDll.Exit();
             UEP.EndSample();
-#if UNITY_EDITOR
             System.GC.Collect();
 #endif
         }

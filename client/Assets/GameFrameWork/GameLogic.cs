@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace GF
+namespace GameFrameWork
 {
     public class GameLogic : MonoBehaviour
     {

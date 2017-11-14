@@ -197,7 +197,7 @@ namespace LuaInterface
                         }
                     }
 
-                    GF.Logger.Log(sb.ToString());            //200行与_line一致
+                    GameFrameWork.Logger.Log(sb.ToString());            //200行与_line一致
                 }
                 return 0;
             }
@@ -387,7 +387,7 @@ namespace LuaInterface
                 }
                 else
                 {
-                    GF.Logger.LogError("type not register to lua");
+                    GameFrameWork.Logger.LogError("type not register to lua");
                     LuaDLL.lua_pushnil(L);
                 }
             }
@@ -2578,7 +2578,7 @@ namespace LuaInterface
             if (LuaOpenLib != null)
             {
 #if UNITY_EDITOR
-                GF.Logger.LogWarning("register PreLoad type {0} to lua", LuaMisc.GetTypeName(type));
+                GameFrameWork.Logger.LogWarning("register PreLoad type {0} to lua", LuaMisc.GetTypeName(type));
 #endif
                 reference = LuaPCall(L, LuaOpenLib);                
             }

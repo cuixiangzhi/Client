@@ -13,5 +13,4 @@ function LoadAsset(path,type,func)
     local function OnAssetLoad(_path,obj)
 
     end
-
 end

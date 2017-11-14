@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using AOT;
 using System.Text;
 
-namespace GF
+namespace GameFrameWork
 {
     public static class UtilDll
     {
@@ -17,12 +17,29 @@ namespace GF
 
 
         [DllImport(DLLNAME)]
-        private static extern void common_md5(string data,StringBuilder outdata);
-        private static StringBuilder mCacheMD5Result = new StringBuilder(64);
+        private static extern void common_md5(string data,int startIndex, StringBuilder outdata);
+        private static StringBuilder mMD5Buffer = new StringBuilder(64);
+        private static Dictionary<int, string> mCacheMD5Result = new Dictionary<int, string>(1024);
         public static string common_md5(string data)
         {
-            common_md5(data, mCacheMD5Result);
-            return mCacheMD5Result.ToString();
+            int hash = data.GetHashCode();
+            if (mCacheMD5Result.ContainsKey(hash))
+            {
+                return mCacheMD5Result[hash];
+            }
+            int startIndex = data.LastIndexOf("/");
+            if(startIndex < 0)
+            {
+                startIndex = data.LastIndexOf("\\");
+            }
+            if(startIndex < 0)
+            {
+                startIndex = 0;
+            }
+            common_md5(data, startIndex, mMD5Buffer);
+            string ret = mMD5Buffer.ToString();
+            mCacheMD5Result[hash] = ret;
+            return ret;
         }
 
         [DllImport(DLLNAME)]

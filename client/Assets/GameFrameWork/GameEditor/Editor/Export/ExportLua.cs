@@ -7,7 +7,7 @@ using UnityEditor;
 using System.Text;
 using System;
 
-namespace GF
+namespace GameFrameWork
 {
     public sealed class ExportLua
     {
@@ -17,19 +17,12 @@ namespace GF
         private static string LUA_TMP_PATH = Path.GetFullPath("Assets/../tmp");
         
 
-        public static void ExportLib()
+        public static void Export()
         {
             if(Directory.Exists(LUA_TMP_PATH)) Directory.Delete(LUA_TMP_PATH, true);
             MakeByteCode(LUA_JIT_PATH, LUA_LIB_PATH + " " + LUA_TMP_PATH);
-            MakePackage(LUA_TMP_PATH,GameConst.LUA_LIB_NAME);
-            if (Directory.Exists(LUA_TMP_PATH)) Directory.Delete(LUA_TMP_PATH, true);
-        }
-
-        public static void ExportLogic()
-        {
-            if (Directory.Exists(LUA_TMP_PATH)) Directory.Delete(LUA_TMP_PATH, true);
             MakeByteCode(LUA_JIT_PATH, LUA_LOGIC_PATH + " " + LUA_TMP_PATH);
-            MakePackage(LUA_TMP_PATH, GameConst.LUA_LOGIC_NAME);
+            MakePackage(LUA_TMP_PATH,GameConst.PACKAGE_LUA_NAME);
             if (Directory.Exists(LUA_TMP_PATH)) Directory.Delete(LUA_TMP_PATH, true);
         }
 

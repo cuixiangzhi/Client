@@ -2,7 +2,7 @@
 using System.Reflection;
 using UnityEngine;
 
-namespace GF
+namespace GameFrameWork
 {
     public static class GameConst
     {
@@ -17,7 +17,6 @@ namespace GF
 #else
         public static string LOG_PATH = Path.GetFullPath(Application.persistentDataPath + "/Log");
 #endif
-        public static string LUA_LIB_NAME = "lualib";
-        public static string LUA_LOGIC_NAME = "lualogic";
+        public static string PACKAGE_LUA_NAME = "luapackage";
     }
 }

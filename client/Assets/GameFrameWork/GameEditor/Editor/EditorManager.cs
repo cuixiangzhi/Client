@@ -4,21 +4,15 @@ using UnityEngine;
 
 using UnityEditor;
 
-namespace GF
+namespace GameFrameWork
 {
     //编辑器代码不能直接调用运行时的模块
     public static class EditorManager
     {
-        [MenuItem("工具/导出资源/TOLUA脚本")]
-        public static void ExportLib()
+        [MenuItem("工具/导出资源/LUA脚本")]
+        public static void ExportLuaPackage()
         {
-            ExportLua.ExportLib();
-        }
-
-        [MenuItem("工具/导出资源/LOGIC脚本")]
-        public static void ExportLogic()
-        {
-            ExportLua.ExportLogic();
+            ExportLua.Export();
         }
     }
 }

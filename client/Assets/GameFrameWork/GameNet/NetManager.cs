@@ -4,7 +4,7 @@ using System.Net;
 using System.Net.Sockets;
 using UnityEngine;
 
-namespace GF
+namespace GameFrameWork
 {
     public static class NetManager
     {

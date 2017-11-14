@@ -2,16 +2,16 @@
 using System;
 using LuaInterface;
 
-public class GF_ResManagerWrap
+public class GameFrameWork_UIFollowWrap
 {
 	public static void Register(LuaState L)
 	{
-		L.BeginStaticLibs("ResManager");
+		L.BeginStaticLibs("UIFollow");
 		L.RegFunction("Init", Init);
 		L.RegFunction("LateLoop", LateLoop);
 		L.RegFunction("Exit", Exit);
-		L.RegFunction("Destroy", Destroy);
-		L.RegFunction("LoadBytes", LoadBytes);
+		L.RegFunction("AddFollow", AddFollow);
+		L.RegFunction("RemoveFollow", RemoveFollow);
 		L.EndStaticLibs();
 	}
 
@@ -21,7 +21,7 @@ public class GF_ResManagerWrap
 		try
 		{
 			ToLua.CheckArgsCount(L, 0);
-			GF.ResManager.Init();
+			GameFrameWork.UIFollow.Init();
 			return 0;
 		}
 		catch (Exception e)
@@ -36,7 +36,7 @@ public class GF_ResManagerWrap
 		try
 		{
 			ToLua.CheckArgsCount(L, 0);
-			GF.ResManager.LateLoop();
+			GameFrameWork.UIFollow.LateLoop();
 			return 0;
 		}
 		catch (Exception e)
@@ -51,7 +51,7 @@ public class GF_ResManagerWrap
 		try
 		{
 			ToLua.CheckArgsCount(L, 0);
-			GF.ResManager.Exit();
+			GameFrameWork.UIFollow.Exit();
 			return 0;
 		}
 		catch (Exception e)
@@ -61,12 +61,16 @@ public class GF_ResManagerWrap
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int Destroy(IntPtr L)
+	static int AddFollow(IntPtr L)
 	{
 		try
 		{
-			ToLua.CheckArgsCount(L, 1);
-			UnityEngine.Object arg0 = (UnityEngine.Object)ToLua.CheckObject<UnityEngine.Object>(L, 1);
+			ToLua.CheckArgsCount(L, 4);
+			UnityEngine.Transform arg0 = (UnityEngine.Transform)ToLua.CheckObject<UnityEngine.Transform>(L, 1);
+			UnityEngine.Transform arg1 = (UnityEngine.Transform)ToLua.CheckObject<UnityEngine.Transform>(L, 2);
+			UnityEngine.Vector3 arg2 = ToLua.ToVector3(L, 3);
+			UnityEngine.Vector3 arg3 = ToLua.ToVector3(L, 4);
+			GameFrameWork.UIFollow.AddFollow(arg0, arg1, arg2, arg3);
 			return 0;
 		}
 		catch (Exception e)
@@ -76,13 +80,14 @@ public class GF_ResManagerWrap
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int LoadBytes(IntPtr L)
+	static int RemoveFollow(IntPtr L)
 	{
 		try
 		{
 			ToLua.CheckArgsCount(L, 1);
-			string arg0 = ToLua.CheckString(L, 1);
-			return 1;
+			UnityEngine.Transform arg0 = (UnityEngine.Transform)ToLua.CheckObject<UnityEngine.Transform>(L, 1);
+			GameFrameWork.UIFollow.RemoveFollow(arg0);
+			return 0;
 		}
 		catch (Exception e)
 		{

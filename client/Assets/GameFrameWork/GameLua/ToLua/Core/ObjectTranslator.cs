@@ -119,7 +119,7 @@ namespace LuaInterface
 
                 if (LogGC)
                 {
-                    GF.Logger.Log("gc object {0}, id {1}", o, udata);
+                    GameFrameWork.Logger.Log("gc object {0}, id {1}", o, udata);
                 }
             }
         }
@@ -143,7 +143,7 @@ namespace LuaInterface
 
                 if (LogGC)
                 {
-                    GF.Logger.Log("destroy object {0}, id {1}", o, udata);
+                    GameFrameWork.Logger.Log("destroy object {0}, id {1}", o, udata);
                 }
             }
         }
@@ -201,11 +201,11 @@ namespace LuaInterface
 
                 if (LogGC)
                 {
-                    GF.Logger.Log("destroy object {0}, id {1}", o, udata);
+                    GameFrameWork.Logger.Log("destroy object {0}, id {1}", o, udata);
                 }
             }
 
-            UnityEngine.Object.Destroy(obj);
+            GameFrameWork.ResManager.DestroyAsset(obj);
         }
 
         public void Collect()

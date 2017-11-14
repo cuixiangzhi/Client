@@ -5,7 +5,7 @@ using LuaInterface;
 using System.IO;
 using System;
 
-namespace GF
+namespace GameFrameWork
 {
     public static class LuaManager
     {

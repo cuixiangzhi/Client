@@ -12,18 +12,10 @@ namespace Export
 {
     public class ExportXcode
     {
+#if UNITY_IOS
         private static string CONFIG_PREFIX = "XU_";
         private static string CONFIG_PATH = Application.dataPath + "/../SDK/iOS/";
-
-        private static bool debug = true;
-        private static string companyName = string.Empty;
-        private static string appName = string.Empty;
-        private static string bundleIdentifier = string.Empty;
-        private static string bundleVersion = string.Empty;
-        private static string signTeamID = string.Empty;
-        private static string exportPath = string.Empty;
-        private static string splashImagePath = string.Empty;
-        private static string appIconPath = string.Empty;
+#endif
 
         public static void Export()
         {
@@ -36,19 +28,22 @@ namespace Export
             {
                 Debug.LogError(commands[i]);
             }
-            appName = commands[10];
-            bundleIdentifier = commands[11];
-            bundleVersion = commands[12];
-            signTeamID = commands[13].Replace("_"," ");
-            exportPath = commands[14];
-            splashImagePath = commands[15];
-            appIconPath = commands[16];
+            string signTeamID = commands[13].Replace("_"," ");
+            string appName = commands[10];
+            string companyName = commands[11].Split('.')[1];
+            string bundleIdentifier = commands[11];
+            string bundleVersion = commands[12];
+            string exportPath = commands[14];
+            string splashImagePath = commands[15];
+            string appIconPath = commands[16];
+            bool debug = commands[17].ToLower() == "true" || commands[17].ToLower() == "1";
 
             //旋转方向
             PlayerSettings.defaultInterfaceOrientation = UIOrientation.AutoRotation;
             PlayerSettings.useAnimatedAutorotation = true;
             PlayerSettings.allowedAutorotateToPortrait = false;
             PlayerSettings.allowedAutorotateToPortraitUpsideDown = false;
+            PlayerSettings.runInBackground = false;
             //应用图标
             if (File.Exists(appIconPath))
             {
@@ -57,27 +52,58 @@ namespace Export
             //启动屏幕
             if (File.Exists(splashImagePath))
             {
-                
+
             }
             //调试设置  
-            if (debug)
             {
-                PlayerSettings.enableInternalProfiler = true;
-                PlayerSettings.enableCrashReportAPI = true;
+                PlayerSettings.enableInternalProfiler = debug;
+                PlayerSettings.enableCrashReportAPI = debug;
+                PlayerSettings.logObjCUncaughtExceptions = debug;
+                PlayerSettings.usePlayerLog = debug;
+                PlayerSettings.actionOnDotNetUnhandledException = ActionOnDotNetUnhandledException.Crash;
+                PlayerSettings.SetStackTraceLogType(LogType.Error, StackTraceLogType.Full);
+                PlayerSettings.SetStackTraceLogType(LogType.Exception, StackTraceLogType.Full);
+                PlayerSettings.SetStackTraceLogType(LogType.Warning, StackTraceLogType.Full);
+                PlayerSettings.SetStackTraceLogType(LogType.Log, StackTraceLogType.Full);
             }
             //渲染设置
             PlayerSettings.colorSpace = ColorSpace.Gamma;
-            //应用签名   
+            PlayerSettings.mobileMTRendering = true;
+            PlayerSettings.MTRendering = true;
+            PlayerSettings.use32BitDisplayBuffer = true;
+            //应用设置   
             PlayerSettings.companyName = companyName;
             PlayerSettings.productName = appName;
             PlayerSettings.applicationIdentifier = bundleIdentifier;
             PlayerSettings.bundleVersion = bundleVersion;
+
             PlayerSettings.iOS.appleDeveloperTeamID = signTeamID;
-            //代码配置  暂无配置需要,可能会加入宏定义
-            //资源优化  
             PlayerSettings.iOS.scriptCallOptimization = ScriptCallOptimizationLevel.FastButNoExceptions;
             PlayerSettings.iOS.requiresPersistentWiFi = true;
-            PlayerSettings.strippingLevel = StrippingLevel.Disabled;
+            PlayerSettings.iOS.allowHTTPDownload = false;
+            
+            PlayerSettings.iOS.appleEnableAutomaticSigning = true;
+            PlayerSettings.iOS.applicationDisplayName = appName;
+            PlayerSettings.iOS.buildNumber = bundleVersion;
+            PlayerSettings.iOS.requiresFullScreen = true;
+            PlayerSettings.iOS.sdkVersion = iOSSdkVersion.DeviceSDK;
+            PlayerSettings.iOS.targetDevice = iOSTargetDevice.iPhoneAndiPad;
+            PlayerSettings.iOS.targetOSVersionString = "7.0";
+            PlayerSettings.iOS.showActivityIndicatorOnLoading = iOSShowActivityIndicatorOnLoading.DontShow;
+            PlayerSettings.iOS.appInBackgroundBehavior = iOSAppInBackgroundBehavior.Suspend;
+            //PlayerSettings.iOS.backgroundModes = iOSBackgroundMode.
+            PlayerSettings.iOS.forceHardShadowsOnMetal = false;
+            PlayerSettings.iOS.prerenderedIcon = true;
+            //代码配置           
+            PlayerSettings.accelerometerFrequency = 0;
+            PlayerSettings.bakeCollisionMeshes = false;
+            PlayerSettings.stripEngineCode = true;
+            PlayerSettings.SetScriptingBackend(BuildTargetGroup.iOS, ScriptingImplementation.IL2CPP);
+            PlayerSettings.SetApiCompatibilityLevel(BuildTargetGroup.iOS, ApiCompatibilityLevel.NET_2_0_Subset);
+            PlayerSettings.SetIncrementalIl2CppBuild(BuildTargetGroup.iOS, true);
+            PlayerSettings.SetArchitecture(BuildTargetGroup.iOS, 0);
+            //PlayerSettings.SetAdditionalIl2CppArgs("");
+            //PlayerSettings.SetScriptingDefineSymbolsForGroup(BuildTargetGroup.iOS, "");
 
             //添加场景
             List<string> levels = new List<string>();
@@ -105,7 +131,7 @@ namespace Export
                     //确保修改生效
                     AssetDatabase.SaveAssets();
                     AssetDatabase.Refresh();
-                    BuildPipeline.BuildPlayer(levels.ToArray(), exportPath, BuildTarget.iOS, BuildOptions.None);
+                    BuildPipeline.BuildPlayer(levels.ToArray(), exportPath, BuildTarget.iOS, debug ? BuildOptions.Development : BuildOptions.None);
                 }
                 catch(System.Exception e)
                 {
