@@ -10,6 +10,7 @@ HTTP网址参数 #位置 ?表示参数 &参数分隔符
 			
 TCP/IP协议栈
 			应用层,自定义消息,序列化为字节数据,发给传输层,这一层是用户控制的,跟具体应用关系密切
+				    HTTP传输使用Base64编码
 			传输层,TCP UDP
 			       把下层消息传递到上层进程
 				   把上层进程的消息加入端口号后传给网络层
@@ -21,7 +22,7 @@ TCP/IP协议栈
 					   setsockopt(socket,SOL_SOCKET || IPPROTO_TCP || IPPROTO_IP,选项,值,值SIZE);
 					   setsockopt(socket,SOL_SOCKET,SO_RCVBUF,&size,sizeof(UINT))   设置接收缓冲区大小
 					   setsockopt(socket,SOL_SOCKET,SO_SNDBUF,&size,sizeof(UINT))   设置发送缓冲区大小
-					   setsockopt(socket,SOL_SOCKET,SO_LINGER,linger,sizeof(linger))设置断开连接时是否丢弃未发送的数据
+					   setsockopt(socket,SOL_SOCKET,SO_LINGER,linger,sizeof(linger))设置断开连接时是否丢弃未发送的数据 linger结构体 l_onoff l_linger
 				       ping命令发包, -f数据不分段 -l设置发送缓冲区大小
 					   WIN ioctlsocket(socket,FIONBIO,0 || 1) 设置socket是否阻塞
 					   LIX fcntl(socket,F_GETFL,O_NONBLOCK)
@@ -100,13 +101,12 @@ SOCKET API
 		  FD_ZERO(&fds)清0  FD_SET(fd,&fds)置1  FD_ISSET(fd,&fds)是否置1 FD_CLR(fd,&fds)重置
 		  客户端发送的connect操作,也会导致socket可读,所以select可以检测新的连接,所以FD_SET始终保持server socket句柄置为1
 	连接上之后,服务器发送校验包,不通过则断开该链接
-	select最大支持uint64  64个连接
+	select最大支持 FD_SETSIZE 个连接,也就是fd_set内的数组大小
 	struct fd_set 
 	{
 			u_int fd_count;               /* how many are SET? */
 			SOCKET  fd_array[FD_SETSIZE];   /* an array of SOCKETs */
 	}
-	可以利用malloc分配超过64个连接,需要重写FD_SET系列函数,已支持超过64连接
 	
 	select缺点是在链接数很多时用户与内核切换时的拷贝消耗,以及遍历消耗
 	

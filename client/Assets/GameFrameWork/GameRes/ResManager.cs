@@ -192,8 +192,8 @@ namespace GameFrameWork
             mAsyncOp = new List<AsyncOperation>(CALL_BACK_SIZE);
             mAsyncBundle = new List<AssetBundle>(CALL_BACK_SIZE);
             mNullAssets = new HashSet<int>();
-            ThreadManager.StartThread<ThreadIO>();
             mNullBuffer = new LuaByteBuffer(null,0);
+            ThreadManager.StartThread<ThreadIO>();
         }
 
         public static void LateLoop()

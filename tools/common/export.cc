@@ -13,10 +13,13 @@ DLLAPI int common_patch(char* oldpath, char* patchpath, char* newpath)
 	return patch(oldpath, patchpath, newpath);
 }
 
-DLLAPI void common_md5(char* data, char* outhash)
+DLLAPI void common_md5(char* data, int startIndex, char* outhash)
 {
 	_uuid_t uuid;
-	uuid_create_external(data,&uuid);
+	char buffer[128];
+	memset(buffer, '\0', sizeof(buffer));
+	strcpy(buffer, data + startIndex);
+	uuid_create_external(buffer,&uuid);
 	char* hash = uuid_to_string(&uuid);
 	strcpy(outhash, hash);
 }
