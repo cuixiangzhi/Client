@@ -2,8 +2,8 @@
 #include <stdarg.h>
 #include <assert.h>
 
-#define err(...) asset(NULL)
-#define errx(...) asset(NULL)
+#define err(...) assert(NULL)
+#define errx(...) assert(NULL)
 typedef int off_t;
 typedef int ssize_t;
 #define fseeko fseek
