@@ -139,7 +139,7 @@ int _patch(int argc,char * argv[])
 		(fseek(fd, 0, SEEK_END) == -1) ||
 		((oldsize = ftell(fd)) < 0) ||
 		((old=malloc(oldsize+1))==NULL) ||
-		(fseek(fd, 0, SEEK_END) == -1) ||
+		(fseek(fd, 0, SEEK_SET) == -1) ||
 		(fread(old,1,oldsize, fd)!=oldsize) ||
 		(fclose(fd)==-1)) err(1,"%s",argv[1]);
 	if((new=malloc(newsize+1))==NULL) err(1,NULL);

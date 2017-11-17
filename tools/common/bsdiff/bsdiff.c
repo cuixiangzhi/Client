@@ -238,7 +238,7 @@ int _diff(int argc,char *argv[])
 		(fseek(fd, 0, SEEK_END) == -1) ||
 		((newsize = ftell(fd)) < 0) ||
 		((new=malloc(newsize+1))==NULL) ||
-		(fseek(fd, 0, SEEK_END) == -1) ||
+		(fseek(fd, 0, SEEK_SET) == -1) ||
 		(fread(new,1 ,newsize, fd)!=newsize) ||
 		(fclose(fd)==-1)) err(1,"%s",argv[2]);
 
