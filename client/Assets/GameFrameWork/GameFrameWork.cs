@@ -51,7 +51,7 @@ namespace GameFrameWork
             UEP.EndSample();
 
             UEP.BeginSample("ResManager.Init();");
-            ResManager.Init();
+            AssetManager.Init();
             UEP.EndSample();
 
             UEP.BeginSample("NetManager.Init();");
@@ -87,7 +87,7 @@ namespace GameFrameWork
             UEP.EndSample();
 
             UEP.BeginSample("ResManager.LateLoop();");
-            ResManager.LateLoop();
+            AssetManager.LateLoop();
             UEP.EndSample();
 
             UEP.BeginSample("ThreadManager.LateLoop();");
@@ -149,7 +149,7 @@ namespace GameFrameWork
             UEP.EndSample();
 
             UEP.BeginSample("ResManager.Exit();");
-            ResManager.Exit();
+            AssetManager.Exit();
             UEP.EndSample();
 
             UEP.BeginSample("ThreadManager.Exit();");

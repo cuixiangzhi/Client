@@ -48,6 +48,12 @@ namespace GameFrameWork
         [DllImport(DLLNAME)]
         public static extern void common_decode(byte[] data, int len);
 
+        [DllImport(DLLNAME)]
+        public static extern int common_diff(string oldpath, string newpath, string patchpath);
+
+        [DllImport(DLLNAME)]
+        public static extern int common_patch(string oldpath, string patchpath, string newpath);
+
         public static void Init()
         {
             

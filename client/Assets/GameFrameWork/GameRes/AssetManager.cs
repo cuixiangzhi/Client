@@ -7,7 +7,7 @@ using SceneMgr = UnityEngine.SceneManagement.SceneManager;
 
 namespace GameFrameWork
 {
-    public static class ResManager
+    public static class AssetManager
     {
         private class ObjectPool
         {
@@ -193,7 +193,7 @@ namespace GameFrameWork
             mAsyncBundle = new List<AssetBundle>(CALL_BACK_SIZE);
             mNullAssets = new HashSet<int>();
             mNullBuffer = new LuaByteBuffer(null,0);
-            ThreadManager.StartThread<ThreadIO>();
+            BundleManager.Init();
         }
 
         public static void LateLoop()
@@ -210,6 +210,7 @@ namespace GameFrameWork
             mCallBackIndex = null;
             mBytesCallBack = null;
             mBytesCallBackFuncs = null;
+            BundleManager.Exit();
         }
 
         public static void LoadAsset(string path, int funcID, Action<int, UnityObj> callBack, bool sync)
@@ -231,7 +232,7 @@ namespace GameFrameWork
             {
                 //添加回调
                 LoadCallBack.CreateCallBack(path,hash,funcID,callBack,sync);
-                ThreadIO.LoadBundle(path, OnBundleLoad, sync);
+                BundleManager.LoadBundle(path, OnBundleLoad, sync);
             }
         }
 
@@ -245,12 +246,12 @@ namespace GameFrameWork
             }
             mBytesCallBack = callBack;
             mBytesCallBackFuncs[hash] = funcID;
-            ThreadIO.LoadBytes(path, OnBytesLoad, sync);
+            BundleManager.LoadBytes(path, OnBytesLoad, sync);
         }
 
         public static LuaByteBuffer LoadAsset(string path)
         {
-            return ThreadIO.LoadBytes(path,null,true);
+            return BundleManager.LoadBytes(path,null,true);
         }
 
         public static void DestroyAsset(UnityObj obj)

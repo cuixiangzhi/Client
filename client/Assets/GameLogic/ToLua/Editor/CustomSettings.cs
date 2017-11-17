@@ -41,7 +41,7 @@ public static class CustomSettings
         _GT(typeof(List<LuaValueInfo>)),
         _GT(typeof(GameFrameWork.Logger)),
         _GT(typeof(GameFrameWork.UIFollow)),
-        _GT(typeof(GameFrameWork.ResManager)),
+        _GT(typeof(GameFrameWork.AssetManager)),
 
         //逻辑
     };

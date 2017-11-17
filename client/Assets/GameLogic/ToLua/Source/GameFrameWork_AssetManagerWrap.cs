@@ -2,11 +2,11 @@
 using System;
 using LuaInterface;
 
-public class GameFrameWork_ResManagerWrap
+public class GameFrameWork_AssetManagerWrap
 {
 	public static void Register(LuaState L)
 	{
-		L.BeginStaticLibs("ResManager");
+		L.BeginStaticLibs("AssetManager");
 		L.RegFunction("Init", Init);
 		L.RegFunction("LateLoop", LateLoop);
 		L.RegFunction("Exit", Exit);
@@ -21,7 +21,7 @@ public class GameFrameWork_ResManagerWrap
 		try
 		{
 			ToLua.CheckArgsCount(L, 0);
-			GameFrameWork.ResManager.Init();
+			GameFrameWork.AssetManager.Init();
 			return 0;
 		}
 		catch (Exception e)
@@ -36,7 +36,7 @@ public class GameFrameWork_ResManagerWrap
 		try
 		{
 			ToLua.CheckArgsCount(L, 0);
-			GameFrameWork.ResManager.LateLoop();
+			GameFrameWork.AssetManager.LateLoop();
 			return 0;
 		}
 		catch (Exception e)
@@ -51,7 +51,7 @@ public class GameFrameWork_ResManagerWrap
 		try
 		{
 			ToLua.CheckArgsCount(L, 0);
-			GameFrameWork.ResManager.Exit();
+			GameFrameWork.AssetManager.Exit();
 			return 0;
 		}
 		catch (Exception e)
@@ -70,7 +70,7 @@ public class GameFrameWork_ResManagerWrap
 			if (count == 1)
 			{
 				string arg0 = ToLua.CheckString(L, 1);
-				LuaInterface.LuaByteBuffer o = GameFrameWork.ResManager.LoadAsset(arg0);
+				LuaInterface.LuaByteBuffer o = GameFrameWork.AssetManager.LoadAsset(arg0);
 				ToLua.Push(L, o);
 				return 1;
 			}
@@ -80,7 +80,7 @@ public class GameFrameWork_ResManagerWrap
 				int arg1 = (int)LuaDLL.luaL_checknumber(L, 2);
 				System.Action<int,LuaInterface.LuaByteBuffer> arg2 = (System.Action<int,LuaInterface.LuaByteBuffer>)ToLua.ToObject(L, 3);
 				bool arg3 = LuaDLL.lua_toboolean(L, 4);
-				GameFrameWork.ResManager.LoadAsset(arg0, arg1, arg2, arg3);
+				GameFrameWork.AssetManager.LoadAsset(arg0, arg1, arg2, arg3);
 				return 0;
 			}
 			else if (count == 4 && TypeChecker.CheckTypes<System.Action<int,UnityEngine.Object>, bool>(L, 3))
@@ -89,12 +89,12 @@ public class GameFrameWork_ResManagerWrap
 				int arg1 = (int)LuaDLL.luaL_checknumber(L, 2);
 				System.Action<int,UnityEngine.Object> arg2 = (System.Action<int,UnityEngine.Object>)ToLua.ToObject(L, 3);
 				bool arg3 = LuaDLL.lua_toboolean(L, 4);
-				GameFrameWork.ResManager.LoadAsset(arg0, arg1, arg2, arg3);
+				GameFrameWork.AssetManager.LoadAsset(arg0, arg1, arg2, arg3);
 				return 0;
 			}
 			else
 			{
-				return LuaDLL.luaL_throw(L, "invalid arguments to method: GameFrameWork.ResManager.LoadAsset");
+				return LuaDLL.luaL_throw(L, "invalid arguments to method: GameFrameWork.AssetManager.LoadAsset");
 			}
 		}
 		catch (Exception e)
@@ -110,7 +110,7 @@ public class GameFrameWork_ResManagerWrap
 		{
 			ToLua.CheckArgsCount(L, 1);
 			UnityEngine.Object arg0 = (UnityEngine.Object)ToLua.CheckObject<UnityEngine.Object>(L, 1);
-			GameFrameWork.ResManager.DestroyAsset(arg0);
+			GameFrameWork.AssetManager.DestroyAsset(arg0);
 			return 0;
 		}
 		catch (Exception e)

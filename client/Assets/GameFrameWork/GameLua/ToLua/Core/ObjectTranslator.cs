@@ -205,7 +205,7 @@ namespace LuaInterface
                 }
             }
 
-            GameFrameWork.ResManager.DestroyAsset(obj);
+            GameFrameWork.AssetManager.DestroyAsset(obj);
         }
 
         public void Collect()

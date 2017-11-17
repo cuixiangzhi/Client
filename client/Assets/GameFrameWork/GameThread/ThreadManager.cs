@@ -6,10 +6,6 @@ namespace GameFrameWork
 {
     public static class ThreadManager
     {
-        public static void StartThread<T>() where T : ThreadBase
-        {
-
-        }
 
         public static void Init()
         {

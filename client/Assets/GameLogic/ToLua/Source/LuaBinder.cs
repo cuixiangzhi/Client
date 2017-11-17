@@ -36,7 +36,7 @@ public static class LuaBinder
 		L.BeginModule("GameFrameWork");
 		GameFrameWork_LoggerWrap.Register(L);
 		GameFrameWork_UIFollowWrap.Register(L);
-		GameFrameWork_ResManagerWrap.Register(L);
+		GameFrameWork_AssetManagerWrap.Register(L);
 		L.EndModule();
 		L.EndModule();
 		GameFrameWork.Logger.Log("Register lua type cost time: {0}", Time.realtimeSinceStartup - t);
