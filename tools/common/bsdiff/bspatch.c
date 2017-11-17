@@ -30,7 +30,7 @@ __FBSDID("$FreeBSD: src/usr.bin/bsdiff/bspatch/bspatch.c,v 1.1 2005/08/06 01:59:
 
 
 //#include <sys/types.h>
-#include <fcntl.h>
+//#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -39,9 +39,9 @@ __FBSDID("$FreeBSD: src/usr.bin/bsdiff/bspatch/bspatch.c,v 1.1 2005/08/06 01:59:
 #include "bzlib.h"
 #include "bstype.h"
 
-static off_t offtin(u_char *buf)
+static off_t_int offtin(u_char *buf)
 {
-	off_t y;
+	off_t_int y;
 
 	y=buf[7]&0x7F;
 	y=y*256;y+=buf[6];
@@ -63,14 +63,14 @@ int _patch(int argc,char * argv[])
 	BZFILE * cpfbz2, * dpfbz2, * epfbz2;
 	int cbz2err, dbz2err, ebz2err;
 	FILE* fd;
-	ssize_t oldsize,newsize;
-	ssize_t bzctrllen,bzdatalen;
+	ssize_t_int oldsize,newsize;
+	ssize_t_int bzctrllen,bzdatalen;
 	u_char header[32],buf[8];
 	u_char *old, *new;
-	off_t oldpos,newpos;
-	off_t ctrl[3];
-	off_t lenread;
-	off_t i;
+	off_t_int oldpos,newpos;
+	off_t_int ctrl[3];
+	off_t_int lenread;
+	off_t_int i;
 
 	if(argc!=4) errx(1,"usage: %s oldfile newfile patchfile\n",argv[0]);
 

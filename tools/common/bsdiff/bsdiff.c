@@ -29,7 +29,7 @@ __FBSDID("$FreeBSD: src/usr.bin/bsdiff/bsdiff/bsdiff.c,v 1.1 2005/08/06 01:59:05
 #endif
 
 //#include <sys/types.h>
-#include <fcntl.h>
+//#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -40,9 +40,9 @@ __FBSDID("$FreeBSD: src/usr.bin/bsdiff/bsdiff/bsdiff.c,v 1.1 2005/08/06 01:59:05
 
 #define MIN(x,y) (((x)<(y)) ? (x) : (y))
 
-static void split(off_t *I,off_t *V,off_t start,off_t len,off_t h)
+static void split(off_t_int *I, off_t_int *V, off_t_int start, off_t_int len, off_t_int h)
 {
-	off_t i,j,k,x,tmp,jj,kk;
+	off_t_int i,j,k,x,tmp,jj,kk;
 
 	if(len<16) {
 		for(k=start;k<start+len;k+=j) {
@@ -101,10 +101,10 @@ static void split(off_t *I,off_t *V,off_t start,off_t len,off_t h)
 	if(start+len>kk) split(I,V,kk,start+len-kk,h);
 }
 
-static void qsufsort(off_t *I,off_t *V,u_char *old,off_t oldsize)
+static void qsufsort(off_t_int *I, off_t_int *V,u_char *old, off_t_int oldsize)
 {
-	off_t buckets[256];
-	off_t i,h,len;
+	off_t_int buckets[256];
+	off_t_int i,h,len;
 
 	for(i=0;i<256;i++) buckets[i]=0;
 	for(i=0;i<oldsize;i++) buckets[old[i]]++;
@@ -139,9 +139,9 @@ static void qsufsort(off_t *I,off_t *V,u_char *old,off_t oldsize)
 	for(i=0;i<oldsize+1;i++) I[V[i]]=i;
 }
 
-static off_t matchlen(u_char *old,off_t oldsize,u_char *new,off_t newsize)
+static off_t_int matchlen(u_char *old, off_t_int oldsize,u_char *new, off_t_int newsize)
 {
-	off_t i;
+	off_t_int i;
 
 	for(i=0;(i<oldsize)&&(i<newsize);i++)
 		if(old[i]!=new[i]) break;
@@ -149,10 +149,10 @@ static off_t matchlen(u_char *old,off_t oldsize,u_char *new,off_t newsize)
 	return i;
 }
 
-static off_t search(off_t *I,u_char *old,off_t oldsize,
-		u_char *new,off_t newsize,off_t st,off_t en,off_t *pos)
+static off_t_int search(off_t_int *I,u_char *old, off_t_int oldsize,
+		u_char *new, off_t_int newsize, off_t_int st, off_t_int en, off_t_int *pos)
 {
-	off_t x,y;
+	off_t_int x,y;
 
 	if(en-st<2) {
 		x=matchlen(old+I[st],oldsize-I[st],new,newsize);
@@ -175,9 +175,9 @@ static off_t search(off_t *I,u_char *old,off_t oldsize,
 	};
 }
 
-static void offtout(off_t x,u_char *buf)
+static void offtout(off_t_int x,u_char *buf)
 {
-	off_t y;
+	off_t_int y;
 
 	if(x<0) y=-x; else y=x;
 
@@ -197,15 +197,15 @@ int _diff(int argc,char *argv[])
 {
 	FILE* fd;
 	u_char *old = NULL,*new;
-	off_t oldsize,newsize;
-	off_t *I,*V = NULL;
-	off_t scan,pos,len;
-	off_t lastscan,lastpos,lastoffset;
-	off_t oldscore,scsc;
-	off_t s,Sf,lenf,Sb,lenb;
-	off_t overlap,Ss,lens;
-	off_t i;
-	off_t dblen,eblen;
+	off_t_int oldsize,newsize;
+	off_t_int *I,*V = NULL;
+	off_t_int scan,pos,len;
+	off_t_int lastscan,lastpos,lastoffset;
+	off_t_int oldscore,scsc;
+	off_t_int s,Sf,lenf,Sb,lenb;
+	off_t_int overlap,Ss,lens;
+	off_t_int i;
+	off_t_int dblen,eblen;
 	u_char *db,*eb;
 	u_char buf[8];
 	u_char header[32];
@@ -225,8 +225,8 @@ int _diff(int argc,char *argv[])
 		(fread(old,1,oldsize,fd)!=oldsize) ||
 		(fclose(fd)==-1)) err(1,"%s",argv[1]);
 
-	if(((I=malloc((oldsize+1)*sizeof(off_t)))==NULL) ||
-		((V=malloc((oldsize+1)*sizeof(off_t)))==NULL)) err(1,NULL);
+	if(((I=malloc((oldsize+1)*sizeof(off_t_int)))==NULL) ||
+		((V=malloc((oldsize+1)*sizeof(off_t_int)))==NULL)) err(1,NULL);
 
 	qsufsort(I,V,old,oldsize);
 
