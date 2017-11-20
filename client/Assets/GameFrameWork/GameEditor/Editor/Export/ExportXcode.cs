@@ -8,7 +8,7 @@ using UnityEditor.iOS.Xcode;
 #endif
 using System.IO;
 
-namespace Export
+namespace GameFrameWork
 {
     public class ExportXcode
     {

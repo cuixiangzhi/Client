@@ -204,12 +204,15 @@ namespace GameFrameWork
 
         public static void Exit()
         {
+            mPoolParent = null;
             mPool = null;
             mPoolIndex = null;
             mCallBack = null;
             mCallBackIndex = null;
-            mBytesCallBack = null;
-            mBytesCallBackFuncs = null;
+            mAsyncPath = null;
+            mAsyncOp = null;
+            mAsyncBundle = null;
+            mNullAssets = null;
             BundleManager.Exit();
         }
 
@@ -232,7 +235,7 @@ namespace GameFrameWork
             {
                 //添加回调
                 LoadCallBack.CreateCallBack(path,hash,funcID,callBack,sync);
-                BundleManager.LoadBundle(path, OnBundleLoad, sync);
+                BundleManager.LoadBundle(path, OnBundleLoad);
             }
         }
 
@@ -246,12 +249,12 @@ namespace GameFrameWork
             }
             mBytesCallBack = callBack;
             mBytesCallBackFuncs[hash] = funcID;
-            BundleManager.LoadBytes(path, OnBytesLoad, sync);
+            OnBytesLoad(path,BundleManager.LoadBytes(path));
         }
 
         public static LuaByteBuffer LoadAsset(string path)
         {
-            return BundleManager.LoadBytes(path,null,true);
+            return BundleManager.LoadBytes(path);
         }
 
         public static void DestroyAsset(UnityObj obj)
@@ -353,6 +356,7 @@ namespace GameFrameWork
             int hash = path.GetHashCode();
             if(obj == null)
             {
+                Logger.Log("asset is null {0}", path);
                 mNullAssets.Add(hash);
             }
             //缓存资源
@@ -377,6 +381,7 @@ namespace GameFrameWork
             int hash = path.GetHashCode();
             if (buffer.buffer == null)
             {
+                Logger.Log("asset is null {0}",path);
                 mNullAssets.Add(hash);
             }
             //执行回调

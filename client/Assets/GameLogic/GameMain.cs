@@ -12,7 +12,8 @@ namespace GL
     {
         private void Awake()
         {
-
+            GameFrameWork.GameFrameWork.Init(this);
+            LuaManager.DoFile("GameMain");
         }
 
         public override void Loop()

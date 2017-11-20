@@ -8,10 +8,10 @@ namespace GameFrameWork
     {
         public static void ToBytes(byte[] buffer,int offset,uint data)
         {
-            buffer[offset + 0] = (byte)(data >> 24 & 0x8);
-            buffer[offset + 1] = (byte)(data >> 16 & 0x8);
-            buffer[offset + 2] = (byte)(data >> 8 & 0x8);
-            buffer[offset + 3] = (byte)(data >> 0 & 0x8);
+            buffer[offset + 0] = (byte)(data >> 24 & 0xff);
+            buffer[offset + 1] = (byte)(data >> 16 & 0xff);
+            buffer[offset + 2] = (byte)(data >> 8 & 0xff);
+            buffer[offset + 3] = (byte)(data >> 0 & 0xff);
         }
 
         public static uint ToUInt32(byte[] data,int offset)

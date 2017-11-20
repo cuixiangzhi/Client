@@ -17,25 +17,26 @@ namespace GameFrameWork
 
 
         [DllImport(DLLNAME)]
-        private static extern void common_md5(string data,int startIndex, StringBuilder outdata);
+        private static extern void common_md5(string data, int startIndex, StringBuilder outdata);
         private static StringBuilder mMD5Buffer = new StringBuilder(64);
         private static Dictionary<int, string> mCacheMD5Result = new Dictionary<int, string>(1024);
         public static string common_md5(string data)
         {
+            if (!Application.isPlaying)
+            {
+                mCacheMD5Result.Clear();
+            }
             int hash = data.GetHashCode();
             if (mCacheMD5Result.ContainsKey(hash))
             {
                 return mCacheMD5Result[hash];
             }
             int startIndex = data.LastIndexOf("/");
-            if(startIndex < 0)
+            if (startIndex < 0)
             {
                 startIndex = data.LastIndexOf("\\");
             }
-            if(startIndex < 0)
-            {
-                startIndex = 0;
-            }
+            startIndex = startIndex < 0 ? 0 : startIndex + 1;
             common_md5(data, startIndex, mMD5Buffer);
             string ret = mMD5Buffer.ToString();
             mCacheMD5Result[hash] = ret;
@@ -43,7 +44,7 @@ namespace GameFrameWork
         }
 
         [DllImport(DLLNAME)]
-        public static extern void common_encode(byte[] data,int len);
+        public static extern void common_encode(byte[] data, int len);
 
         [DllImport(DLLNAME)]
         public static extern void common_decode(byte[] data, int len);
@@ -56,7 +57,7 @@ namespace GameFrameWork
 
         public static void Init()
         {
-            
+            mCacheMD5Result.Clear();
         }
 
         public static void Exit()

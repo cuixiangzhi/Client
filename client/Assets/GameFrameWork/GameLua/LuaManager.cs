@@ -27,7 +27,7 @@ namespace GameFrameWork
                 return base.ReadFile(fileName);
 #else
                 //读取LUA字节码               
-                return ResManager.LoadAsset(fileName);
+                return AssetManager.LoadAsset(fileName);
 #endif
             }
 
@@ -95,6 +95,12 @@ namespace GameFrameWork
 
             //启动虚拟机
             mLuaState.Start();
+
+            //启动VSCODE调试器
+#if UNITY_EDITOR
+            string vscodebug = @"require(jit and 'debug.LuaDebugjit' or 'debug.LuaDebug')('localhost', 7003)";
+            mLuaState.DoString(vscodebug);
+#endif
         }
 
         public static void Loop()

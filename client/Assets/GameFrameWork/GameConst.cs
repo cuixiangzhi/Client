@@ -17,6 +17,9 @@ namespace GameFrameWork
 #else
         public static string LOG_PATH = Path.GetFullPath(Application.persistentDataPath + "/Log");
 #endif
-        public static string PACKAGE_LUA_NAME = "luapackage";
+        //资源包
+        public static string PACKAGE_NAME = "package";
+        //资源列表
+        public static string FILEMAP_NAME = "filemap";
     }
 }
