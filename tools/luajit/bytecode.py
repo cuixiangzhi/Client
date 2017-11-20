@@ -23,9 +23,9 @@ def export_bytecode(import_root_path,export_root_path,import_path):
                 if(not os.path.exists(cur_export_path)):
                     os.makedirs(cur_export_path)
                 print(u"导出64:" + file)
-                os.system("luajit64 -b {0} {1}/{2}_64.bytes".format(abspath,cur_export_path,file[:-4]))    
+                os.system("luajit64 -b {0} {1}/{2}_64".format(abspath,cur_export_path,file[:-4]))    
                 print(u"导出32:" + file)
-                os.system("luajit32 -b {0} {1}/{2}_32.bytes".format(abspath,cur_export_path,file[:-4]))                 
+                os.system("luajit32 -b {0} {1}/{2}_32".format(abspath,cur_export_path,file[:-4]))                 
     
 if(__name__ == "__main__"):
     try:        
