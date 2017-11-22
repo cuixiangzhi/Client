@@ -16,7 +16,7 @@ SQL  结构化查询语言
 			 删除列  DROP COLUMN name
 			 修改列  MODIFY COLUMN name type 约束
 			 
-	插入数据 INSERT INFO name (keys) VALUES(...)
+	插入数据 INSERT INTO name (keys) VALUES(...)
 	修改数据 UPDATE name SET key=val WHERE key=val
 	删除数据 DELETE FROM name WHERE key=val
 	
