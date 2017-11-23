@@ -76,7 +76,6 @@ namespace GameFrameWork
         public ByteData GetByteData(string path)
         {
             string name = UtilDll.common_md5(path);
-            Logger.Log(name);
             if (IntPtr.Size == 8 && mNewFile64.ContainsKey(name))
             {
                 return mNewFile64[name];
@@ -85,13 +84,13 @@ namespace GameFrameWork
             {
                 return mOldFile64[name];
             }
-            if (mNewFile32.ContainsKey(path))
+            if (mNewFile32.ContainsKey(name))
             {
-                return mNewFile32[path];
+                return mNewFile32[name];
             }
-            if (mOldFile32.ContainsKey(path))
+            if (mOldFile32.ContainsKey(name))
             {
-                return mOldFile32[path];
+                return mOldFile32[name];
             }
             return mNullByteData;
         }

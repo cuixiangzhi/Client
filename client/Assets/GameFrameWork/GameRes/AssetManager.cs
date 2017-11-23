@@ -356,7 +356,6 @@ namespace GameFrameWork
             int hash = path.GetHashCode();
             if(obj == null)
             {
-                Logger.Log("asset is null {0}", path);
                 mNullAssets.Add(hash);
             }
             //缓存资源
@@ -381,7 +380,6 @@ namespace GameFrameWork
             int hash = path.GetHashCode();
             if (buffer.buffer == null)
             {
-                Logger.Log("asset is null {0}",path);
                 mNullAssets.Add(hash);
             }
             //执行回调
