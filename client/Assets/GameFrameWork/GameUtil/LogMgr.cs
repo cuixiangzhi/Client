@@ -7,7 +7,7 @@ using System.Reflection;
 
 namespace GameFrameWork
 {
-    public static class Logger
+    public static class LogMgr
     {
         //日志文件流
         private static FileStream LOG_STREAM = null;
@@ -44,45 +44,45 @@ namespace GameFrameWork
         }
 
         [Conditional("ENABLE_LOG")]
-        public static void Log(object msg)
+        public static void Log(string msg)
         {
             string message = SaveToFile(msg);
             UnityEngine.Debug.Log(message);
         }
 
         [Conditional("ENABLE_LOG")]
-        public static void Log(string fmt, object arg1, params object[] args)
+        public static void Log(string fmt,params object[] args)
         {
-            Log(string.Format(fmt, arg1, args));
+            Log(string.Format(fmt, args));
         }
 
         [Conditional("ENABLE_LOG")]
-        public static void LogError(object msg)
+        public static void LogError(string msg)
         {
             string message = SaveToFile(msg);
             UnityEngine.Debug.LogError(message);
         }
 
         [Conditional("ENABLE_LOG")]
-        public static void LogError(string fmt, object arg1,params object[] args)
+        public static void LogError(string fmt, params object[] args)
         {
-            LogError(string.Format(fmt, arg1, args));
+            LogError(string.Format(fmt, args));
         }
 
         [Conditional("ENABLE_LOG")]
-        public static void LogWarning(object msg)
+        public static void LogWarning(string msg)
         {
             string message = SaveToFile(msg);
             UnityEngine.Debug.LogWarning(message);
         }
 
         [Conditional("ENABLE_LOG")]
-        public static void LogWarning(string fmt, object arg1, params object[] args)
+        public static void LogWarning(string fmt, params object[] args)
         {
-            LogWarning(string.Format(fmt, arg1, args));
+            LogWarning(string.Format(fmt,args));
         }
 
-        private static string SaveToFile(object msg)
+        private static string SaveToFile(string msg)
         {
             string message = string.Format("{0:00000.000} {1} ", Time.realtimeSinceStartup,msg);
 

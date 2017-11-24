@@ -2,11 +2,11 @@
 using System;
 using LuaInterface;
 
-public class GameFrameWork_LoggerWrap
+public class GameFrameWork_LogMgrWrap
 {
 	public static void Register(LuaState L)
 	{
-		L.BeginStaticLibs("Logger");
+		L.BeginStaticLibs("LogMgr");
 		L.RegFunction("Init", Init);
 		L.RegFunction("LateLoop", LateLoop);
 		L.RegFunction("Exit", Exit);
@@ -22,7 +22,7 @@ public class GameFrameWork_LoggerWrap
 		try
 		{
 			ToLua.CheckArgsCount(L, 0);
-			GameFrameWork.Logger.Init();
+			GameFrameWork.LogMgr.Init();
 			return 0;
 		}
 		catch (Exception e)
@@ -37,7 +37,7 @@ public class GameFrameWork_LoggerWrap
 		try
 		{
 			ToLua.CheckArgsCount(L, 0);
-			GameFrameWork.Logger.LateLoop();
+			GameFrameWork.LogMgr.LateLoop();
 			return 0;
 		}
 		catch (Exception e)
@@ -52,7 +52,7 @@ public class GameFrameWork_LoggerWrap
 		try
 		{
 			ToLua.CheckArgsCount(L, 0);
-			GameFrameWork.Logger.Exit();
+			GameFrameWork.LogMgr.Exit();
 			return 0;
 		}
 		catch (Exception e)
@@ -68,23 +68,22 @@ public class GameFrameWork_LoggerWrap
 		{
 			int count = LuaDLL.lua_gettop(L);
 
-			if (count == 1 && TypeChecker.CheckTypes<object>(L, 1))
-			{
-				object arg0 = ToLua.ToVarObject(L, 1);
-				GameFrameWork.Logger.Log(arg0);
-				return 0;
-			}
-			else if (TypeChecker.CheckTypes<string, object>(L, 1) && TypeChecker.CheckParamsType<object>(L, 3, count - 2))
+			if (count == 1 && TypeChecker.CheckTypes<string>(L, 1))
 			{
 				string arg0 = ToLua.ToString(L, 1);
-				object arg1 = ToLua.ToVarObject(L, 2);
-				object[] arg2 = ToLua.ToParamsObject(L, 3, count - 2);
-				GameFrameWork.Logger.Log(arg0, arg1, arg2);
+				GameFrameWork.LogMgr.Log(arg0);
+				return 0;
+			}
+			else if (TypeChecker.CheckTypes<string>(L, 1) && TypeChecker.CheckParamsType<object>(L, 2, count - 1))
+			{
+				string arg0 = ToLua.ToString(L, 1);
+				object[] arg1 = ToLua.ToParamsObject(L, 2, count - 1);
+				GameFrameWork.LogMgr.Log(arg0, arg1);
 				return 0;
 			}
 			else
 			{
-				return LuaDLL.luaL_throw(L, "invalid arguments to method: GameFrameWork.Logger.Log");
+				return LuaDLL.luaL_throw(L, "invalid arguments to method: GameFrameWork.LogMgr.Log");
 			}
 		}
 		catch (Exception e)
@@ -100,23 +99,22 @@ public class GameFrameWork_LoggerWrap
 		{
 			int count = LuaDLL.lua_gettop(L);
 
-			if (count == 1 && TypeChecker.CheckTypes<object>(L, 1))
-			{
-				object arg0 = ToLua.ToVarObject(L, 1);
-				GameFrameWork.Logger.LogError(arg0);
-				return 0;
-			}
-			else if (TypeChecker.CheckTypes<string, object>(L, 1) && TypeChecker.CheckParamsType<object>(L, 3, count - 2))
+			if (count == 1 && TypeChecker.CheckTypes<string>(L, 1))
 			{
 				string arg0 = ToLua.ToString(L, 1);
-				object arg1 = ToLua.ToVarObject(L, 2);
-				object[] arg2 = ToLua.ToParamsObject(L, 3, count - 2);
-				GameFrameWork.Logger.LogError(arg0, arg1, arg2);
+				GameFrameWork.LogMgr.LogError(arg0);
+				return 0;
+			}
+			else if (TypeChecker.CheckTypes<string>(L, 1) && TypeChecker.CheckParamsType<object>(L, 2, count - 1))
+			{
+				string arg0 = ToLua.ToString(L, 1);
+				object[] arg1 = ToLua.ToParamsObject(L, 2, count - 1);
+				GameFrameWork.LogMgr.LogError(arg0, arg1);
 				return 0;
 			}
 			else
 			{
-				return LuaDLL.luaL_throw(L, "invalid arguments to method: GameFrameWork.Logger.LogError");
+				return LuaDLL.luaL_throw(L, "invalid arguments to method: GameFrameWork.LogMgr.LogError");
 			}
 		}
 		catch (Exception e)
@@ -132,23 +130,22 @@ public class GameFrameWork_LoggerWrap
 		{
 			int count = LuaDLL.lua_gettop(L);
 
-			if (count == 1 && TypeChecker.CheckTypes<object>(L, 1))
-			{
-				object arg0 = ToLua.ToVarObject(L, 1);
-				GameFrameWork.Logger.LogWarning(arg0);
-				return 0;
-			}
-			else if (TypeChecker.CheckTypes<string, object>(L, 1) && TypeChecker.CheckParamsType<object>(L, 3, count - 2))
+			if (count == 1 && TypeChecker.CheckTypes<string>(L, 1))
 			{
 				string arg0 = ToLua.ToString(L, 1);
-				object arg1 = ToLua.ToVarObject(L, 2);
-				object[] arg2 = ToLua.ToParamsObject(L, 3, count - 2);
-				GameFrameWork.Logger.LogWarning(arg0, arg1, arg2);
+				GameFrameWork.LogMgr.LogWarning(arg0);
+				return 0;
+			}
+			else if (TypeChecker.CheckTypes<string>(L, 1) && TypeChecker.CheckParamsType<object>(L, 2, count - 1))
+			{
+				string arg0 = ToLua.ToString(L, 1);
+				object[] arg1 = ToLua.ToParamsObject(L, 2, count - 1);
+				GameFrameWork.LogMgr.LogWarning(arg0, arg1);
 				return 0;
 			}
 			else
 			{
-				return LuaDLL.luaL_throw(L, "invalid arguments to method: GameFrameWork.Logger.LogWarning");
+				return LuaDLL.luaL_throw(L, "invalid arguments to method: GameFrameWork.LogMgr.LogWarning");
 			}
 		}
 		catch (Exception e)

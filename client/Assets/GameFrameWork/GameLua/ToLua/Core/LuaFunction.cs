@@ -55,7 +55,7 @@ namespace LuaInterface
 #if UNITY_EDITOR
             if (oldTop != -1 && count <= 1)
             {
-                GameFrameWork.Logger.LogError("You must call EndPCall before calling Dispose");
+                GameFrameWork.LogMgr.LogError("You must call EndPCall before calling Dispose");
             }
 #endif
             base.Dispose();
@@ -85,7 +85,7 @@ namespace LuaInterface
 #if UNITY_EDITOR
             if (oldTop == -1)
             {
-                GameFrameWork.Logger.LogError("You must call BeginPCall before calling PCall");
+                GameFrameWork.LogMgr.LogError("You must call BeginPCall before calling PCall");
             }
 #endif
 

@@ -27,8 +27,8 @@ namespace GameFrameWork
             Profiler.Init();
             UEP.EndSample();
 
-            UEP.BeginSample("Logger.Init();");
-            Logger.Init();
+            UEP.BeginSample("LogMgr.Init();");
+            LogMgr.Init();
             UEP.EndSample();
 
             UEP.BeginSample("UIFollow.Init();");
@@ -39,11 +39,11 @@ namespace GameFrameWork
             Timer.Init();
             UEP.EndSample();
 
-            UEP.BeginSample("UtilDll.Init();");
-            UtilDll.Init();
+            UEP.BeginSample("DllMgr.Init();");
+            DllMgr.Init();
             UEP.EndSample();
 
-            Logger.Log("game start: manager init");
+            LogMgr.Log("game start: manager init");
 
             //运行环境初始化
             UEP.BeginSample("ThreadManager.Init();");
@@ -104,8 +104,8 @@ namespace GameFrameWork
             Profiler.LateLoop();
             UEP.EndSample();
 
-            UEP.BeginSample("Logger.LateLoop();");
-            Logger.LateLoop();
+            UEP.BeginSample("LogMgr.LateLoop();");
+            LogMgr.LateLoop();
             UEP.EndSample();
 
             UEP.BeginSample("UIFollow.LateLoop();");
@@ -131,7 +131,7 @@ namespace GameFrameWork
 
         private void OnApplicationQuit()
         {
-            Logger.Log("game quit: manager exit");
+            LogMgr.Log("game quit: manager exit");
 #if UNITY_EDITOR
             //游戏逻辑退出
             UEP.BeginSample("GameLogic.Exit();");
@@ -157,8 +157,8 @@ namespace GameFrameWork
             UEP.EndSample();
 
             //工具类退出
-            UEP.BeginSample("Logger.Exit();");
-            Logger.Exit();
+            UEP.BeginSample("LogMgr.Exit();");
+            LogMgr.Exit();
             UEP.EndSample();
 
             UEP.BeginSample("UIFollow.Exit();");
@@ -173,8 +173,8 @@ namespace GameFrameWork
             Timer.Exit();
             UEP.EndSample();
 
-            UEP.BeginSample("UtilDll.Exit();");
-            UtilDll.Exit();
+            UEP.BeginSample("DllMgr.Exit();");
+            DllMgr.Exit();
             UEP.EndSample();
             System.GC.Collect();
 #endif

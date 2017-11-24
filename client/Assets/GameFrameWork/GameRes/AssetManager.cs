@@ -329,7 +329,7 @@ namespace GameFrameWork
                 }
                 if (sync)
                 {
-                    UnityObj obj = ab.LoadAsset<UnityObj>(UtilDll.common_md5(path));
+                    UnityObj obj = ab.LoadAsset<UnityObj>(DllMgr.common_md5(path));
                     ab.Unload(false);
                     OnObjectLoad(path, obj);
                 }
@@ -338,11 +338,11 @@ namespace GameFrameWork
                     AsyncOperation aop = null;
                     if (ab.isStreamedSceneAssetBundle)
                     {
-                        aop = SceneMgr.LoadSceneAsync(UtilDll.common_md5(path));
+                        aop = SceneMgr.LoadSceneAsync(DllMgr.common_md5(path));
                     }
                     else
                     {
-                        aop = ab.LoadAssetAsync<UnityObj>(UtilDll.common_md5(path));
+                        aop = ab.LoadAssetAsync<UnityObj>(DllMgr.common_md5(path));
                     }
                     mAsyncBundle.Add(ab);
                     mAsyncOp.Add(aop);

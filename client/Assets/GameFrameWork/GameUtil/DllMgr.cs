@@ -8,7 +8,7 @@ using System.Text;
 
 namespace GameFrameWork
 {
-    public static class UtilDll
+    public static class DllMgr
     {
 #if UNITY_IPHONE
         private const string DLLNAME = "__Internal";
@@ -38,6 +38,7 @@ namespace GameFrameWork
                 startIndex = data.LastIndexOf("\\");
             }
             startIndex = startIndex < 0 ? 0 : startIndex + 1;
+            mMD5Buffer.Remove(0, mMD5Buffer.Length);
             common_md5(data, startIndex, mMD5Buffer);
             string ret = mMD5Buffer.ToString();
             mCacheMD5Result[hash] = ret;
@@ -57,7 +58,7 @@ namespace GameFrameWork
         public static extern int common_patch(string oldpath, string patchpath, string newpath);
 
         [DllImport(DLLNAME)]
-        public static extern IntPtr common_android_open(string file,IntPtr mgr, int mode);
+        public static extern IntPtr common_android_open(string file, IntPtr mgr, int mode);
 
         [DllImport(DLLNAME)]
         public static extern int common_android_read(IntPtr asset, byte[] buffer, int len);

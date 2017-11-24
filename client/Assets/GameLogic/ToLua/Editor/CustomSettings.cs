@@ -39,7 +39,7 @@ public static class CustomSettings
         _GT(typeof(LuaDebugTool)),
         _GT(typeof(LuaValueInfo)),
         _GT(typeof(List<LuaValueInfo>)),
-        _GT(typeof(GameFrameWork.Logger)),
+        _GT(typeof(GameFrameWork.LogMgr)),
         _GT(typeof(GameFrameWork.UIFollow)),
         _GT(typeof(GameFrameWork.AssetManager)),
 

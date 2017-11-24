@@ -747,7 +747,7 @@ public static class ToLuaExport
             return;
         }
 
-        //GameFrameWork.Logger.Log("Begin Generate lua Wrap for class {0}", className);        
+        //GameFrameWork.LogMgr.Log("Begin Generate lua Wrap for class {0}", className);        
         sb = new StringBuilder();
         usingList.Add("System");                
 
@@ -1547,7 +1547,7 @@ public static class ToLuaExport
 
             if (IsGenericMethod(m.Method))
             {
-                GameFrameWork.Logger.Log("Generic Method {0}.{1} cannot be export to lua", LuaMisc.GetTypeName(type), m.GetTotalName());
+                GameFrameWork.LogMgr.Log("Generic Method {0}.{1} cannot be export to lua", LuaMisc.GetTypeName(type), m.GetTotalName());
                 continue;
             }
 
@@ -2720,14 +2720,14 @@ public static class ToLuaExport
         {
             if (CompareMethod(list[index], r) == 2)
             {                
-                GameFrameWork.Logger.LogWarning("{0}.{1} has been dropped as function {2} more match lua", className, list[index].GetTotalName(), r.GetTotalName());
+                GameFrameWork.LogMgr.LogWarning("{0}.{1} has been dropped as function {2} more match lua", className, list[index].GetTotalName(), r.GetTotalName());
                 list.RemoveAt(index);
                 list.Add(r);
                 return;
             }
             else
             {
-                GameFrameWork.Logger.LogWarning("{0}.{1} has been dropped as function {2} more match lua", className, r.GetTotalName(), list[index].GetTotalName());
+                GameFrameWork.LogMgr.LogWarning("{0}.{1} has been dropped as function {2} more match lua", className, r.GetTotalName(), list[index].GetTotalName());
                 return;
             }
         }
@@ -3324,7 +3324,7 @@ public static class ToLuaExport
             name = beDefined ? name : type + " " + name;
             sb.AppendFormat("{0}{1} = ({2})func.CheckObject(typeof({2}));\r\n", head, name, type);
 
-            //GameFrameWork.Logger.LogError("GenLuaFunctionCheckValue undefined type:" + t.FullName);
+            //GameFrameWork.LogMgr.LogError("GenLuaFunctionCheckValue undefined type:" + t.FullName);
         }
     }
 

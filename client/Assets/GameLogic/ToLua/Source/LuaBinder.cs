@@ -34,12 +34,12 @@ public static class LuaBinder
 		L.EndModule();
 		L.EndModule();
 		L.BeginModule("GameFrameWork");
-		GameFrameWork_LoggerWrap.Register(L);
+		GameFrameWork_LogMgrWrap.Register(L);
 		GameFrameWork_UIFollowWrap.Register(L);
 		GameFrameWork_AssetManagerWrap.Register(L);
 		L.EndModule();
 		L.EndModule();
-		GameFrameWork.Logger.Log("Register lua type cost time: {0}", Time.realtimeSinceStartup - t);
+		GameFrameWork.LogMgr.Log("Register lua type cost time: {0}", Time.realtimeSinceStartup - t);
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]

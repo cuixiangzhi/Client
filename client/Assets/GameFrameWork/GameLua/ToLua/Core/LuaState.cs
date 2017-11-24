@@ -116,7 +116,7 @@ namespace LuaInterface
             OpenBaseLibs();
             LuaSetTop(0);
             InitLuaPath();
-            GameFrameWork.Logger.Log("Init lua state cost: {0}", Time.realtimeSinceStartup - time);
+            GameFrameWork.LogMgr.Log("Init lua state cost: {0}", Time.realtimeSinceStartup - time);
         }        
 
         void OpenBaseLibs()
@@ -213,7 +213,7 @@ namespace LuaInterface
 #if UNITY_EDITOR
             beStart = true;
 #endif
-            GameFrameWork.Logger.Log("LuaState start");
+            GameFrameWork.LogMgr.Log("LuaState start");
             OpenBaseLuaLibs();
             PackBounds = GetFuncRef("Bounds.New");
             UnpackBounds = GetFuncRef("Bounds.Get");
@@ -921,13 +921,13 @@ namespace LuaInterface
                 funcMap.Add(name, new WeakReference(fun));
                 funcRefMap.Add(reference, new WeakReference(fun));
                 RemoveFromGCList(reference);
-                if (LogGC) GameFrameWork.Logger.Log("Alloc LuaFunction name {0}, id {1}", name, reference);                
+                if (LogGC) GameFrameWork.LogMgr.Log("Alloc LuaFunction name {0}, id {1}", name, reference);                
                 return fun;
             }
 
             if (beLogMiss)
             {
-                GameFrameWork.Logger.Log("Lua function {0} not exists", name);                
+                GameFrameWork.LogMgr.Log("Lua function {0} not exists", name);                
             }
 
             return null;
@@ -964,7 +964,7 @@ namespace LuaInterface
             {                
                 func = new LuaFunction(reference, this);
                 funcRefMap.Add(reference, new WeakReference(func));
-                if (LogGC) GameFrameWork.Logger.Log("Alloc LuaFunction name , id {0}", reference);      
+                if (LogGC) GameFrameWork.LogMgr.Log("Alloc LuaFunction name , id {0}", reference);      
             }
 
             RemoveFromGCList(reference);
@@ -1021,14 +1021,14 @@ namespace LuaInterface
                 table.name = fullPath;
                 funcMap.Add(fullPath, new WeakReference(table));
                 funcRefMap.Add(reference, new WeakReference(table));
-                if (LogGC) GameFrameWork.Logger.Log("Alloc LuaTable name {0}, id {1}", fullPath, reference);     
+                if (LogGC) GameFrameWork.LogMgr.Log("Alloc LuaTable name {0}, id {1}", fullPath, reference);     
                 RemoveFromGCList(reference);
                 return table;
             }
 
             if (beLogMiss)
             {
-                GameFrameWork.Logger.LogWarning("Lua table {0} not exists", fullPath);
+                GameFrameWork.LogMgr.LogWarning("Lua table {0} not exists", fullPath);
             }
 
             return null;
@@ -1132,7 +1132,7 @@ namespace LuaInterface
 
             if (n != 0)
             {
-                GameFrameWork.Logger.LogWarning("Lua stack top is {0}", n);
+                GameFrameWork.LogMgr.LogWarning("Lua stack top is {0}", n);
                 return false;
             }
 
@@ -1847,7 +1847,7 @@ namespace LuaInterface
                     if (!missSet.Contains(t))
                     {
                         missSet.Add(t);
-                        GameFrameWork.Logger.LogWarning("Type {0} not wrap to lua, push as {1}, the warning is only raised once", LuaMisc.GetTypeName(t), LuaMisc.GetTypeName(type));
+                        GameFrameWork.LogMgr.LogWarning("Type {0} not wrap to lua, push as {1}, the warning is only raised once", LuaMisc.GetTypeName(t), LuaMisc.GetTypeName(type));
                     }
 #endif                    
                     return reference;              
@@ -1866,7 +1866,7 @@ namespace LuaInterface
             if (!missSet.Contains(t))
             {
                 missSet.Add(t);
-                GameFrameWork.Logger.LogWarning("Type {0} not wrap to lua, push as {1}, the warning is only raised once", LuaMisc.GetTypeName(t), LuaMisc.GetTypeName(type));
+                GameFrameWork.LogMgr.LogWarning("Type {0} not wrap to lua, push as {1}, the warning is only raised once", LuaMisc.GetTypeName(t), LuaMisc.GetTypeName(type));
             }            
 #endif
 
@@ -1949,7 +1949,7 @@ namespace LuaInterface
                 missSet.Clear();
 #endif
                 OnDestroy();
-                GameFrameWork.Logger.Log("LuaState destroy");
+                GameFrameWork.LogMgr.Log("LuaState destroy");
             }
 
             if (mainState == this)
@@ -2029,7 +2029,7 @@ namespace LuaInterface
 
             while (iter2.MoveNext())
             {
-                GameFrameWork.Logger.Log("map item, k,v is {0}:{1}", iter2.Current.Key, iter2.Current.Value);
+                GameFrameWork.LogMgr.Log("map item, k,v is {0}:{1}", iter2.Current.Key, iter2.Current.Value);
             }
 
             iter2.Dispose();
@@ -2064,7 +2064,7 @@ namespace LuaInterface
                     if (LogGC)
                     {
                         string str = name == null ? "null" : name;
-                        GameFrameWork.Logger.Log("collect lua reference name {0}, id {1} in thread", str, reference);
+                        GameFrameWork.LogMgr.Log("collect lua reference name {0}, id {1} in thread", str, reference);
                     }
                 }
             }
@@ -2093,7 +2093,7 @@ namespace LuaInterface
                 if (LogGC)
                 {
                     string str = name == null ? "null" : name;
-                    GameFrameWork.Logger.Log("collect lua reference name {0}, id {1} in main", str, reference);
+                    GameFrameWork.LogMgr.Log("collect lua reference name {0}, id {1} in main", str, reference);
                 }
             }
         }
@@ -2150,7 +2150,7 @@ namespace LuaInterface
                 LuaDLL.lua_settop(L, top);
                 if (beLogMiss)
                 {
-                    GameFrameWork.Logger.Log("Lua function {0} not exists", name);
+                    GameFrameWork.LogMgr.Log("Lua function {0} not exists", name);
                 }
                 
                 return false;

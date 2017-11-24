@@ -50,13 +50,13 @@ namespace GameFrameWork
             {
                 if(mFollowList[i].mSource == null || mFollowList[i].mSourceObj == null)
                 {
-                    Logger.LogError("follow source is null!");
+                    LogMgr.LogError("follow source is null!");
                     mFollowList.RemoveAt(i--);
                     continue;
                 }
                 if(mFollowList[i].mTarget == null)
                 {
-                    Logger.LogError("follow target is null {0}!", mFollowList[i].mSource.name);
+                    LogMgr.LogError("follow target is null {0}!", mFollowList[i].mSource.name);
                     mFollowList.RemoveAt(i--);
                     continue;
                 }
