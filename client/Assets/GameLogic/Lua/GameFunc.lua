@@ -1,13 +1,17 @@
 module("GameFunc",package.seeall)
 local traceback = debug.traceback
 local print = print
-function LoadAsset()
+local print_error = print_error
+function load()
+    local function OnAssetLoad(func,asset)
+
+    end
 end
 
-function Log(format,...)
+function log(format,...)
     xpcall(print,traceback,string.format(format,...))
 end
 
-function LogError(format,...)
-    xpcall(GameCore.LogMgr.Log,traceback,string.format(format,...))
+function error(format,...)
+    xpcall(print_error,traceback,string.format(format,...))
 end
