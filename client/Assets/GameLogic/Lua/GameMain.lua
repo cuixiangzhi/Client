@@ -1,5 +1,4 @@
 --游戏入口
 module("GameMain",package.seeall)
-local x = 1
-
-local xx;
+require(jit and 'debug.LuaDebugjit' or 'debug.LuaDebug')('localhost', 7003)
+require "GameFunc"
