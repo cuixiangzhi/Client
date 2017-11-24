@@ -3,6 +3,7 @@ include $(CLEAR_VARS)
 LOCAL_MODULE := common
 
 LOCAL_CFLAGS := -frtti -DHAVE_PTHREAD -fvisibility=hidden
+LOCAL_LDLIBS := -landroid
 
 LOCAL_C_INCLUDES := ..
 LOCAL_SRC_FILES := \
@@ -17,7 +18,7 @@ $(wildcard ../google/protobuf/stubs/*.cc) \
 $(wildcard ../google/protobuf/util/*.cc) \
 $(wildcard ../google/protobuf/util/internal/*.cc)
 
-#���Ӿ�̬��
-#���ɶ�̬��
+#添加静态库
+#生成动态库
 include $(BUILD_SHARED_LIBRARY)
-#���뾲̬��
+#导入静态库
