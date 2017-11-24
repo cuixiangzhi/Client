@@ -6,6 +6,9 @@ namespace GameCore
 {
     public static class UpdateManager
     {
+        public static void Update()
+        {
 
+        }
     }
 }

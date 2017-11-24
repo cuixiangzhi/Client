@@ -4,5 +4,5 @@ module("GameMain",package.seeall)
 require(jit and 'debug.LuaDebugjit' or 'debug.LuaDebug')('localhost', 7003)
 --C# API
 require "GameFunc"
---打开界面
-GameFunc.OpenWindow()
+--更新
+GameCore.UpdateManager.Update()

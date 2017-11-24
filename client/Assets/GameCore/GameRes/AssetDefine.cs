@@ -95,4 +95,8 @@ namespace GameCore
             return mNullByteData;
         }
     }
+
+    public class UIData
+    {
+    }
 }

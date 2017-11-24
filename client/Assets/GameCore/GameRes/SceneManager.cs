@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace GameCore
 {
-    public class BehaviourBase : MonoBehaviour
+    public static class SceneManager
     {
 
     }

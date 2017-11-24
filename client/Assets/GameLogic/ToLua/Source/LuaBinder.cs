@@ -17,6 +17,7 @@ public static class LuaBinder
 		UnityEngine_GameObjectWrap.Register(L);
 		UnityEngine_TransformWrap.Register(L);
 		UnityEngine_CameraWrap.Register(L);
+		UnityEngine_MonoBehaviourWrap.Register(L);
 		L.BeginModule("Camera");
 		L.RegFunction("CameraCallback", UnityEngine_Camera_CameraCallback);
 		L.EndModule();
@@ -37,6 +38,13 @@ public static class LuaBinder
 		GameCore_LogMgrWrap.Register(L);
 		GameCore_UIFollowWrap.Register(L);
 		GameCore_AssetManagerWrap.Register(L);
+		GameCore_UIManagerWrap.Register(L);
+		GameCore_UpdateManagerWrap.Register(L);
+		GameCore_SceneManagerWrap.Register(L);
+		GameCore_BehaviourUIWrap.Register(L);
+		GameCore_BehaviourAudioWrap.Register(L);
+		GameCore_BehaviourEffectWrap.Register(L);
+		GameCore_BehaviourModelWrap.Register(L);
 		L.EndModule();
 		L.EndModule();
 		GameCore.LogMgr.Log("Register lua type cost time: {0}", Time.realtimeSinceStartup - t);
