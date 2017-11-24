@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Runtime.InteropServices;
 using AOT;
+using System;
 using System.Text;
 
 namespace GameFrameWork
@@ -54,6 +55,18 @@ namespace GameFrameWork
 
         [DllImport(DLLNAME)]
         public static extern int common_patch(string oldpath, string patchpath, string newpath);
+
+        [DllImport(DLLNAME)]
+        public static extern IntPtr common_android_open(string file,IntPtr mgr, int mode);
+
+        [DllImport(DLLNAME)]
+        public static extern int common_android_read(IntPtr asset, byte[] buffer, int len);
+
+        [DllImport(DLLNAME)]
+        public static extern void common_android_seek(IntPtr asset, int offset, int where);
+
+        [DllImport(DLLNAME)]
+        public static extern void common_android_close(IntPtr asset);
 
         public static void Init()
         {
