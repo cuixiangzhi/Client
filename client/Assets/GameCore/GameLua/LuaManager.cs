@@ -81,8 +81,6 @@ namespace GameCore
             OpenLuaSocket();
             //json 库
             OpenCJson();
-            //lua c调用库
-            mLuaState.OpenLibs(LuaDLL.luaopen_ffi);
             //lua 模式匹配库
             mLuaState.OpenLibs(LuaDLL.luaopen_lpeg);
 #if UNITY_STANDALONE_OSX || UNITY_EDITOR_OSX
