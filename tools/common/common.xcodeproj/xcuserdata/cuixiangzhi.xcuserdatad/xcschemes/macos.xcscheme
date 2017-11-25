@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "011E9FBA1FBED8A60026326F"
-               BuildableName = "macos.bundle"
+               BuildableName = "common.bundle"
                BlueprintName = "macos"
                ReferencedContainer = "container:common.xcodeproj">
             </BuildableReference>
@@ -46,7 +46,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "011E9FBA1FBED8A60026326F"
-            BuildableName = "macos.bundle"
+            BuildableName = "common.bundle"
             BlueprintName = "macos"
             ReferencedContainer = "container:common.xcodeproj">
          </BuildableReference>
@@ -64,7 +64,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "011E9FBA1FBED8A60026326F"
-            BuildableName = "macos.bundle"
+            BuildableName = "common.bundle"
             BlueprintName = "macos"
             ReferencedContainer = "container:common.xcodeproj">
          </BuildableReference>
