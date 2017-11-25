@@ -1,9 +1,8 @@
+#!/usr/bin/python
 #coding:utf-8
 import traceback
 import os
 import sys
-reload(sys)
-sys.setdefaultencoding("utf-8")
 
 def export_bytecode(import_root_path,export_root_path,import_path):
     if(import_root_path == import_path):
