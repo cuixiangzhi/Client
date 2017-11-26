@@ -22,11 +22,12 @@ namespace GameCore
             if(Directory.Exists(LUA_EXP_PATH)) Directory.Delete(LUA_EXP_PATH, true);
             MakeByteCode(LUA_JIT_PATH, LUA_LIB_PATH + " " + LUA_EXP_PATH);
             MakeByteCode(LUA_JIT_PATH, LUA_LOGIC_PATH + " " + LUA_EXP_PATH);
+			EditorUtility.DisplayDialog("提示", "导出完成", "确定");
         }
 
         private static void MakeByteCode(string command,string args)
         {
-            Process process = Process.Start(command, args);
+			Process process = Process.Start("python",command + " " + args);
             process.WaitForExit();
             process.Close();
         }
