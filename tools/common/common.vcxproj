@@ -18,6 +18,30 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="bsdiff\blocksort.c" />
+    <ClCompile Include="bsdiff\bsdiff.c" />
+    <ClCompile Include="bsdiff\bspatch.c" />
+    <ClCompile Include="bsdiff\bzlib.c" />
+    <ClCompile Include="bsdiff\compress.c" />
+    <ClCompile Include="bsdiff\crctable.c" />
+    <ClCompile Include="bsdiff\decompress.c" />
+    <ClCompile Include="bsdiff\huffman.c" />
+    <ClCompile Include="bsdiff\randtable.c" />
+    <ClCompile Include="client\export.cc" />
+    <ClCompile Include="uuid\bitcoder.cpp" />
+    <ClCompile Include="uuid\md5.cpp" />
+    <ClCompile Include="uuid\uuid32.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="bsdiff\bstype.h" />
+    <ClInclude Include="bsdiff\bzlib.h" />
+    <ClInclude Include="bsdiff\bzlib_private.h" />
+    <ClInclude Include="client\export.h" />
+    <ClInclude Include="uuid\cdatatype.h" />
+    <ClInclude Include="uuid\md5.h" />
+    <ClInclude Include="uuid\uuid32.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{743830EF-426A-441E-A117-DC426EF8319F}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
@@ -129,30 +153,6 @@
       <MultiProcessorCompilation>false</MultiProcessorCompilation>
     </ClCompile>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="bsdiff\blocksort.c" />
-    <ClCompile Include="bsdiff\bsdiff.c" />
-    <ClCompile Include="bsdiff\bspatch.c" />
-    <ClCompile Include="bsdiff\bzlib.c" />
-    <ClCompile Include="bsdiff\compress.c" />
-    <ClCompile Include="bsdiff\crctable.c" />
-    <ClCompile Include="bsdiff\decompress.c" />
-    <ClCompile Include="bsdiff\huffman.c" />
-    <ClCompile Include="bsdiff\randtable.c" />
-    <ClCompile Include="client/export.cc" />
-    <ClCompile Include="uuid\bitcoder.cpp" />
-    <ClCompile Include="uuid\md5.cpp" />
-    <ClCompile Include="uuid\uuid32.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="bsdiff\bstype.h" />
-    <ClInclude Include="bsdiff\bzlib.h" />
-    <ClInclude Include="bsdiff\bzlib_private.h" />
-    <ClInclude Include="client/export.h" />
-    <ClInclude Include="uuid\cdatatype.h" />
-    <ClInclude Include="uuid\md5.h" />
-    <ClInclude Include="uuid\uuid32.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
