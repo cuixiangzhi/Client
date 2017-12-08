@@ -1129,36 +1129,39 @@ local function debugger_getBreakVar(body, server)
 			vars = _G
 		end
 		
-	--特殊处理下
-	for i, v in ipairs(keys) do
-		local start_m = string.sub(v,1,1)
-		if(start_m == "[") then
-			local len = string.len( v )
-			local end_m = string.sub(v,len,len)
-			if(end_m == "]") then
-				v = string.sub(v,2,len-1);
+		--特殊处理下
+		for i, v in ipairs(keys) do
+			if type(v) == "string" then
+				local start_m = string.sub(v,1,1)
+				if(start_m == "[") then
+					local len = string.len( v )
+					local end_m = string.sub(v,len,len)
+					if(end_m == "]") then
+						v = string.sub(v,2,len-1);
+					end
+					vars = vars[v]
+				else
+					vars = vars[v]
+				end
+			else
+				vars = vars[v]
 			end
-			vars = vars[v]
-		else
-			vars = vars[v]
+			if(type(vars) == "userdata" and LuaDebugTool == nil) then
+				vars = tolua.getpeer(vars)
+			end
+			if(vars == nil) then
+				break;
+			end
 		end
-		if(type(vars) == "userdata" and LuaDebugTool == nil) then
-			vars = tolua.getpeer(vars)
-		end
-		if(vars == nil) then
-			break;
-		end
-	end
 	
-	if(type(vars) == "userdata" and LuaDebugTool) then
-		
-		debugger_GeVarInfoBytUserData(server,vars,variablesReference,debugSpeedIndex)
-		return;
-	end
+		if(type(vars) == "userdata" and LuaDebugTool) then
+			debugger_GeVarInfoBytUserData(server,vars,variablesReference,debugSpeedIndex)
+			return;
+		end
 
 		local count = 0;
 		if(vars ~= nil) then
-			for k, v in pairs(vars) do
+			local function add_value(k,v)
 				local vinfo = debugger_setVarInfo(k, v)
 				table.insert(vinfos, vinfo)
 				if(# vinfos > 10) then
@@ -1171,6 +1174,15 @@ local function debugger_getBreakVar(body, server)
 						isComplete = 0
 					})
 					vinfos = {}
+				end
+			end
+			for k, v in pairs(vars) do
+				if k == "_fields" then
+					for _k,_v in pairs(v) do
+						add_value(_k.name,vars[_k.name]);
+					end
+				else
+					add_value(k,v);
 				end
 			end
 		end
