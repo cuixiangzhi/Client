@@ -1,0 +1,27 @@
+{
+  "internal_frameworks" : ["SystemConfiguration.framework","CoreTelephony.framework","AudioToolbox.framework","CoreAudio.framework","AVFoundation.framework"],
+  "internal_dynamiclibs" : ["libstdc++.6.0.9.dylib"],
+	"external_frameworks" : [],
+	"external_staticlibs" : [],
+	"external_files" : [],
+  "lib_searchpath" : [],
+  "framework_searchpath" : [],
+  "buildset_set": 
+  [
+    { 
+      "key": "ENABLE_BITCODE", 
+      "value": "NO" 
+    }
+  ],
+  "buildset_add":
+  [
+
+  ],
+  "plistset":
+	[
+    {
+      "key": "NSMicrophoneUsageDescription",
+      "value": ""
+    }
+	]
+}

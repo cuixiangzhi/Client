@@ -1,0 +1,30 @@
+{
+	"internal_frameworks" : ["AudioToolbox.framework"],
+	"internal_dynamiclibs" : ["libz.dylib","libc++.dylib"],
+	"external_frameworks" : [],
+	"external_staticlibs" : [],
+	"external_files" : [],
+  "lib_searchpath" : ["$(SRCROOT)/Libraries/Plugins/iOS/Cos"],
+  "framework_searchpath" : [],
+  "buildset_set": 
+  [
+    { 
+      "key": "ENABLE_BITCODE", 
+      "value": "NO" 
+    }
+  ],
+  "buildset_add":
+  [
+    {
+      "key": "OTHER_LDFLAGS",
+      "value": "-ObjC"
+    }    
+  ],
+  "plistset":
+	[
+    {
+      "key": "NSMicrophoneUsageDescription",
+      "value": ""
+    }
+	]
+}
