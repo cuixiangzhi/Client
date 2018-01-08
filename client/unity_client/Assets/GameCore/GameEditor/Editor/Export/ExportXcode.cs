@@ -13,7 +13,7 @@ namespace GameCore
     public class ExportXcode
     {
 #if UNITY_IOS
-        private static string CONFIG_PREFIX = "XU_";
+        private static string CONFIG_PREFIX = "";
         private static string CONFIG_PATH = Application.dataPath + "/../SDK/iOS/";
 #endif
 
@@ -237,12 +237,35 @@ namespace GameCore
                     }
                 }
 
-                //BuildSetting
-                if (json.buildset != null)
+                if(json.lib_searchpath != null)
                 {
-                    for (int j = 0; j < json.buildset.Length; j++)
+                    for(int j = 0;j < json.lib_searchpath.Length;j++)
                     {
-                        proj.SetBuildProperty(target, json.buildset[j].key, json.buildset[j].value);
+                        proj.AddBuildProperty(target, "LIBRARY_SEARCH_PATHS", json.lib_searchpath[j]);
+                    }
+                }
+
+                if (json.framework_searchpath != null)
+                {
+                    for (int j = 0; j < json.framework_searchpath.Length; j++)
+                    {
+                        proj.AddBuildProperty(target, "FRAMEWORK_SEARCH_PATHS", json.framework_searchpath[j]);
+                    }
+                }
+
+                //BuildSetting
+                if (json.buildset_set != null)
+                {
+                    for (int j = 0; j < json.buildset_set.Length; j++)
+                    {
+                        proj.SetBuildProperty(target, json.buildset_set[j].key, json.buildset_set[j].value);
+                    }
+                }
+                if (json.buildset_add != null)
+                {
+                    for (int j = 0; j < json.buildset_add.Length; j++)
+                    {
+                        proj.UpdateBuildProperty(target, json.buildset_add[j].key, new List<string>() { json.buildset_add[j].value },new List<string>());
                     }
                 }
 
@@ -307,7 +330,10 @@ namespace GameCore
             public string[] external_frameworks;
             public string[] external_staticlibs;
             public string[] external_files;
-            public Unity_Xcode_Json_KV[] buildset;
+            public string[] lib_searchpath;
+            public string[] framework_searchpath;
+            public Unity_Xcode_Json_KV[] buildset_set;
+            public Unity_Xcode_Json_KV[] buildset_add;
             public Unity_Xcode_Json_KV[] plistset;
         }
     }

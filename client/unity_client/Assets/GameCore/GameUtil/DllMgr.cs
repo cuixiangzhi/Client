@@ -10,7 +10,7 @@ namespace GameCore
 {
     public static class DllMgr
     {
-#if UNITY_IPHONE
+#if UNITY_IPHONE && !UNITY_EDITOR
         private const string DLLNAME = "__Internal";
 #else
         private const string DLLNAME = "common";

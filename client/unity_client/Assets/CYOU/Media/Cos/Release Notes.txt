@@ -1,0 +1,18 @@
+Cos_2017-12-20.unitypackage
+1.添加下载功能。
+2.支持PC平台。
+Cos_2017-11-24.unitypackage
+1、修改不支持PC端的Log level由error改为warning。
+
+Cos_2017-11-21.unitypackage
+1、修正回调Unity GameObject名称错误问题。
+
+Cos_2017-10-23.unitypackage
+1、添加丢失的libCOSClient.a，Android 改掉一个包名冲突。
+
+Cos_2017-10-19.unitypackage
+1、由于目前不支持PC端上传，为了逻辑能过继续进行，可在初始化之后设置一个假的地址
+public void SetFakeImageRemotePath(string path)
+
+Cos_2017-09-18.unitypackage
+1、整理封装Unity的C#代码
