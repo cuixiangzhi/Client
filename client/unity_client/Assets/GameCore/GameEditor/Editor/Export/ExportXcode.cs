@@ -159,12 +159,8 @@ namespace GameCore
             string[] files = Directory.GetFiles(CONFIG_PATH, "*.json", SearchOption.TopDirectoryOnly);
             for (int i = 0; i < files.Length; i++)
             {
-                string fileName = Path.GetFileNameWithoutExtension(files[i]);
-                if (fileName.StartsWith(CONFIG_PREFIX))
-                {
-                    //TODO:根据平台过滤
-                    jsons.Add(JsonUtility.FromJson<Unity_Xcode_Json>(File.ReadAllText(files[i])));
-                }
+                //TODO:根据平台过滤
+                jsons.Add(JsonUtility.FromJson<Unity_Xcode_Json>(File.ReadAllText(files[i])));
             }
 
             //创建资源目录
