@@ -68,6 +68,7 @@ namespace gcloud_voice
 		public override event StreamSpeechToTextHandler OnStreamSpeechToText;
         public override event StatusUpdateHandler OnStatusUpdate;
         public override event ChangeRoleCompleteHandler OnRoleChangeComplete;
+        public override event RoomMemberVoiceHandler OnRoomMemberVoice;
 		
 		private static bool bInit = false;
 		private static bool bIsSetAppInfo = false;
@@ -75,7 +76,7 @@ namespace gcloud_voice
 		private byte[] pollBuf;
 		private NoticeMessage pollMsg = null;
 		private int[] memberVoice = null;
-		
+		private byte[] roomNameBuf;
 		
 		#region DllImport 
 		[DllImport(LibName, CallingConvention = CallingConvention.Cdecl)]
@@ -98,10 +99,16 @@ namespace gcloud_voice
 		private static extern int GCloudVoice_Resume();
 		[DllImport(LibName, CallingConvention = CallingConvention.Cdecl)]
         private static extern int GCloudVoice_JoinTeamRoom([MarshalAs(UnmanagedType.LPArray)] string roomName, int msTimeout);
+
+		[DllImport(LibName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern int GCloudVoice_QueryRoomName(byte[] buf, int length, int index);
+
+        [DllImport(LibName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern int GCloudVoice_JoinRangeRoom([MarshalAs(UnmanagedType.LPArray)] string roomName, int msTimeout);
 		[DllImport(LibName, CallingConvention = CallingConvention.Cdecl)]
 		private static extern int GCloudVoice_JoinNationalRoom([MarshalAs(UnmanagedType.LPArray)] string roomName, int role, int msTimeout);
         [DllImport(LibName, CallingConvention = CallingConvention.Cdecl)]
-        private static extern int GCloudVoice_ChangeRole(int role);
+        private static extern int GCloudVoice_ChangeRole(int role, [MarshalAs(UnmanagedType.LPArray)] string roomName);
 		[DllImport(LibName, CallingConvention = CallingConvention.Cdecl)]
 		private static extern int GCloudVoice_JoinFMRoom([MarshalAs(UnmanagedType.LPArray)] string roomName, int msTimeout);		
 		[DllImport(LibName, CallingConvention = CallingConvention.Cdecl)]
@@ -114,6 +121,18 @@ namespace gcloud_voice
 		private static extern int GCloudVoice_OpenSpeaker();
 		[DllImport(LibName, CallingConvention = CallingConvention.Cdecl)]
 		private static extern int GCloudVoice_CloseSpeaker();
+
+		[DllImport(LibName, CallingConvention = CallingConvention.Cdecl)]
+		private static extern int GCloudVoice_EnableRoomMicrophone([MarshalAs(UnmanagedType.LPArray)] string roomName, bool enable);
+		[DllImport(LibName, CallingConvention = CallingConvention.Cdecl)]
+		private static extern int GCloudVoice_EnableRoomSpeaker([MarshalAs(UnmanagedType.LPArray)] string roomName, bool enable);
+
+		[DllImport(LibName, CallingConvention = CallingConvention.Cdecl)]
+		private static extern int GCloudVoice_EnableMultiRoom(bool enable);
+
+		[DllImport(LibName, CallingConvention = CallingConvention.Cdecl)]
+		private static extern int GCloudVoice_UpdateCoordinate([MarshalAs(UnmanagedType.LPArray)] string roomName, long x, long y, long z, long r);
+
 		[DllImport(LibName, CallingConvention = CallingConvention.Cdecl)]
 		private static extern int GCloudVoice_ApplyMessageKey(int msTimeout);
 		[DllImport(LibName, CallingConvention = CallingConvention.Cdecl)]
@@ -133,7 +152,7 @@ namespace gcloud_voice
 		[DllImport(LibName, CallingConvention = CallingConvention.Cdecl)]
 		private static extern int GCloudVoice_SpeechToText([MarshalAs(UnmanagedType.LPArray)] string fileID, int language, int msTimeout);
 		[DllImport(LibName, CallingConvention = CallingConvention.Cdecl)]
-		private static extern int GCloudVoice_ForbidMemberVoice(int member, bool bEnable);
+		private static extern int GCloudVoice_ForbidMemberVoice(int member, bool bEnable, [MarshalAs(UnmanagedType.LPArray)] string roomName);
 		[DllImport(LibName, CallingConvention = CallingConvention.Cdecl)]
 		private static extern int GCloudVoice_EnableLog(bool enable);
 		[DllImport(LibName, CallingConvention = CallingConvention.Cdecl)]
@@ -209,11 +228,15 @@ namespace gcloud_voice
 		[DllImport(LibName, CallingConvention = CallingConvention.Cdecl)]
 		private static extern int GCloudVoice_SetBitRate(int bitrate);
 
+		[DllImport(LibName, CallingConvention = CallingConvention.Cdecl)]
+		private static extern int GCloudVoice_GetHwState();
 
+        [DllImport(LibName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern int GCloudVoice_Deinit();
 
-		#endregion 
-		
-		public GCloudVoiceEngine()
+        #endregion
+
+        public GCloudVoiceEngine()
 		{
 			int ret = GCloudVoice_CreateInstance();
 			if(ret != 0)
@@ -222,7 +245,8 @@ namespace gcloud_voice
 			}
 			pollBuf = new byte[pollBufLen];
 			pollMsg = new NoticeMessage();
-			memberVoice = new int[100];
+			roomNameBuf = new byte[256];
+			memberVoice = new int[1024];
 		}
 		
 		public override int SetAppInfo(string appID, string appKey, string openID)
@@ -260,6 +284,19 @@ namespace gcloud_voice
 			} 
 			return (int)GCloudVoiceErr.GCLOUD_VOICE_SUCC;         
 		}
+
+        public override int Deinit()
+        {
+            Debug.Log("GCloudVoice_C# API: _Deinit");
+            if (!bInit)
+            {
+                return (int)GCloudVoiceErr.GCLOUD_VOICE_NEED_INIT;
+            }
+
+            int nRet = GCloudVoice_Deinit();
+            Debug.Log("GCloudVoice_C# API: _Deinit nRet=" + nRet);
+            return nRet;
+        }
 		
 		public override  int SetMode(GCloudVoiceMode nMode)
 		{
@@ -350,18 +387,28 @@ namespace gcloud_voice
 				} 
 			} else if (msg.what == (int)NoticeMessageType.MSG_ON_STREAM_SPEECH_TO_TEXT) {
 				if (OnStreamSpeechToText != null) {
-					OnStreamSpeechToText ((IGCloudVoice.GCloudVoiceCompleteCode)msg.intArg1, msg.intArg2, msg.custom != null ? System.Text.Encoding.UTF8.GetString (msg.custom, 0, msg.datalen) : "");
+					OnStreamSpeechToText ((IGCloudVoice.GCloudVoiceCompleteCode)msg.intArg1, msg.intArg2, msg.custom != null ? System.Text.Encoding.UTF8.GetString (msg.custom, 0, msg.datalen) : "", msg.strArg);
 				} 			
 			} else if (msg.what == (int)NoticeMessageType.MSG_ON_MEMBER_VOICE) {
-				if (OnMemberVoice != null) {
+				
 					Array.Clear (memberVoice, 0, memberVoice.Length);
 					int memcount = msg.intArg1;
 					for (int i = 0; i < memcount; i++) {
 						memberVoice [2 * i] = System.BitConverter.ToInt32 (pollMsg.custom, 2 * i * 4);
 						
 						memberVoice [2 * i + 1] = System.BitConverter.ToInt32 (pollMsg.custom, (2 * i + 1) * 4);
+					int index = (int)  (memberVoice [2 * i] &0xf0000000) >>28;
+					int memID =  memberVoice[2*i] & 0x0fffffff;
+					int roomNameBufLen = 256;
+					int roomNameLen = GCloudVoice_QueryRoomName(roomNameBuf, roomNameBufLen, index);
+					if (OnRoomMemberVoice != null) {
+						string roomNameStr = System.Text.Encoding.Default.GetString(roomNameBuf, 0, roomNameLen);
+						OnRoomMemberVoice(roomNameStr, memID, memberVoice [2 * i + 1]);
+					}
 						
 					}
+
+				if (OnMemberVoice != null) {
 					OnMemberVoice (memberVoice, memcount);
 				}
 			} else if (msg.what == (int)NoticeMessageType.MSG_ON_ROOM_OFFLINE) {
@@ -419,6 +466,20 @@ namespace gcloud_voice
 			return nRet;
 		}
 
+		public override int JoinRangeRoom(string roomName, int msTimeout)
+		{
+			Debug.Log("GCloudVoice_C# API: JoinRangeRoom");
+			if (!bInit)
+			{
+				return (int)GCloudVoiceErr.GCLOUD_VOICE_NEED_INIT;
+			}
+			
+			int nRet = GCloudVoice_JoinRangeRoom(roomName, msTimeout);
+			Debug.Log("GCloudVoice_C# API: JoinRangeRoom  nRet=" + nRet);
+			return nRet;
+		}
+
+
 		public override int JoinTeamRoom(string roomName, string token, int timestamp, int msTimeout)
 		{
 			Debug.Log("GCloudVoice_C# API: JoinTeamRoom"+" mstimeout:"+msTimeout);
@@ -445,14 +506,14 @@ namespace gcloud_voice
 			return nRet;
 		}
 
-        public override int ChangeRole(GCloudVoiceRole role)
+        public override int ChangeRole(GCloudVoiceRole role, string roomName="")
         {
             Debug.Log("GCloudVoice_C# API: ChangeRole");
             if (!bInit)
             {
                 return (int)GCloudVoiceErr.GCLOUD_VOICE_NEED_INIT;
             }
-            int nRet = GCloudVoice_ChangeRole((int)role);
+            int nRet = GCloudVoice_ChangeRole((int)role, roomName);
             Debug.Log("GCloudVoice_C# API: GCloudVoice_ChangeRole  nRet=" + nRet);
             return nRet;
         }
@@ -545,6 +606,61 @@ namespace gcloud_voice
 			
 			int nRet = GCloudVoice_CloseSpeaker();
 			Debug.Log("GCloudVoice_C# API: CloseSpeaker  nRet=" + nRet);
+			return nRet;
+		}
+		
+
+		public override int EnableRoomMicrophone(string roomName, bool enable)
+		{
+			Debug.Log("GCloudVoice_C# API: EnableRoomMicrophone");
+			if (!bInit)
+			{
+				return (int)GCloudVoiceErr.GCLOUD_VOICE_NEED_INIT;
+			}
+			
+			int nRet = GCloudVoice_EnableRoomMicrophone(roomName, enable);
+			Debug.Log("GCloudVoice_C# API: EnableRoomMicrophone  nRet=" + nRet);
+			return nRet;
+		}
+
+		public override int EnableRoomSpeaker(string roomName, bool enable)
+		{
+			Debug.Log("GCloudVoice_C# API: EnableRoomSpeaker");
+			if (!bInit)
+			{
+				return (int)GCloudVoiceErr.GCLOUD_VOICE_NEED_INIT;
+			}
+			
+			int nRet = GCloudVoice_EnableRoomSpeaker(roomName, enable);
+			Debug.Log("GCloudVoice_C# API: EnableRoomSpeaker  nRet=" + nRet);
+			return nRet;
+
+		}
+
+		public override int EnableMultiRoom(bool enable)
+		{
+			Debug.Log("GCloudVoice_C# API: EnableMultiRoom");
+			if (!bInit)
+			{
+				return (int)GCloudVoiceErr.GCLOUD_VOICE_NEED_INIT;
+			}
+			
+			int nRet = GCloudVoice_EnableMultiRoom(enable);
+			Debug.Log("GCloudVoice_C# API: EnableMultiRoom  nRet=" + nRet);
+			return nRet;
+
+		}
+
+		public override int UpdateCoordinate (string roomName, long x, long y, long z, long r)
+		{
+			Debug.Log("GCloudVoice_C# API: UpdateCoordinate");
+			if (!bInit)
+			{
+				return (int)GCloudVoiceErr.GCLOUD_VOICE_NEED_INIT;
+			}
+
+			int nRet = GCloudVoice_UpdateCoordinate (roomName, x, y, z, r);
+			Debug.Log("GCloudVoice_C# API: UpdateCoordinate  nRet=" + nRet);
 			return nRet;
 		}
 		
@@ -735,7 +851,7 @@ namespace gcloud_voice
 			return nRet;
 		}			
 		
-		public override int ForbidMemberVoice(int member, bool bEnable)
+		public override int ForbidMemberVoice(int member, bool bEnable, string roomName="")
 		{
 			Debug.Log("GCloudVoice_C# API: ForbidMemberVoice");
 			if (!bInit)
@@ -743,7 +859,7 @@ namespace gcloud_voice
 				return (int)GCloudVoiceErr.GCLOUD_VOICE_NEED_INIT;
 			}
 			
-			int nRet = GCloudVoice_ForbidMemberVoice(member, bEnable);
+			int nRet = GCloudVoice_ForbidMemberVoice(member, bEnable, roomName);
 			Debug.Log("GCloudVoice_C# API: ForbidMemberVoice  nRet=" + nRet);
 			return nRet;
 		}
@@ -1090,9 +1206,20 @@ namespace gcloud_voice
 
 		}
 
+		public override int GetHwState()
+		{
+			
+			
+			if (!bInit)
+			{
+				return (int)GCloudVoiceErr.GCLOUD_VOICE_NEED_INIT;
+			}
+			
+			int nRet = GCloudVoice_GetHwState();
+			
+			return nRet;
 
-
-
+		}
 
 
 

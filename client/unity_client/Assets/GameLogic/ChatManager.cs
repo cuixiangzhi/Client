@@ -13,6 +13,23 @@ using LuaInterface;
 
 namespace ldj.sdk.cyou.chat
 {
+    public enum CHAT_EVENT_TYPE
+    {
+        AUDIO_BREAK = 0,
+        AUDIO_INVALID1 = 1,
+        AUDIO_CANCEL = 2,
+        AUDIO_TOO_SHORT = 3,
+        AUDIO_INVALID2 = 4,
+        AUDIO_SAVE_FAIL = 5,
+        AUDIO_UPLOAD = 6,
+        AUDIO_UPLOAD_FAIL = 7,
+        AUDIO_DOWN_FAIL = 8,
+        AUDIO_PLAY_FINISH = 9,
+        CHAT_MSG_NEW = 10,
+        REALTIME_NATIONAL_FAIL = 11,
+        REALTIME_TEAM_FAIL = 12,
+    }
+
     public class ChatManager : MonoBehaviour
     {
         private static ChatManager mInstance;
@@ -34,13 +51,12 @@ namespace ldj.sdk.cyou.chat
         private int mClientStatus = 0; //0未连接  1连接中 2登录中 3已连接
 
         private string mSpeechContent;
-        private string mSpeechError;
         private DateTime mSpeechBeginTime;
         private int mTotalSeconds;
         private bool mNeedUploadVoice;
-        private int mSpeechStatus = 0; //0空闲 1录音中 2取消中 3识别中 4上传中 5下载中 6播放中
+        private int mSpeechStatus = 0; //0空闲 1录音中 2取消中 3识别中 4上传中 5下载中 6播放中 7实时模式
 
-        private bool mNeedPlayVoice;
+        private string mFinalPlayFile;
 
         private LuaFunction LUA_EVENT;
 
@@ -56,6 +72,7 @@ namespace ldj.sdk.cyou.chat
         //搜狗语音初始化参数
         private string SG_APPID = "RDKO602";
         private string SG_APPKEY = "zxb8w4q5";
+        private string SG_PATH = "";
         
         //百度翻译初始化参数
         private string BAIDU_APPID = "20160524000021917";
@@ -68,6 +85,7 @@ namespace ldj.sdk.cyou.chat
         private string COS_SECRET_KEY = "mjYFl7GGmJtNkw1v1xqcHk3FHJBvTp9K";
         private string COS_REGION = "bj";
         private bool COS_DEBUG = true;
+        private string COS_DIR = "";
 
         //实时语音初始化参数
         private string GCLOUD_APPID = "932849489";
@@ -101,7 +119,7 @@ namespace ldj.sdk.cyou.chat
             BAIDU_APPKEY = appKey;
         }
 
-        public void InitCosParam(string appID, string bucketName, string secretID, string secretKey, string region, bool debug)
+        public void InitCosParam(string appID, string bucketName, string secretID, string secretKey, string region, bool debug,string cosDir)
         {
             COS_APPID = appID;
             COS_BUCKET_NAME = bucketName;
@@ -109,6 +127,7 @@ namespace ldj.sdk.cyou.chat
             COS_SECRET_KEY = secretKey;
             COS_REGION = region;
             COS_DEBUG = debug;
+            COS_DIR = cosDir;
         }
 
         public void InitGCloudParam(string appID,string appKey,string appURL)
@@ -118,8 +137,18 @@ namespace ldj.sdk.cyou.chat
             GCLOUD_APPURL = appURL;
         }
 
-        public void InitSDK()
+        public void InitSDK(bool debug)
         {
+#if UNITY_EDITOR
+            SG_PATH = Application.dataPath + "/../Record";
+#else
+            SG_PATH = Application.persistentDataPath + "/Record";
+#endif
+            if (!Directory.Exists(SG_PATH))
+            {
+                Directory.CreateDirectory(SG_PATH);
+            }
+            ChatSystem.Instance.SetDebug(debug);
             //输入历史初始化
             Recommend.Instance.InitFromDisk();
             //搜狗语音初始化
@@ -139,14 +168,14 @@ namespace ldj.sdk.cyou.chat
             SpeechManager.Instance.SetValidVoiceDetectedHandler(OnReceiveValidVoice);
             SpeechManager.Instance.SetHasPermissionHandler(OnReceiveHasPermission);
             //文件存储初始化
-            TXCosManager.Instance.InitCos(COS_APPID, COS_BUCKET_NAME, COS_SECRET_ID, COS_SECRET_KEY, COS_REGION, COS_DEBUG);
+            TXCosManager.Instance.InitCos(COS_APPID, COS_BUCKET_NAME, COS_SECRET_ID, COS_SECRET_KEY, COS_REGION, debug);
             TXCosManager.Instance.OnUploadFileAction = OnUploadFile;
             TXCosManager.Instance.OnDownloadAction = OnDownloadFile;
             //百度翻译初始化
             TranslateEngine.Instance.SetTranslateBaiduKey(BAIDU_APPID, BAIDU_APPKEY);
             TranslateEngine.Instance.InitTranslator(TranslatorType.TT_Baidu);
             //实时语音初始化
-            GCloudManager.Instance.Init(GCLOUD_APPID,GCLOUD_APPKEY,USER_ID, GCLOUD_APPURL);
+            GCloudManager.Instance.Init(GCLOUD_APPID,GCLOUD_APPKEY,USER_ID, GCLOUD_APPURL, OnJoinRoomFail);
         }
 
         public void InitClient()
@@ -175,76 +204,89 @@ namespace ldj.sdk.cyou.chat
 
         public int StartRecord()
         {
-            //不在空闲状态
-            if(mSpeechStatus != 0)
+            if (mSpeechStatus == 0 || mSpeechStatus == 5 || mSpeechStatus == 6)
+            {
+                if (mSpeechStatus == 5 || mSpeechStatus == 6)
+                {
+                    mFinalPlayFile = string.Empty;
+                    SendEvent(CHAT_EVENT_TYPE.AUDIO_BREAK);
+                }
+                mSpeechStatus = 1;
+                SpeechManager.Instance.StartRecording();
+                return -1;
+            }
+            else
             {
                 return mSpeechStatus;
             }
-            mSpeechStatus = 1;
-            mSpeechError = string.Empty;
-            mSpeechContent = string.Empty;
-            mNeedUploadVoice = true;
-            SpeechManager.Instance.StartRecording();
-            return -1;
         }
 
         public int CancelRecord()
         {
-            //不在录音状态
-            if(mSpeechStatus != 1)
+            if(mSpeechStatus == 1)
+            {
+                mSpeechStatus = 2;
+                mNeedUploadVoice = false;
+                SpeechManager.Instance.CancleTask();
+                return -1;
+            }
+            else
             {
                 return mSpeechStatus;
             }
-            mSpeechStatus = 2;
-            mNeedUploadVoice = false;
-            SpeechManager.Instance.CancleTask();
-            return -1;
         }
 
         public int StopRecord()
         {
-            //不在录音状态
-            if (mSpeechStatus != 1)
+            if(mSpeechStatus == 1)
+            {
+                mSpeechStatus = 3;
+                mNeedUploadVoice = true;
+                SpeechManager.Instance.StopRecording();
+                return -1;
+            }
+            else
             {
                 return mSpeechStatus;
             }
-            mSpeechStatus = 3;
-            SpeechManager.Instance.StopRecording();
-            return -1;
         }
 
         public int StartAudio(string remotePath)
         {
-            if(mSpeechStatus != 0)
+            if(mSpeechStatus == 0 || mSpeechStatus == 5 || mSpeechStatus == 6)
             {
-                return mSpeechStatus;
-            }
-            string localPath = string.Format("{0}/{1}",Application.persistentDataPath,Path.GetFileName(remotePath));
-            if(File.Exists(localPath))
-            {
-                mSpeechStatus = 6;
-                mNeedPlayVoice = false;
-                SpeechManager.Instance.PlayAudio(localPath);
+                mFinalPlayFile = GetRecordLocalPath(remotePath);
+                if (File.Exists(mFinalPlayFile))
+                {
+                    mSpeechStatus = 6;
+                    SpeechManager.Instance.PlayAudio(File.ReadAllBytes(mFinalPlayFile));
+                }
+                else
+                {
+                    mSpeechStatus = 5;
+                    TXCosManager.Instance.DownloadFile(remotePath, mFinalPlayFile);
+                }
+                return -1;
             }
             else
             {
-                mSpeechStatus = 5;
-                mNeedPlayVoice = true;
-                TXCosManager.Instance.DownloadFile(remotePath, localPath);
+                return mSpeechStatus;
             }
-            return -1;
         }
 
         public int StopAudio()
         {
-            if(mSpeechStatus != 5 && mSpeechStatus != 6)
+            if (mSpeechStatus == 5 || mSpeechStatus == 6)
+            {
+                mSpeechStatus = 0;
+                mFinalPlayFile = string.Empty;
+                SpeechManager.Instance.StopAudio();
+                return -1;
+            }
+            else
             {
                 return mSpeechStatus;
             }
-            mSpeechStatus = 0;
-            mNeedPlayVoice = false;
-            SpeechManager.Instance.StopAudio();
-            return -1;
         }
         #endregion
 
@@ -269,39 +311,23 @@ namespace ldj.sdk.cyou.chat
             GCloudManager.Instance.CloseSpeaker();
         }
 
-        public int JoinTeamRoom(string roomName)
+        public void JoinTeamRoom(string roomName)
         {
-            return GCloudManager.Instance.JoinTeamRoom(roomName);
+            GCloudManager.Instance.JoinTeamRoom(roomName);
         }
 
-        public int JoinNationalRoom(string roomName,bool canSpeak)
+        public void JoinNationalRoom(string roomName, bool canSpeak)
         {
-            return GCloudManager.Instance.JoinNationalRoom(roomName, canSpeak);
+            GCloudManager.Instance.JoinNationalRoom(roomName, canSpeak);
         }
 
-        public int QuitRoom()
+        public void QuitRoom()
         {
-            return GCloudManager.Instance.QuitRoom();
+            GCloudManager.Instance.QuitRoom();
         }
         #endregion
 
-        public int SendChatMsg(string chat_info,string players)
-        {
-            if(mClientStatus == 3)
-            {
-                Web_CT_Say_PlayerList msg = new Web_CT_Say_PlayerList();
-                msg.chat_info = chat_info;
-                msg.player_list = new List<string>(players.Split(','));
-                mClient.SendPacket(msg);
-                return -1;
-            }
-            else
-            {
-                return mClientStatus;
-            }
-        }
-
-        #region 搜狗语音回调
+        #region 语音回调
         private void OnReceiveSpeechText(string text)
         {
             //语音识别结果
@@ -320,10 +346,11 @@ namespace ldj.sdk.cyou.chat
         
         private void OnReceiveErrorCode(string errorCode)
         {
-            //录音过程出错
-            mSpeechError = errorCode;
-            mNeedUploadVoice = false;
-            mSpeechStatus = 0;
+            if(mSpeechStatus == 1 || mSpeechStatus == 3)
+            {
+                mSpeechStatus = 0;
+                SendEvent(CHAT_EVENT_TYPE.AUDIO_INVALID1);
+            }
         }
         
         private void OnTaskStart()
@@ -336,73 +363,118 @@ namespace ldj.sdk.cyou.chat
         {
             
         }
-        
-        private void OnTaskOver()
-        {         
-            if (mNeedUploadVoice)
-            {
-                mSpeechStatus = 4;
-                //时间太短
-                if (mTotalSeconds <= 0)
-                {
-                    mSpeechStatus = 0;
-                    return;
-                }
-                //无效语音
-                byte[] buffer = SpeechManager.Instance.GetAudioBuffer();
-                if(buffer == null)
-                {
-                    mSpeechStatus = 0;
-                    return;
-                }
-                //本地保存
-                string localPath = string.Format("{0}/record_{1}.sound", Application.persistentDataPath,DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss"));
-                FileStream file = new FileStream(localPath, FileMode.CreateNew);
-                file.Write(buffer, 0, buffer.Length);
-                file.Close();
-                //上传语音
-                TXCosManager.Instance.UploadFile(localPath, "ldj", -1);
-            }
-            else
-            {
-                mSpeechStatus = 0;
-            }
-        }
-        
+
         private void OnRecordBegin()
         {
-            
+
         }
-        
+
         private void OnRecordEnd()
         {
             mTotalSeconds = (int)Math.Floor((DateTime.Now - mSpeechBeginTime).TotalSeconds);
         }
 
+        private void OnTaskOver()
+        {
+            if(mSpeechStatus == 3)
+            {
+                //时间太短
+                if (mTotalSeconds <= 0)
+                {
+                    mSpeechStatus = 0;
+                    SendEvent(CHAT_EVENT_TYPE.AUDIO_TOO_SHORT);
+                    return;
+                }
+                //无效语音
+                byte[] buffer = SpeechManager.Instance.GetAudioBuffer();
+                if (buffer == null)
+                {
+                    mSpeechStatus = 0;
+                    SendEvent(CHAT_EVENT_TYPE.AUDIO_INVALID2);
+                    return;
+                }
+                string localPath = GetRecordLocalPath(string.Empty);
+                FileStream file = null;
+                bool success = true;
+                try
+                {
+                    //本地保存
+                    file = new FileStream(localPath, FileMode.Create);
+                    file.Write(buffer, 0, buffer.Length);                                                    
+                }
+                catch(Exception e)
+                {
+                    //保存失败
+                    GameCore.LogMgr.LogError(e.Message);
+                    success = false;
+                }
+                finally
+                {
+                    if(file != null)
+                    {
+                        file.Close();
+                    }
+                }
+                if (success)
+                {
+                    //上传语音
+                    mSpeechStatus = 4;
+                    TXCosManager.Instance.UploadFile(localPath, COS_DIR, -1);
+                }
+                else
+                {
+                    mSpeechStatus = 0;
+                    SendEvent(CHAT_EVENT_TYPE.AUDIO_SAVE_FAIL);
+                }
+            }
+            else if(mSpeechStatus == 2)
+            {
+                mSpeechStatus = 0;
+                SendEvent(CHAT_EVENT_TYPE.AUDIO_CANCEL);
+            }
+        }
+        
+
+
         private void OnPlayRecordOver()
         {
-            //通知播放结束
-            mSpeechStatus = 0;
-            SendEvent(0);
+            if(mSpeechStatus == 6)
+            {
+                mSpeechStatus = 0;
+                SendEvent(CHAT_EVENT_TYPE.AUDIO_PLAY_FINISH);
+            }
         }
 
         private void OnUploadFile(string code, string localPath, string remotePath)
         {
-            //通知上传结束
-            mSpeechStatus = 0;
-            SendEvent(1, remotePath);
+            if(mSpeechStatus == 4)
+            {
+                mSpeechStatus = 0;
+                if (code == "0")
+                {                 
+                    SendEvent(CHAT_EVENT_TYPE.AUDIO_UPLOAD, remotePath,mSpeechContent);
+                }
+                else
+                {
+                    SendEvent(CHAT_EVENT_TYPE.AUDIO_UPLOAD_FAIL, remotePath);
+                }
+            }
         }
 
         private void OnDownloadFile(string code, string localPath, string remotePath)
         {
-            if(mNeedPlayVoice)
+            if (mSpeechStatus == 5)
             {
-                mSpeechStatus = 6;
-                SpeechManager.Instance.PlayAudio(localPath);
-            }
-            else
-            {
-                mSpeechStatus = 0;
+                if(code == "0")
+                {
+                    mSpeechStatus = 6;
+                    SpeechManager.Instance.PlayAudio(File.ReadAllBytes(localPath));
+                }
+                else
+                {
+                    mSpeechStatus = 0;
+                    SendEvent(CHAT_EVENT_TYPE.AUDIO_DOWN_FAIL);
+                }
             }
         }
         #endregion
@@ -444,11 +516,8 @@ namespace ldj.sdk.cyou.chat
 
             public override void HandleWebPacket(Web_TC_Say msg)
             {
-                //翻译
-                //TranslateEngine.Instance.Translate(text, from, to, OnTranslateFinish, serialNum);
                 //通知聊天消息
-                GameCore.LogMgr.LogError("receive chat message");
-                Instance.SendEvent(2, msg.chat_info);
+                Instance.SendEvent(CHAT_EVENT_TYPE.CHAT_MSG_NEW, msg.chat_info);
             }
 
             public override void HandleWebPacket(Web_TC_Notify2 msg)
@@ -456,23 +525,59 @@ namespace ldj.sdk.cyou.chat
                 //通知命令错误
                 GameCore.LogMgr.LogError(msg.errcmd);
             }
-
-            private void OnTranslateFinish(ref TranslateResponse response)
-            {
-
-            }
         }
         #endregion
 
-        private void SendEvent(int eventID,string arg = "")
+        public int SendChatMsg(string chat_info, string players)
+        {
+            if (mClientStatus == 3)
+            {
+                Web_CT_Say_PlayerList msg = new Web_CT_Say_PlayerList();
+                msg.chat_info = chat_info;
+                msg.player_list = new List<string>(players.Split(','));
+                mClient.SendPacket(msg);
+                return -1;
+            }
+            else
+            {
+                return mClientStatus;
+            }
+        }
+
+        private void SendEvent(CHAT_EVENT_TYPE eventID,string arg1 = "",string arg2 = "")
         {
             if(LUA_EVENT != null)
             {
                 LUA_EVENT.BeginPCall();
-                LUA_EVENT.Push(eventID);
-                LUA_EVENT.Push(arg);
+                LUA_EVENT.Push((int)eventID);
+                LUA_EVENT.Push(arg1);
+                LUA_EVENT.Push(arg2);
                 LUA_EVENT.PCall();
                 LUA_EVENT.EndPCall();
+            }
+        }
+
+        private string GetRecordLocalPath(string fileName)
+        {
+            if(string.IsNullOrEmpty(fileName))
+            {
+                return string.Format("{0}/Record/{1}_{2}.sound", SG_PATH, USER_ID, DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss"));
+            }
+            else
+            {
+                return string.Format("{0}/Record/{1}", SG_PATH, Path.GetFileName(fileName));
+            }                     
+        }
+
+        private void OnJoinRoomFail(int evtID,int ret)
+        {
+            if(evtID == 0)
+            {
+                SendEvent(CHAT_EVENT_TYPE.REALTIME_NATIONAL_FAIL,ret.ToString());
+            }
+            else
+            {
+                SendEvent(CHAT_EVENT_TYPE.REALTIME_TEAM_FAIL, ret.ToString());
             }
         }
     }

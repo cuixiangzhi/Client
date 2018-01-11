@@ -2,64 +2,43 @@
 using ldj.sdk.cyou.chat;
 using com.cyou.media.cos;
 using System.IO;
+using com.cyou.media.speech;
+using com.tencent.gcloud;
 
 namespace GameLogic
 {
     public class GameTest : MonoBehaviour
     {
+        private string SG_APPID = "RDKO602";
+        private string SG_APPKEY = "zxb8w4q5";
+        private string SG_PATH;
+
+        private string GCLOUD_APPID = "932849489";
+        private string GCLOUD_APPKEY = "d94749efe9fce61333121de84123ef9b";
+        private string GCLOUD_APPURL = "";
+
         private void Awake()
         {
-            FileStream fs = new FileStream(Application.persistentDataPath + "/test_voice.sound",FileMode.Create);
-            fs.Write(new byte[100],0,100);
-            fs.Close();
-            ChatManager.Instance.InitSDK();
-            GameChatServer.InitServer();
+            GCloudManager.Instance.Init(GCLOUD_APPID, GCLOUD_APPKEY, SG_APPID, GCLOUD_APPURL, OnJoinRoomFail);
         }
 
         private void OnGUI()
         {
             if (GUILayout.Button("进入房间", GUILayout.Width(400), GUILayout.Height(100)))
             {
-                ChatManager.Instance.JoinTeamRoom("hello");
-                ChatManager.Instance.OpenMic();
-                ChatManager.Instance.OpenSpeaker();
+                GCloudManager.Instance.JoinTeamRoom("hello");
+                GCloudManager.Instance.OpenMic();
+                GCloudManager.Instance.OpenSpeaker();
             }
             if (GUILayout.Button("离开房间", GUILayout.Width(400), GUILayout.Height(100)))
             {
-                ChatManager.Instance.CloseMic();
-                ChatManager.Instance.CloseSpeaker();
-                ChatManager.Instance.QuitRoom();
+                GCloudManager.Instance.QuitRoom();
             }
-            if (GUILayout.Button("开始录音", GUILayout.Width(400), GUILayout.Height(100)))
-            {
-                int ret = ChatManager.Instance.StartRecord();
-                if(ret != -1)
-                {
-                    if(ret == 1)
-                    {
-                        GameCore.LogMgr.LogError("正在录音");
-                    }
-                    else if(ret == 2)
-                    {
+        }
 
-                    }
-                }
-            }
-            if (GUILayout.Button("停止录音", GUILayout.Width(400), GUILayout.Height(100)))
-            {
-                int ret = ChatManager.Instance.StopRecord();
-                if(ret != -1)
-                {
-                    if(ret == 0)
-                    {
-                        GameCore.LogMgr.LogError("未检测到有效语音");
-                    }
-                }
-            }
-            if (GUILayout.Button("上传文件", GUILayout.Width(400), GUILayout.Height(100)))
-            {
-                TXCosManager.Instance.UploadFile(Application.persistentDataPath + "/test_voice.sound", "ldj", -1);
-            }
+        private void OnJoinRoomFail(int evtID,int ret)
+        {
+            GameCore.LogMgr.LogError("{0} {1}",evtID,ret);
         }
     }
 }

@@ -34,6 +34,9 @@ public enum GCloudVoiceErr
 	GCLOUD_VOICE_JOIN_ERR = 0x2002, //8194, join room failed
 	GCLOUD_VOICE_QUIT_ROOMNAME_ERR = 0x2003,	//8195, quit room err, the quit roomname not equal join roomname
 	GCLOUD_VOICE_OPENMIC_NOTANCHOR_ERR = 0x2004,//8196, open mic in bigroom,but not anchor role
+    GCLOUD_VOICE_CREATE_ROOM_ERR = 0x2005, // 8197, create room error
+    GCLOUD_VOICE_NO_ROOM = 0x2006, // 8198, no such room
+    GCLOUD_VOICE_QUIT_ROOM_ERR = 0x2007, //8199, quit room error
 
 	//message err
 	GCLOUD_VOICE_AUTHKEY_ERR = 0x3001, //12289, apply authkey api error
@@ -46,6 +49,7 @@ public enum GCloudVoiceErr
     GCLOUD_VOICE_SPEAKER_ERR = 0x3008, //12296, open or close speaker tve error
     GCLOUD_VOICE_TVE_PLAYSOUND_ERR = 0x3009, //12297, tve play file error
     GCLOUD_VOICE_AUTHING = 0x300a, // 12298, Already in applying auth key processing
+    GCLOUD_VOICE_LIMIT = 0x300b,   //12299, upload limit
 
     GCLOUD_VOICE_INTERNAL_TVE_ERR = 0x5001,		//20481, internal TVE err, our used
 	GCLOUD_VOICE_INTERNAL_VISIT_ERR = 0x5002,	//20482, internal Not TVE err, out used
@@ -54,6 +58,10 @@ public enum GCloudVoiceErr
             GCLOUD_VOICE_BADSERVER = 0x06001, // 24577, bad server address,should be "udp://capi.xxx.xxx.com"
         
         GCLOUD_VOICE_STTING =  0x07001, // 28673, Already in speach to text processing
+
+    GCLOUD_VOICE_CHANGE_ROLE = 0x08001, // 32769, change role error
+    GCLOUD_VOICE_CHANGING_ROLE=0x08002, // 32770, is in changing role
+    GCLOUD_VOICE_NOT_IN_ROOM =0x08003, // 32771, no in room
 }
 
 public enum GCloudVoiceRole
@@ -117,6 +125,15 @@ public abstract class IGCloudVoice
         GV_ON_PLAYFILE_DONE,  //the record file played end
 
 		GV_ON_ROOM_OFFLINE, // Dropped from the room
+
+        GV_ON_UNKNOWN,
+        GV_ON_ROLE_SUCC,    // Change Role Success
+        GV_ON_ROLE_TIMEOUT, // Change Role with tiemout
+        GV_ON_ROLE_MAX_AHCHOR, // To much Anchor
+        GV_ON_ROLE_NO_CHANGE, // The same role
+        GV_ON_ROLE_SVR_ERROR, // server's error
+        
+        GV_ON_RSTT_RETRY, // need retry stt
     };
 
     //realtime call back
@@ -145,6 +162,7 @@ public abstract class IGCloudVoice
     /// <param name="memberID"> the quit room user's memberID</param>
     /// <returns></returns>
     public delegate void QuitRoomCompleteHandler(GCloudVoiceCompleteCode code, string roomName, int memberID) ;
+
     /// <summary>
     /// Callback when someone saied or silence in the same room.
     /// </summary>
@@ -153,6 +171,16 @@ public abstract class IGCloudVoice
     /// here, status could be 0, 1, 2. 0 meets silence and 1/2 means saying</param>
     /// <returns></returns>
     public delegate void MemberVoiceHandler(int[] members, int count) ;
+
+
+    /// <summary>
+    /// Callback when someone saied or silence in it's own room.
+    /// </summary>
+    /// <param name="roomName">name of the room.</param>
+    /// <param name="member">member if in the room.</param>
+    /// <param name="status"> status could be 0, 1, 2. 0 meets silence and 1/2 means saying</param>
+    /// <returns></returns>
+    public delegate void RoomMemberVoiceHandler(string roomName, int member, int status) ;
 
     //Voice Message Callback
     /// <summary>
@@ -201,7 +229,7 @@ public abstract class IGCloudVoice
     /// <param name="error">error code.</param>
     /// <param name="result"> if success ,get back the text of voice file.</param>
     /// <returns></returns>
-    public delegate void StreamSpeechToTextHandler(GCloudVoiceCompleteCode code, int error, string result) ;
+    public delegate void StreamSpeechToTextHandler(GCloudVoiceCompleteCode code, int error, string result, string voicePath) ;
 
 	/// <summary>
 	/// Callback when dropped from the room.
@@ -211,6 +239,7 @@ public abstract class IGCloudVoice
 	/// <param name="memberID"> if success, return the memberID.</param>
 	/// <returns></returns>
 	public delegate void StatusUpdateHandler(GCloudVoiceCompleteCode code, string roomName, int memberID) ;
+	
 	
 	public abstract event JoinRoomCompleteHandler OnJoinRoomComplete;
 	public abstract event QuitRoomCompleteHandler OnQuitRoomComplete;
@@ -223,6 +252,7 @@ public abstract class IGCloudVoice
     public abstract event StreamSpeechToTextHandler OnStreamSpeechToText;    
 	public abstract event StatusUpdateHandler OnStatusUpdate;
     public abstract event ChangeRoleCompleteHandler OnRoleChangeComplete;
+    public abstract event RoomMemberVoiceHandler OnRoomMemberVoice;
 
 
     /// <summary>
@@ -247,6 +277,8 @@ public abstract class IGCloudVoice
     /// </summary>
     /// <returns> if success return GCLOUD_VOICE_SUCC, failed return other errno @see GCloudVoiceErrno</returns>
     public abstract int Init();
+
+    public abstract int Deinit();
 
     /// <summary>
     /// Set the mode for engine.
@@ -288,6 +320,14 @@ public abstract class IGCloudVoice
     public abstract int JoinTeamRoom(string roomName, int msTimeout);
 
     /// <summary>
+    /// Join in a LBS team room.
+    /// </summary>
+    /// <param name="roomName">the room to join, should be less than 127byte, composed by alpha.</param>
+    /// <param name="msTimeout">time for join, it is micro second. value range[5000, 60000]</param>
+    /// <returns> if success return GCLOUD_VOICE_SUCC, failed return other errno @see GCloudVoiceErrno</returns>
+	public abstract int JoinRangeRoom(string roomName, int msTimeout);
+
+    /// <summary>
     /// Join in a national room.
     /// </summary>
     /// <param name="roomName">the room to join, should be less than 127byte, composed by alpha.</param>
@@ -299,9 +339,10 @@ public abstract class IGCloudVoice
     /// <summary>
     /// change role in nation room.
     /// </summary>
+    /// <param name="roomName">the room.</param>
     /// <param name="role">the new role value for role conversion.</param>
     /// <returns>if success return GCLOUD_VOICE_SUCC, failed return other errno @see GCloudVoiceErrno</returns>
-    public abstract int ChangeRole(GCloudVoiceRole role);
+    public abstract int ChangeRole(GCloudVoiceRole role, string roomName="");
 
     /// <summary>
     /// Join in a FM room.
@@ -342,6 +383,40 @@ public abstract class IGCloudVoice
     /// </summary>
     /// <returns>if success return GCLOUD_VOICE_SUCC, failed return other errno @see GCloudVoiceErrno</returns>
     public abstract int CloseSpeaker();
+
+
+    /// <summary>
+    ///  Close or Open microphone for the room.
+    /// <param name="roomName">the room</param>
+    /// <param name="enable">ture for open and false for close</param>
+    /// </summary>
+    /// <returns>if success return GCLOUD_VOICE_SUCC, failed return other errno @see GCloudVoiceErrno</returns>
+    public abstract int EnableRoomMicrophone(string roomName, bool enable);
+
+    /// <summary>
+    ///  Close or Open speaker for the room
+    /// <param name="roomName">the room</param>
+    /// <param name="enable">ture for open and false for close</param>
+    /// </summary>
+    /// <returns>if success return GCLOUD_VOICE_SUCC, failed return other errno @see GCloudVoiceErrno</returns>
+    public abstract int EnableRoomSpeaker(string roomName, bool enable);
+
+    /// <summary>
+    ///  enable a client join in multi rooms.
+    /// <param name="enable">ture for open and false for close</param>
+    /// </summary>
+    /// <returns>if success return GCLOUD_VOICE_SUCC, failed return other errno @see GCloudVoiceErrno</returns>
+    public abstract int EnableMultiRoom(bool enable);
+
+	/// <summary>
+	/// Update your coordinate
+	/// <param name="roomName">the room to update, should be less than 127byte, composed by alpha.</param>
+	/// <param name="x">the x coordinate</param>
+	/// <param name="y">the y coordinate</param>
+	/// <param name="z">the z coordinate</param>
+	/// <param name="r">the r coordinate</param>
+	/// <returns>if success return GCLOUD_VOICE_SUCC, failed return other errno @see GCloudVoiceErrno</returns>
+	public abstract int UpdateCoordinate (string roomName, long x, long y, long z, long r);
 
     /// <summary>
     /// Apply the key for voice message.
@@ -445,10 +520,11 @@ public abstract class IGCloudVoice
     /// <summary>
     /// Don't play voice of the member.
     /// </summary>
+    /// <param name="name">the room</param>
     /// <param name="member">member to forbid</param>
     /// <param name="bEnable">do forbid if it is true</param>
     /// <returns>if success return GCLOUD_VOICE_SUCC, failed return other errno @see GCloudVoiceErrno</returns>
-    public abstract int ForbidMemberVoice(int member, bool bEnable);
+    public abstract int ForbidMemberVoice(int member, bool bEnable, string roomName="");
 
     /// <summary>
     /// Open Voice Engine's logcat
@@ -516,34 +592,110 @@ public abstract class IGCloudVoice
     /// <returns></returns>
     public abstract int invoke( uint nCmd, uint nParam1, uint nParam2, uint [] pOutput );
 
+	/// <summary>
+    /// Get GVoice engine pointer for GFM.
+    /// </summary>
     public abstract IntPtr GetExtensionPluginContext();
 
+/// <summary>
+    /// Join in team room with token.
+    /// </summary>
+    /// <returns>return GCLOUD_VOICE_SUCC</returns>
 	public abstract int JoinTeamRoom (string roomName, string token, int timestamp, int msTimeout);
+
+	/// <summary>
+    /// Join in national room with token.
+    /// </summary>
+    /// <returns>return GCLOUD_VOICE_SUCC</returns>
 	public abstract int JoinNationalRoom (string roomName, string token, int timestamp, GCloudVoiceRole role, int msTimeout);
+
+	/// <summary>
+    /// Apply message key with tokey.
+    /// </summary>
 	public abstract int ApplyMessageKey (string token, int timestamp, int msTimeout);
+
+	/// <summary>
+    /// Speech To Text with tokey.
+    /// </summary>
 	public abstract int SpeechToText (string fileID, string token, int timestamp, int language = 0, int msTimeout = 6000);
 
+	/// <summary>
+    /// Speaker & Receiver switch,true for speaker,false receiver
+    /// </summary>
 	public abstract int EnableSpeakerOn(bool bEnable);
 
+	/// <summary>
+    /// Set microphone volume,0-150, 100 is the raw volume
+    /// </summary>
 	public abstract int SetMicVolume(int vol);
 
+	/// <summary>
+    /// Set voice effects
+    /// </summary>
 	public abstract int SetVoiceEffects(SoundEffects mode);
-    
+
+	/// <summary>
+    /// Enable Reverb
+    /// </summary>
     public abstract int EnableReverb(bool bEnable);
+
+	/// <summary>
+    /// Set Reverb mode.
+    /// </summary>
 	public abstract int SetReverbMode(int mode);
 
+	/// <summary>
+    /// Get voice identify,1  is male,0 is female
+    /// </summary>
 	public abstract int GetVoiceIdentify();
 
+	/// <summary>
+    /// Set background music path,it supports mp3 file format.
+    /// </summary>
 	public abstract int SetBGMPath(string path);
+
+	/// <summary>
+    /// Start play background music
+    /// </summary>
 	public abstract int StartBGMPlay();
+
+	/// <summary>
+    /// Stop play background music
+    /// </summary>
 	public abstract int StopBGMPlay();
+
+	/// <summary>
+    /// Pause play background music
+    /// </summary>
 	public abstract int PauseBGMPlay();
+
+	/// <summary>
+    /// Resume play background music
+    /// </summary>
 	public abstract int ResumeBGMPlay();
+
+	/// <summary>
+    /// Set background music volume,0-150,100 is raw volume
+    /// </summary>
 	public abstract int SetBGMVol(int vol);
+
+	/// <summary>
+    /// Get background music play state
+    /// </summary>
 	public abstract int GetBGMPlayState();
+
+	/// <summary>
+    /// Enable native background music play
+    /// </summary>
 	public abstract int EnableNativeBGMPlay(bool bEnable);
 
+	/// <summary>
+    /// Set bitrate,default is 32000bit/second
+    /// </summary>
 	public abstract int SetBitRate(int bitrate);
+
+	//Get howling state
+	public abstract int GetHwState();
 	
 }
 
@@ -572,8 +724,8 @@ class GCloudVoice
             ins.Call<int>("init", context, currentActivity);
             Debug.Log("GCloudVoice_C# API: Call java from c sharp after");
 #endif
-            }
-            return instance;
+		}
+		return instance;
 	
 	}
 	private static IGCloudVoice instance = null;

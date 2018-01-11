@@ -2385,6 +2385,40 @@
         		"nAdjRefOvrf":0,
         		"nAdjFe":0,
         		"nAgcTarget":0	
+        	} 
+        	 ,"OPPO R9s PlusOPPO":
+        	{
+        		"capSource":1,
+        		"micSource":4,
+        		"rndSource":0,
+        		"isvoip" : -1,
+        		"delayTime":150,
+        		"isAec":1,
+        		"updateSpeed":0,
+        		"nlp":2,
+        		"nVAD":0,
+        		"nNs":0,
+        		"nAdjNe":0,
+        		"nAdjRefOvrf":0,
+        		"nAdjFe":0,
+        		"nAgcTarget":0	
+        	}
+        	 ,"SM-G9300samsung":
+        	{
+        		"capSource":1,
+        		"micSource":-1,
+        		"rndSource":-1,
+        		"isvoip" : -1,
+        		"delayTime":150,
+        		"isAec":1,
+        		"updateSpeed":1,
+        		"nlp":2,
+        		"nVAD":0,
+        		"nNs":0,
+        		"nAdjNe":0,
+        		"nAdjRefOvrf":0,
+        		"nAdjFe":0,
+        		"nAgcTarget":0	
         	} 			
         }
     }
