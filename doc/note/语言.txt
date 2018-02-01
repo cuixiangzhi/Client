@@ -170,6 +170,10 @@ python
 	           string.split() 
 			  字符串拼接数组 string.join(array)
 			  替换replace
+	   编码   python字符串是对象,有两种,
+	   		  一个是str类型,可能是gbk或utf-8编码或者ascii编码 通过decode("gbk|ascii|utf-8")操作转换为unicode对象
+	   		  一个是unicode类型,通过encode("gbk|utf-8|ascii")转换为str对象
+	   		  判断对象类型 type(x) is unicode or type(x) is str
 	   
 	   库  excel库xlrd
 	              excel = xlrd.open_workbook(path)

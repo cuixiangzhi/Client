@@ -103,42 +103,13 @@ SQL  结构化查询语言
 	
 API
 	ODBC 是对数据库的封装,具体的数据库实现作为ODBC数据源进行配置,配置的时候可以选择IP、PORT、NAME、PASSWORD,连接时可以选择数据源
-	     windows配置,配置好数据源即可,控制面板->管理工具->数据源64位,API头文件 sql.h sqlext.h
-		 linux配置,安装unixODBC
-		 返回值 SQLRETURN  成功返回SQL_SUCCESS SQL_SUCCESS_WITHINFO
-		 连接数据库 SQLRETURN result = SQLConnect(hDbc,odbcSourceName,SQL_NTS,userName,SQL_NTS,pwd,SQL_NTS);
-		                        参数一是ODBC内核对象句柄, 创建数据库环境句柄 SQLHENV hEnv;
-								                                             SQLAllocHandle(SQL_HANDLE_ENV,SQL_NULL_HANDLE,&hEnv);
-														  设置数据库环境版本 SQLSetEnvAttr(hEnv,SQL_ATTR_ODBC_VERSION,(SQLPOINTER)SQL_OV_ODBC3,SQL_IS_INTEGER);
-														  创建数据库连接句柄 SQLHDBC hDbc;
-																			 SQLAllocHandle(SQL_HANDLE_DBC,hEnv,&hDbc);
-		 执行SQL语句 SQLRETURN result = SQLExecDirect(hStmt,sql,SQL_NTS)
-								参数一是状态句柄 SQLHSTMT hStmt; SQLAllocHandle(SQL_HANDLE_STMT,hDbc,&hStmt);
-		 执行结果    SQLRowCount(hStmt,&affectRows);  改变了多少行
-		             SQLNumResultCols(hStmt,&colCount); 结果有多少列,为0表示没有结果
-					 
-		 获取结果    SQLFetch(hStmt)  来移动光标,遍历所有行 ,没有数据返回SQL_NO_DATA
-					 SQLGetData(hStmt,第几列,SQL_C_TYPE,buff,buffLen,refLen) ,没有数据返回SQL_NO_DATA
-					 SQLBindCol(hStmt,第几列,SQL_C_TYPE,buff,buffLen,refLen) ,调用这个绑定函数后,每次SQLFetch会自动把数据传递到指定的buff,比每次SQLGetData效率高
-					 SQLDescribeCol(hStmt,第几列,buff,buffLen,NULL,NULL,NULL,NULL,NULL); 获取列名
-					 
-		 断开连接 	SQLCloseCursor(hStmt); SQLFreeStmt(hStmt, SQL_UNBIND); SQLFreeHandle(SQL_HANDLE_STMT,hStmt);
-					SQLFreeHandle(SQL_HANDLE_DBC,hDbc); SQLDisconnect(hDbc);
-					SQLFreeHandle(SQL_HANDLE_ENV,hEnv);
-		 清理		SQLCloseCursor(hStmt); SQLFreeStmt(hStmt, SQL_UNBIND);
-		 错误       SQLGetDiagRec(SQL_HANDLE_STMT, stmt,  1, UCHAR errstate[5], &errnative, UCHAR errmsg[255], sizeof(errmsg), &errmsglen);
-		 切换事务提交方式
-		            SQLSetConnectAttr(hDbc, SQL_ATTR_AUTOCOMMIT, SQL_FALSE, SQL_NTS);
-					自动提交模式下,一条sql语句就是一个事务
-					手动提交模式下,调用SQLExecDirect后在调用SQLEndTrans()提交事务
-					或者对sql语句做处理,利用procedure执行事务
 	sqlite C#
 	     连接数据库 SqliteConnection connect = new SqliteConnection("data source=XX.db");
 		
 		 断开连接   connect.Close();
 		 
 		 执行SQL    SqliteCommand cmd = connect.CreateCommand(); 
-		            cmd..CommandText = sql;
+		            cmd.CommandText = sql;
 					SqliteDataReader reader = cmd.ExecuteReader();
 		 读取数据   reader.NextResult();
 					reader.GetXX();
