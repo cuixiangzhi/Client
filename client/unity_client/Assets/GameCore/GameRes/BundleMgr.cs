@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 
 namespace GameCore
 {
-    public static class BundleManager
+    public static class BundleMgr
     {
 #if UNITY_EDITOR
         private static string persistentPath = Application.dataPath + "/../";

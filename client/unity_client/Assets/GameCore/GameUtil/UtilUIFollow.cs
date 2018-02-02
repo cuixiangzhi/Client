@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace GameCore
 {
-    public static class UIFollow
+    public static class UtilUIFollow
     {
         private static Camera mGameCamera = null;
 

@@ -7,7 +7,7 @@ using SceneMgr = UnityEngine.SceneManagement.SceneManager;
 
 namespace GameCore
 {
-    public static class AssetManager
+    public static class AssetMgr
     {
         private class ObjectPool
         {
@@ -45,19 +45,7 @@ namespace GameCore
 
             public void Init(UnityObj obj)
             {
-                //原始资源加工
-                if (obj is AudioClip)
-                {
-                    GameObject go = new GameObject(obj.name);
-                    UnityObj.DontDestroyOnLoad(go);
-                    go.transform.parent = mPoolParent;
-                    AudioSource source = go.AddComponent<AudioSource>();
-                    source.playOnAwake = false;
-                    source.clip = obj as AudioClip;
-
-                    obj = go.AddComponent<BehaviourAudio>();
-                }
-                else if (obj is GameObject)
+                if (obj is GameObject)
                 {
                     GameObject go = obj as GameObject;
                     go.SetActive(false);
@@ -72,7 +60,7 @@ namespace GameCore
             public UnityObj CreateObj()
             {
                 UnityObj obj = null;
-                mLastUseTime = Time.unscaledTime;
+                mLastUseTime = Time.time;
                 if(mUnUsingObj.Count != 0)
                 {
                     obj = mUnUsingObj[mUnUsingObj.Count - 1];
@@ -80,27 +68,15 @@ namespace GameCore
                     mUnUsingObj.RemoveAt(mUnUsingObj.Count - 1);
                     return obj;
                 }
-                if(mLoadedObj is Texture || mLoadedObj is Animator || mLoadedObj is Material)
-                {
-                    obj = mLoadedObj;                   
-                }
-                else if(obj is GameObject)
+                if(obj is GameObject)
                 {
                     GameObject go = obj as GameObject;
-                    //TODO:处理不需要实例化的资源
-                    if(go.GetComponent<UIAtlas>() != null)
-                    {
-                        obj = go;
-                    }
-                    else
-                    {
-                        go = UnityObj.Instantiate<GameObject>(go, mPoolParent, false);
-                        obj = go;
-                    }
+                    go = UnityObj.Instantiate<GameObject>(go, mPoolParent, false);
+                    obj = go;
                 }
                 else
                 {
-                    throw new Exception("unkown object type " + mLoadedObj.GetType().FullName);
+                    obj = mLoadedObj;
                 }
                 mUsingObj.Add(obj);
                 return obj;
@@ -116,30 +92,26 @@ namespace GameCore
         private class LoadCallBack
         {
             public bool sync = true;
-            public List<int> funcID = null;
-            public Action<int, UnityObj> callBack = null;
+            public List<Action<UnityObj>> callBacks = null;
 
-            public static void CreateCallBack(string path,int hash, int funcID, Action<int, UnityObj> callBack,bool sync)
+            public static void CreateCallBack(string path,int hash, Action<UnityObj> callBack,bool sync)
             {
                 int idx = -1;
                 if (mCallBackIndex.ContainsKey(hash))
                 {
                     idx = mCallBackIndex[hash];
-                    mCallBack[idx].funcID.Add(funcID);
+                    mCallBack[idx].callBacks.Add(callBack);
                     mCallBack[idx].sync = mCallBack[idx].sync && sync;
-                    if (mCallBack[idx].callBack != callBack)
-                        throw new Exception("callback not equal with same asset " + path);
                 }
                 else
                 {
                     //回收旧的
                     for (int i = 0; i < mCallBack.Count; i++)
                     {
-                        if (mCallBack[i].funcID.Count == 0)
+                        if (mCallBack[i].callBacks.Count == 0)
                         {
                             mCallBack[idx].sync = sync;
-                            mCallBack[i].callBack = callBack;
-                            mCallBack[i].funcID.Add(funcID);
+                            mCallBack[i].callBacks.Add(callBack);
                             mCallBackIndex[hash] = i;
                             return;
                         }
@@ -147,10 +119,8 @@ namespace GameCore
                     //新建回调
                     {
                         LoadCallBack lc = new LoadCallBack();
-                        lc.callBack = callBack;
                         lc.sync = sync;
-                        lc.funcID = new List<int>(CALL_BACK_SIZE);
-                        lc.funcID.Add(funcID);
+                        lc.callBacks = new List<Action<UnityObj>>(CALL_BACK_SIZE);
                         mCallBack.Add(lc);
                         mCallBackIndex[hash] = mCallBack.Count - 1;
                     }
@@ -164,9 +134,6 @@ namespace GameCore
         //资源加载回调
         private static List<LoadCallBack> mCallBack = null;
         private static Dictionary<int, int> mCallBackIndex = null;
-        //数据加载回调
-        private static Action<int, LuaByteBuffer> mBytesCallBack = null;
-        private static Dictionary<int, int> mBytesCallBackFuncs = null;
         //异步加载
         private static List<string> mAsyncPath = null;
         private static List<AsyncOperation> mAsyncOp = null;
@@ -177,7 +144,6 @@ namespace GameCore
         private static int POOL_SIZE = 1024;
         private static int CACHE_DURATION = 900;
         private static Transform mPoolParent;
-        private static LuaByteBuffer mNullBuffer;
 
         public static void Init()
         {
@@ -192,8 +158,8 @@ namespace GameCore
             mAsyncOp = new List<AsyncOperation>(CALL_BACK_SIZE);
             mAsyncBundle = new List<AssetBundle>(CALL_BACK_SIZE);
             mNullAssets = new HashSet<int>();
-            mNullBuffer = new LuaByteBuffer(null,0);
-            BundleManager.Init();
+
+            BundleMgr.Init();
         }
 
         public static void LateLoop()
@@ -213,15 +179,15 @@ namespace GameCore
             mAsyncOp = null;
             mAsyncBundle = null;
             mNullAssets = null;
-            BundleManager.Exit();
+            BundleMgr.Exit();
         }
 
-        public static void LoadAsset(string path, int funcID, Action<int, UnityObj> callBack, bool sync)
+        public static void LoadAsset(string path, Action<UnityObj> callBack, bool sync)
         {
             int hash = path.GetHashCode();
             if(CheckNull(hash))
             {
-                callBack(funcID, null);
+                callBack(null);
                 return;
             }
             int idx = -1;
@@ -229,32 +195,19 @@ namespace GameCore
             if (mPoolIndex.ContainsKey(hash))
             {
                 idx = mPoolIndex[hash];               
-                callBack(funcID, mPool[idx].CreateObj());
+                callBack(mPool[idx].CreateObj());
             }
             else
             {
                 //添加回调
-                LoadCallBack.CreateCallBack(path,hash,funcID,callBack,sync);
-                BundleManager.LoadBundle(path, OnBundleLoad);
+                LoadCallBack.CreateCallBack(path,hash,callBack,sync);
+                BundleMgr.LoadBundle(path, OnBundleLoad);
             }
-        }
-
-        public static void LoadAsset(string path, int funcID, Action<int, LuaByteBuffer> callBack, bool sync)
-        {
-            int hash = path.GetHashCode();
-            if (CheckNull(hash))
-            {
-                callBack(funcID, mNullBuffer);
-                return;
-            }
-            mBytesCallBack = callBack;
-            mBytesCallBackFuncs[hash] = funcID;
-            OnBytesLoad(path,BundleManager.LoadBytes(path));
         }
 
         public static LuaByteBuffer LoadAsset(string path)
         {
-            return BundleManager.LoadBytes(path);
+            return BundleMgr.LoadBytes(path);
         }
 
         public static void DestroyAsset(UnityObj obj)
@@ -275,7 +228,7 @@ namespace GameCore
             for(int i = 0;i < mPool.Count;i++)
             {
                 //最后一次使用的时间到现在超过缓存时长,就清理掉
-                if(mPool[i].mUsingObj.Count == 0 && mPool[i].mLastUseTime + CACHE_DURATION < Time.unscaledTime)
+                if(mPool[i].mUsingObj.Count == 0 && mPool[i].mLastUseTime + CACHE_DURATION < Time.time)
                 {
                     for(int j = 0;j < mPool[i].mUnUsingObj.Count;j++)
                     {
@@ -365,31 +318,12 @@ namespace GameCore
             {
                 int idx = mCallBackIndex[hash];
                 LoadCallBack lc = mCallBack[idx];
-                for(int i = 0;i < lc.funcID.Count;i++)
+                for(int i = 0;i < lc.callBacks.Count;i++)
                 {
-                    lc.callBack(lc.funcID[i], pool != null ? pool.CreateObj() : null);
+                    lc.callBacks[i](pool != null ? pool.CreateObj() : null);
                 }
                 //清空回调
-                lc.callBack = null;
-                lc.funcID.Clear();
-            }
-        }
-
-        private static void OnBytesLoad(string path, LuaByteBuffer buffer)
-        {
-            int hash = path.GetHashCode();
-            if (buffer.buffer == null)
-            {
-                mNullAssets.Add(hash);
-            }
-            //执行回调
-            if (mBytesCallBackFuncs.ContainsKey(hash))
-            {
-                int funcID = mBytesCallBackFuncs[hash];
-                if(mBytesCallBack != null)
-                {
-                    mBytesCallBack(funcID,buffer);
-                }
+                lc.callBacks.Clear();
             }
         }
     }

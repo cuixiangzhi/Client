@@ -10,8 +10,8 @@ namespace GameCore
     public sealed class ExportPackage
     {
         private static string EXPORT_PATH = Path.GetFullPath("Assets/StreamingAssets/");
-        private static string BUNDLE_PATH = Path.GetFullPath("Assets/../../assets/export/bundles");
-        private static string BYTES_PATH = Path.GetFullPath("Assets/../../assets/export/bytes");
+        private static string BUNDLE_PATH = Path.GetFullPath("Assets/../../../assets/export/bundles");
+        private static string BYTES_PATH = Path.GetFullPath("Assets/../../../assets/export/bytes");
 
         public static void Export()
         {
@@ -43,8 +43,8 @@ namespace GameCore
                 //写入偏移信息
                 string uuid = DllMgr.common_md5(files[i]);
                 Encoding.UTF8.GetBytes(uuid, 0, uuid.Length, file_byte_info, 0);
-                ByteUtil.ToBytes(file_byte_info, uuid.Length, offset);
-                ByteUtil.ToBytes(file_byte_info, uuid.Length + 4, (uint)bytes.Length);
+                UtilByte.ToBytes(file_byte_info, uuid.Length, offset);
+                UtilByte.ToBytes(file_byte_info, uuid.Length + 4, (uint)bytes.Length);
                 filemap.Write(file_byte_info,0,file_byte_info.Length);
                 offset += (uint)bytes.Length;
             }
@@ -68,8 +68,8 @@ namespace GameCore
                 //写入偏移信息
                 string uuid = DllMgr.common_md5(files[i].Replace("_32","").Replace("_64",""));
                 Encoding.UTF8.GetBytes(uuid, 0, uuid.Length, file_byte_info, 0);
-                ByteUtil.ToBytes(file_byte_info, uuid.Length, offset);
-                ByteUtil.ToBytes(file_byte_info, uuid.Length + 4, (uint)bytes.Length);
+                UtilByte.ToBytes(file_byte_info, uuid.Length, offset);
+                UtilByte.ToBytes(file_byte_info, uuid.Length + 4, (uint)bytes.Length);
                 filemap.Write(file_byte_info, 0, file_byte_info.Length);
                 offset += (uint)bytes.Length;
             }

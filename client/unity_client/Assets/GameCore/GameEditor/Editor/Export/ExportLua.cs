@@ -13,8 +13,8 @@ namespace GameCore
     {
         private static string LUA_LIB_PATH = Path.GetFullPath("Assets/GameCore/GameLua/ToLua/Lua");
         private static string LUA_LOGIC_PATH = Path.GetFullPath("Assets/GameLogic/Lua");
-        private static string LUA_JIT_PATH = Path.GetFullPath("Assets/../../tools/luajit/bytecode.py");
-        private static string LUA_EXP_PATH = Path.GetFullPath("Assets/../../assets/export/bytes/lua");
+        private static string LUA_JIT_PATH = Path.GetFullPath("Assets/../../../tools/luajit/bytecode.py");
+        private static string LUA_EXP_PATH = Path.GetFullPath("Assets/../../../assets/export/bytes/lua");
         
 
         public static void Export()

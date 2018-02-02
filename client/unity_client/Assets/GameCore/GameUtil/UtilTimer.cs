@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace GameCore
 {
-    public static class Timer
+    public static class UtilTimer
     {
         private class TimerInfo
         {
@@ -14,6 +14,7 @@ namespace GameCore
             public int id = 0;
             public bool pause = false;
             public bool removeFlag = false;
+            public TimerCallBack callBack = null;
         }
 
         private static List<TimerInfo> mUsed = new List<TimerInfo>();
@@ -26,14 +27,12 @@ namespace GameCore
 
         public delegate void TimerCallBack(int id);
 
-        public static TimerCallBack ON_RM_TIMER = null;
-
-        public static TimerCallBack ON_TICK_FINISH = null;
-
         public static void Init()
         {
             mTimerID = 0;
             mUpdateFlag = false;
+            mUsed.Clear();
+            mUnUsed.Clear();
         }
 
         public static void LateLoop()
@@ -50,8 +49,6 @@ namespace GameCore
                     mUsed[i].leftDuration -= Time.deltaTime;
                     if (mUsed[i].leftDuration <= 0)
                     {
-                        if (ON_TICK_FINISH != null)
-                            ON_TICK_FINISH(mUsed[i].id);
                         --mUsed[i].leftCount;
                         if (mUsed[i].leftCount <= 0)
                             mUsed[i].removeFlag = true;
@@ -75,11 +72,9 @@ namespace GameCore
         {
             mUsed.Clear();
             mUnUsed.Clear();
-            ON_RM_TIMER = null;
-            ON_TICK_FINISH = null;
         }
 
-        public static int AddTimer(float duration, int count)
+        public static int AddTimer(float duration, int count, TimerCallBack callBack)
         {
             TimerInfo curInfo = null;
             if (mUnUsed.Count != 0)
@@ -96,6 +91,7 @@ namespace GameCore
             curInfo.id = mTimerID++;
             curInfo.pause = false;
             curInfo.removeFlag = false;
+            curInfo.callBack = callBack;
             mUsed.Add(curInfo);
             return curInfo.id;
         }
@@ -105,6 +101,26 @@ namespace GameCore
             for (int i = 0; i < mUsed.Count; i++)
             {
                 if (mUsed[i].id == id)
+                {
+                    if (mUpdateFlag)
+                    {
+                        mUsed[i].removeFlag = true;
+                    }
+                    else
+                    {
+                        RemoveTimer(mUsed[i]);
+                        mUsed.RemoveAt(i);
+                    }
+                    break;
+                }
+            }
+        }
+
+        public static void DeleteTimer(TimerCallBack callBack)
+        {
+            for (int i = 0; i < mUsed.Count; i++)
+            {
+                if (mUsed[i].callBack == callBack)
                 {
                     if (mUpdateFlag)
                     {
@@ -132,13 +148,22 @@ namespace GameCore
             }
         }
 
+        public static void PauseTimer(TimerCallBack callBack, bool pause)
+        {
+            for (int i = 0; i < mUsed.Count; i++)
+            {
+                if (mUsed[i].callBack == callBack)
+                {
+                    mUsed[i].pause = pause;
+                    break;
+                }
+            }
+        }
+
         private static void RemoveTimer(TimerInfo tm)
         {
+            tm.callBack = null;
             mUnUsed.Enqueue(tm);
-            if (ON_RM_TIMER != null)
-            {
-                ON_RM_TIMER(tm.id);
-            }
         }
     }
 }

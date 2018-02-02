@@ -44,8 +44,8 @@ namespace GameCore
             for (int i = 0; i < len; i += 44)
             {
                 string name = Encoding.UTF8.GetString(data, i, 36);
-                uint offset = ByteUtil.ToUInt32(data, i + 36);
-                uint length = ByteUtil.ToUInt32(data, i + 40);
+                uint offset = UtilByte.ToUInt32(data, i + 36);
+                uint length = UtilByte.ToUInt32(data, i + 40);
                 if(map32.ContainsKey(name))
                 {
                     map64[name] = new ByteData(offset,length);
@@ -94,9 +94,5 @@ namespace GameCore
             }
             return mNullByteData;
         }
-    }
-
-    public class UIData
-    {
     }
 }

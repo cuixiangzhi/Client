@@ -76,7 +76,7 @@ namespace GameCore
 
         public static void Exit()
         {
-
+            mCacheMD5Result.Clear();
         }
     }
 }

@@ -205,7 +205,7 @@ namespace LuaInterface
                 }
             }
 
-            GameCore.AssetManager.DestroyAsset(obj);
+            GameCore.AssetMgr.DestroyAsset(obj);
         }
 
         public void Collect()

@@ -5,7 +5,7 @@ using UEP = UnityEngine.Profiling.Profiler;
 
 namespace GameCore
 {
-    public static class Profiler
+    public static class UtilProfiler
     {
         [Conditional("ENABLE_PROFILER_FILE")]
         public static void Init()

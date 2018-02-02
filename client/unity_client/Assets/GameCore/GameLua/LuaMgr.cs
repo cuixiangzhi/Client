@@ -7,7 +7,7 @@ using System;
 
 namespace GameCore
 {
-    public static class LuaManager
+    public static class LuaMgr
     {
         private static LuaState mLuaState = null;
 

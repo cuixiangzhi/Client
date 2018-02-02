@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace GameCore
 {
-    public static class ByteUtil
+    public static class UtilByte
     {
         public static void ToBytes(byte[] buffer,int offset,uint data)
         {
