@@ -415,11 +415,16 @@ static public class NGUIMath
 		return CalculateRelativeWidgetBounds(trans, trans, considerInactive);
 	}
 
-	/// <summary>
-	/// Calculate the combined bounds of all widgets attached to the specified game object or its children (in relative-to-object space).
-	/// </summary>
+    static public Bounds CalculateRelativeWidgetBounds(Transform trans, bool considerInactive, bool considerChildren)
+    {
+        return CalculateRelativeWidgetBounds(trans, trans, considerInactive, considerChildren);
+    }
 
-	static public Bounds CalculateRelativeWidgetBounds (Transform relativeTo, Transform content)
+    /// <summary>
+    /// Calculate the combined bounds of all widgets attached to the specified game object or its children (in relative-to-object space).
+    /// </summary>
+
+    static public Bounds CalculateRelativeWidgetBounds (Transform relativeTo, Transform content)
 	{
 		return CalculateRelativeWidgetBounds(relativeTo, content, false);
 	}
@@ -428,7 +433,7 @@ static public class NGUIMath
 	/// Calculate the combined bounds of all widgets attached to the specified game object or its children (in relative-to-object space).
 	/// </summary>
 
-	static public Bounds CalculateRelativeWidgetBounds (Transform relativeTo, Transform content, bool considerInactive, bool considerChildren = true)
+	static public Bounds CalculateRelativeWidgetBounds (Transform relativeTo, Transform content, bool considerInactive, bool considerChildren = true,List<UIPanel> childPanel = null)
 	{
 		if (content != null && relativeTo != null)
 		{
@@ -436,7 +441,7 @@ static public class NGUIMath
 			Matrix4x4 toLocal = relativeTo.worldToLocalMatrix;
 			Vector3 min = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
 			Vector3 max = new Vector3(float.MinValue, float.MinValue, float.MinValue);
-			CalculateRelativeWidgetBounds(content, considerInactive, true, ref toLocal, ref min, ref max, ref isSet, considerChildren);
+			CalculateRelativeWidgetBounds(content, considerInactive, true, ref toLocal, ref min, ref max, ref isSet, considerChildren,childPanel);
 
 			if (isSet)
 			{
@@ -455,13 +460,25 @@ static public class NGUIMath
 	[System.Diagnostics.DebuggerHidden]
 	[System.Diagnostics.DebuggerStepThrough]
 	static void CalculateRelativeWidgetBounds (Transform content, bool considerInactive, bool isRoot,
-		ref Matrix4x4 toLocal, ref Vector3 vMin, ref Vector3 vMax, ref bool isSet, bool considerChildren)
+		ref Matrix4x4 toLocal, ref Vector3 vMin, ref Vector3 vMax, ref bool isSet, bool considerChildren,List<UIPanel> childPanel)
 	{
 		if (content == null) return;
 		if (!considerInactive && !NGUITools.GetActive(content.gameObject)) return;
 
-		// If this isn't a root node, check to see if there is a panel present
-		UIPanel p = isRoot ? null : content.GetComponent<UIPanel>();
+        // If this isn't a root node, check to see if there is a panel present
+        UIPanel p = null;
+        //modify by cuixiangzhi 2017.8.19
+        if (!isRoot && childPanel != null && childPanel.Count != 0)
+        {
+            for(int i = 0;i < childPanel.Count;i++)
+            {
+                if(childPanel[i].gameObject.GetInstanceID() == content.gameObject.GetInstanceID())
+                {
+                    p = childPanel[i];
+                    break;
+                }
+            }
+        }
 
 		// Ignore disabled panels as a disabled panel means invisible children
 		if (p != null && !p.enabled) return;
@@ -514,7 +531,7 @@ static public class NGUIMath
 			}
 			
 			for (int i = 0, imax = content.childCount; i < imax; ++i)
-				CalculateRelativeWidgetBounds(content.GetChild(i), considerInactive, false, ref toLocal, ref vMin, ref vMax, ref isSet, true);
+				CalculateRelativeWidgetBounds(content.GetChild(i), considerInactive, false, ref toLocal, ref vMin, ref vMax, ref isSet, true, childPanel);
 		}
 	}
 

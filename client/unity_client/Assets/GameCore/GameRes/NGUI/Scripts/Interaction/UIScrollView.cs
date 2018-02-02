@@ -47,6 +47,8 @@ public class UIScrollView : MonoBehaviour
 
 	public Movement movement = Movement.Horizontal;
 
+    public Vector3 resetOffset = Vector3.zero;
+
 	/// <summary>
 	/// Effect to apply when dragging.
 	/// </summary>
@@ -189,6 +191,10 @@ public class UIScrollView : MonoBehaviour
 
 	public bool isDragging { get { return mPressed && mDragStarted; } }
 
+    public bool considerChild = false;
+
+    public System.Collections.Generic.List<UIPanel> childPanel;
+
 	/// <summary>
 	/// Calculate the bounds used by the widgets.
 	/// </summary>
@@ -201,7 +207,7 @@ public class UIScrollView : MonoBehaviour
 			{
 				mCalculatedBounds = true;
 				mTrans = transform;
-				mBounds = NGUIMath.CalculateRelativeWidgetBounds(mTrans, mTrans);
+				mBounds = NGUIMath.CalculateRelativeWidgetBounds(mTrans, mTrans,false,considerChild,childPanel);
 			}
 			return mBounds;
 		}
@@ -423,6 +429,8 @@ public class UIScrollView : MonoBehaviour
 				Vector3 pos = mTrans.localPosition + constraint;
 				pos.x = Mathf.Round(pos.x);
 				pos.y = Mathf.Round(pos.y);
+
+                pos += resetOffset;
 				SpringPanel.Begin(mPanel.gameObject, pos, 8f);
 			}
 			else

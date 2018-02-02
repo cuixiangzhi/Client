@@ -180,11 +180,13 @@ public class UIInput : MonoBehaviour
 
 	public OnValidate onValidate;
 
-	/// <summary>
-	/// Input field's value.
-	/// </summary>
+    public bool useDefaultAlign = true;
 
-	[SerializeField][HideInInspector] protected string mValue;
+    /// <summary>
+    /// Input field's value.
+    /// </summary>
+
+    [SerializeField][HideInInspector] protected string mValue;
 
 	[System.NonSerialized] protected string mDefaultText = "";
 	[System.NonSerialized] protected Color mDefaultColor = Color.white;
@@ -760,7 +762,14 @@ public class UIInput : MonoBehaviour
 				// Windows has them, OSX may not. They get handled inside OnGUI() instead.
 				string s = Input.inputString;
 
-				for (int i = 0; i < s.Length; ++i)
+                //modify by cuixiangzhi 修改PC输入选中BUG
+                if (mLastIME != ime)
+                {
+                    mSelectionEnd = Mathf.Min(mSelectionStart, mSelectionEnd);
+                    mSelectionStart = mSelectionEnd;
+                }
+
+                for (int i = 0; i < s.Length; ++i)
 				{
 					char ch = s[i];
 					if (ch < ' ') continue;
@@ -778,8 +787,15 @@ public class UIInput : MonoBehaviour
 			// Append IME composition
 			if (mLastIME != ime)
 			{
-				mSelectionEnd = string.IsNullOrEmpty(ime) ? mSelectionStart : mValue.Length + ime.Length;
-				mLastIME = ime;
+                //modify by cuixiangzhi 修改PC输入选中BUG
+                if (string.IsNullOrEmpty(mLastIME) && mSelectionStart != mSelectionEnd)
+                {
+                    int oldSelectStart = mSelectionStart > mSelectionEnd ? mSelectionEnd : mSelectionStart;
+                    Insert(string.Empty);
+                    mSelectionStart = oldSelectStart;
+                }
+                mSelectionEnd = string.IsNullOrEmpty(ime) ? mSelectionStart : mSelectionStart + ime.Length;
+                mLastIME = ime;
 				UpdateLabel();
 				ExecuteOnChange();
 			}
@@ -1325,7 +1341,7 @@ public class UIInput : MonoBehaviour
 				else processed = fullText;
 
 				// Start with text leading up to the selection
-				int selPos = selected ? Mathf.Min(processed.Length, cursorPosition) : 0;
+				int selPos = selected ? Mathf.Min(mSelectionStart, mSelectionEnd) : 0;
 				string left = processed.Substring(0, selPos);
 
 				// Append the composition string and the cursor character
@@ -1362,7 +1378,14 @@ public class UIInput : MonoBehaviour
 						if (offset > mDrawStart)
 						{
 							mDrawStart = offset;
-							label.alignment = NGUIText.Alignment.Right;
+                            if(useDefaultAlign)
+                            {
+                                label.alignment = NGUIText.Alignment.Right;
+                            }
+                            else
+                            {
+                                label.alignment = NGUIText.Alignment.Left;
+                            }
 						}
 					}
 

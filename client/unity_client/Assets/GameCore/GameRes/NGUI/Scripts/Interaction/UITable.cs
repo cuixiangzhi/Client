@@ -38,6 +38,8 @@ public class UITable : UIWidgetContainer
 
 	public int columns = 0;
 
+    public bool considerChildren = false;
+
 	/// <summary>
 	/// Which way the new lines will be added.
 	/// </summary>
@@ -195,7 +197,7 @@ public class UITable : UIWidgetContainer
 		for (int i = 0, imax = children.Count; i < imax; ++i)
 		{
 			Transform t = children[i];
-			Bounds b = NGUIMath.CalculateRelativeWidgetBounds(t, !hideInactive);
+			Bounds b = NGUIMath.CalculateRelativeWidgetBounds(t, !hideInactive, considerChildren);
 
 			Vector3 scale = t.localScale;
 			b.min = Vector3.Scale(b.min, scale);
