@@ -23,6 +23,7 @@ public class DelegateFactory
 		dict.Add(typeof(System.Predicate<LuaValueInfo>), factory.System_Predicate_LuaValueInfo);
 		dict.Add(typeof(System.Action<LuaValueInfo>), factory.System_Action_LuaValueInfo);
 		dict.Add(typeof(System.Comparison<LuaValueInfo>), factory.System_Comparison_LuaValueInfo);
+		dict.Add(typeof(GameCore.UtilTimer.TimerCallBack), factory.GameCore_UtilTimer_TimerCallBack);
 
 		DelegateTraits<System.Action<int,LuaInterface.LuaByteBuffer>>.Init(factory.System_Action_int_LuaInterface_LuaByteBuffer);
 		DelegateTraits<System.Action<int,UnityEngine.Object>>.Init(factory.System_Action_int_UnityEngine_Object);
@@ -30,6 +31,7 @@ public class DelegateFactory
 		DelegateTraits<System.Predicate<LuaValueInfo>>.Init(factory.System_Predicate_LuaValueInfo);
 		DelegateTraits<System.Action<LuaValueInfo>>.Init(factory.System_Action_LuaValueInfo);
 		DelegateTraits<System.Comparison<LuaValueInfo>>.Init(factory.System_Comparison_LuaValueInfo);
+		DelegateTraits<GameCore.UtilTimer.TimerCallBack>.Init(factory.GameCore_UtilTimer_TimerCallBack);
 
 		TypeTraits<System.Action<int,LuaInterface.LuaByteBuffer>>.Init(factory.Check_System_Action_int_LuaInterface_LuaByteBuffer);
 		TypeTraits<System.Action<int,UnityEngine.Object>>.Init(factory.Check_System_Action_int_UnityEngine_Object);
@@ -37,6 +39,7 @@ public class DelegateFactory
 		TypeTraits<System.Predicate<LuaValueInfo>>.Init(factory.Check_System_Predicate_LuaValueInfo);
 		TypeTraits<System.Action<LuaValueInfo>>.Init(factory.Check_System_Action_LuaValueInfo);
 		TypeTraits<System.Comparison<LuaValueInfo>>.Init(factory.Check_System_Comparison_LuaValueInfo);
+		TypeTraits<GameCore.UtilTimer.TimerCallBack>.Init(factory.Check_GameCore_UtilTimer_TimerCallBack);
 
 		StackTraits<System.Action<int,LuaInterface.LuaByteBuffer>>.Push = factory.Push_System_Action_int_LuaInterface_LuaByteBuffer;
 		StackTraits<System.Action<int,UnityEngine.Object>>.Push = factory.Push_System_Action_int_UnityEngine_Object;
@@ -44,6 +47,7 @@ public class DelegateFactory
 		StackTraits<System.Predicate<LuaValueInfo>>.Push = factory.Push_System_Predicate_LuaValueInfo;
 		StackTraits<System.Action<LuaValueInfo>>.Push = factory.Push_System_Action_LuaValueInfo;
 		StackTraits<System.Comparison<LuaValueInfo>>.Push = factory.Push_System_Comparison_LuaValueInfo;
+		StackTraits<GameCore.UtilTimer.TimerCallBack>.Push = factory.Push_GameCore_UtilTimer_TimerCallBack;
 	}
     
     public static Delegate CreateDelegate(Type t, LuaFunction func = null)
@@ -507,6 +511,63 @@ public class DelegateFactory
 	}
 
 	void Push_System_Comparison_LuaValueInfo(IntPtr L, System.Comparison<LuaValueInfo> o)
+	{
+		ToLua.Push(L, o);
+	}
+
+	class GameCore_UtilTimer_TimerCallBack_Event : LuaDelegate
+	{
+		public GameCore_UtilTimer_TimerCallBack_Event(LuaFunction func) : base(func) { }
+		public GameCore_UtilTimer_TimerCallBack_Event(LuaFunction func, LuaTable self) : base(func, self) { }
+
+		public void Call(int param0)
+		{
+			func.BeginPCall();
+			func.Push(param0);
+			func.PCall();
+			func.EndPCall();
+		}
+
+		public void CallWithSelf(int param0)
+		{
+			func.BeginPCall();
+			func.Push(self);
+			func.Push(param0);
+			func.PCall();
+			func.EndPCall();
+		}
+	}
+
+	public GameCore.UtilTimer.TimerCallBack GameCore_UtilTimer_TimerCallBack(LuaFunction func, LuaTable self, bool flag)
+	{
+		if (func == null)
+		{
+			GameCore.UtilTimer.TimerCallBack fn = delegate(int param0) { };
+			return fn;
+		}
+
+		if(!flag)
+		{
+			GameCore_UtilTimer_TimerCallBack_Event target = new GameCore_UtilTimer_TimerCallBack_Event(func);
+			GameCore.UtilTimer.TimerCallBack d = target.Call;
+			target.method = d.Method;
+			return d;
+		}
+		else
+		{
+			GameCore_UtilTimer_TimerCallBack_Event target = new GameCore_UtilTimer_TimerCallBack_Event(func, self);
+			GameCore.UtilTimer.TimerCallBack d = target.CallWithSelf;
+			target.method = d.Method;
+			return d;
+		}
+	}
+
+	bool Check_GameCore_UtilTimer_TimerCallBack(IntPtr L, int pos)
+	{
+		return TypeChecker.CheckDelegateType(typeof(GameCore.UtilTimer.TimerCallBack), L, pos);
+	}
+
+	void Push_GameCore_UtilTimer_TimerCallBack(IntPtr L, GameCore.UtilTimer.TimerCallBack o)
 	{
 		ToLua.Push(L, o);
 	}

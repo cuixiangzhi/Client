@@ -35,16 +35,13 @@ public static class LuaBinder
 		L.EndModule();
 		L.EndModule();
 		L.BeginModule("GameCore");
+		GameCore_UtilUIFollowWrap.Register(L);
+		GameCore_UtilTimerWrap.Register(L);
 		GameCore_LogMgrWrap.Register(L);
-		GameCore_UIFollowWrap.Register(L);
-		GameCore_AssetManagerWrap.Register(L);
-		GameCore_UIManagerWrap.Register(L);
-		GameCore_UpdateManagerWrap.Register(L);
-		GameCore_SceneManagerWrap.Register(L);
-		GameCore_BehaviourUIWrap.Register(L);
-		GameCore_BehaviourAudioWrap.Register(L);
-		GameCore_BehaviourEffectWrap.Register(L);
-		GameCore_BehaviourModelWrap.Register(L);
+		GameCore_AssetMgrWrap.Register(L);
+		L.BeginModule("UtilTimer");
+		L.RegFunction("TimerCallBack", GameCore_UtilTimer_TimerCallBack);
+		L.EndModule();
 		L.EndModule();
 		L.EndModule();
 		GameCore.LogMgr.Log("Register lua type cost time: {0}", Time.realtimeSinceStartup - t);
@@ -202,6 +199,33 @@ public static class LuaBinder
 			{
 				LuaTable self = ToLua.CheckLuaTable(L, 2);
 				Delegate arg1 = DelegateTraits<System.Comparison<LuaValueInfo>>.Create(func, self);
+				ToLua.Push(L, arg1);
+			}
+			return 1;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int GameCore_UtilTimer_TimerCallBack(IntPtr L)
+	{
+		try
+		{
+			int count = LuaDLL.lua_gettop(L);
+			LuaFunction func = ToLua.CheckLuaFunction(L, 1);
+
+			if (count == 1)
+			{
+				Delegate arg1 = DelegateTraits<GameCore.UtilTimer.TimerCallBack>.Create(func);
+				ToLua.Push(L, arg1);
+			}
+			else
+			{
+				LuaTable self = ToLua.CheckLuaTable(L, 2);
+				Delegate arg1 = DelegateTraits<GameCore.UtilTimer.TimerCallBack>.Create(func, self);
 				ToLua.Push(L, arg1);
 			}
 			return 1;

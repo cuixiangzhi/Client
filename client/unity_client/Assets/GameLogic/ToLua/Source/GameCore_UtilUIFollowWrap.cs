@@ -2,11 +2,11 @@
 using System;
 using LuaInterface;
 
-public class GameCore_UIFollowWrap
+public class GameCore_UtilUIFollowWrap
 {
 	public static void Register(LuaState L)
 	{
-		L.BeginStaticLibs("UIFollow");
+		L.BeginStaticLibs("UtilUIFollow");
 		L.RegFunction("Init", Init);
 		L.RegFunction("LateLoop", LateLoop);
 		L.RegFunction("Exit", Exit);
@@ -21,7 +21,7 @@ public class GameCore_UIFollowWrap
 		try
 		{
 			ToLua.CheckArgsCount(L, 0);
-			GameCore.UIFollow.Init();
+			GameCore.UtilUIFollow.Init();
 			return 0;
 		}
 		catch (Exception e)
@@ -36,7 +36,7 @@ public class GameCore_UIFollowWrap
 		try
 		{
 			ToLua.CheckArgsCount(L, 0);
-			GameCore.UIFollow.LateLoop();
+			GameCore.UtilUIFollow.LateLoop();
 			return 0;
 		}
 		catch (Exception e)
@@ -51,7 +51,7 @@ public class GameCore_UIFollowWrap
 		try
 		{
 			ToLua.CheckArgsCount(L, 0);
-			GameCore.UIFollow.Exit();
+			GameCore.UtilUIFollow.Exit();
 			return 0;
 		}
 		catch (Exception e)
@@ -70,7 +70,7 @@ public class GameCore_UIFollowWrap
 			UnityEngine.Transform arg1 = (UnityEngine.Transform)ToLua.CheckObject<UnityEngine.Transform>(L, 2);
 			UnityEngine.Vector3 arg2 = ToLua.ToVector3(L, 3);
 			UnityEngine.Vector3 arg3 = ToLua.ToVector3(L, 4);
-			GameCore.UIFollow.AddFollow(arg0, arg1, arg2, arg3);
+			GameCore.UtilUIFollow.AddFollow(arg0, arg1, arg2, arg3);
 			return 0;
 		}
 		catch (Exception e)
@@ -86,7 +86,7 @@ public class GameCore_UIFollowWrap
 		{
 			ToLua.CheckArgsCount(L, 1);
 			UnityEngine.Transform arg0 = (UnityEngine.Transform)ToLua.CheckObject<UnityEngine.Transform>(L, 1);
-			GameCore.UIFollow.RemoveFollow(arg0);
+			GameCore.UtilUIFollow.RemoveFollow(arg0);
 			return 0;
 		}
 		catch (Exception e)

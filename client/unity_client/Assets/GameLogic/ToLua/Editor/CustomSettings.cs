@@ -29,30 +29,31 @@ public static class CustomSettings
     //在这里添加你要导出注册到lua的类型列表
     public static BindType[] customTypeList =
     {                
-        //引擎
+        #region 引擎
         _GT(typeof(UnityEngine.Component)),
         _GT(typeof(UnityEngine.Behaviour)),
         _GT(typeof(UnityEngine.GameObject)),
         _GT(typeof(UnityEngine.Transform)),
         _GT(typeof(UnityEngine.Camera)),
         _GT(typeof(UnityEngine.MonoBehaviour)),
+        #endregion
 
-        //框架
+        #region 框架
+        //VSCODE LUA调试
         _GT(typeof(LuaDebugTool)),
         _GT(typeof(LuaValueInfo)),
         _GT(typeof(List<LuaValueInfo>)),
-        _GT(typeof(GameCore.LogMgr)),
-        _GT(typeof(GameCore.UIFollow)),
-        _GT(typeof(GameCore.AssetManager)),
-        _GT(typeof(GameCore.UIManager)),
-        _GT(typeof(GameCore.UpdateManager)),
-        _GT(typeof(GameCore.SceneManager)),
-        _GT(typeof(GameCore.BehaviourUI)),
-        _GT(typeof(GameCore.BehaviourAudio)),
-        _GT(typeof(GameCore.BehaviourEffect)),
-        _GT(typeof(GameCore.BehaviourModel)),     
+        //基础
+        _GT(typeof(GameCore.UtilUIFollow)),
+        _GT(typeof(GameCore.UtilTimer)),
+        _GT(typeof(GameCore.LogMgr)),        
+        _GT(typeof(GameCore.AssetMgr)),
+        //NGUI
+        //NGUIEXT
+        #endregion
 
-        //逻辑
+        #region 逻辑
+        #endregion
     };
 
     public static List<Type> dynamicList = new List<Type>()
