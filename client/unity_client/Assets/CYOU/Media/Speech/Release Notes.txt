@@ -1,6 +1,0 @@
-Speech_2017-09-20.unitypackage
-1、整理封装Unity的C#代码
-Speech_2017-09-25.unitypackage
-1、Unity调用Android原生函数强制在UIThread。
-Speech_2017-10-19.unitypackage
-1、修复iPhoneX崩溃的问题。
