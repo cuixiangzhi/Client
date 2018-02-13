@@ -54,4 +54,92 @@ C++使用mono运行C# DLL,需要mono提供的库和头文件,注意c# dll需要�
 
 		return 0;
 	}
-	
+
+Lua
+	  1.数据结构
+	  	lua_TValue结构
+	  				p userdata
+	  				b bool
+	  				f c function
+	  				i number long long
+	  				n number double
+	  	TString结构
+	  				extra   
+	  				shrlen  短字符串长度
+	  				hash    字符串hash值
+	  				lnglen  长字符串长度
+	  				hnext   hash表
+	  	stringtable结构
+	  				hash hash表
+	  	lightuserdata
+	  	Proto		函数原型
+	  	LClosure
+	  	CClosure
+		luaState结构
+					CommonHeader  
+						GCObject *next; lu_byte tt; lu_byte marked
+						GC对象通用标记,GCObject是一个由GC对象构成的链表,tt代表该对象类型,marked代表GC标记
+					l_G
+						全局状态,通过newthread创建的所有luaState共享同一个
+						newstate创建的都是独立的
+					oldpc
+						最后一次执行的指令信息
+					status 
+						标记当前线程运行状态,OK 语法错误 运行错误 GC错误 内存错误 协程中断
+					nci ci baseci top stack stack_last openupvalue stacksize
+						栈底、栈顶、栈空间、栈帧、函数栈、数据栈
+					
+					gclist		
+						垃圾回收辅助
+					twups
+						其他luaState的数据栈
+					errorJmp errfunc
+						当前错误恢复跳转点 错误处理函数
+					nny nCcalls
+						可中断和不可中断的函数个数						
+					hook basehookcount hookcount hookmask allowhook 
+						调试钩子状态变量
+		CallInfo结构
+					base top 
+						当前函数栈底、栈顶
+					func extra
+						当前函数、闭包变量
+					savedpc
+						执行到的指令
+					previous next
+						调用栈前后信息
+					nresults callstatus
+						预期返回值、调用状态
+					k ctx 
+						C函数yield回调
+		global_State结构
+					version 
+							lua版本
+					l_registry
+							注册表
+					strt 
+							字符串池
+					mt tmname
+							基本类型的元表 元表默认方法名称 __add __sub等等
+					mainthread
+							主线程
+					frealloc ud 
+							内存分配器
+					gc信息
+	2.
+	  压栈过程
+	  	赋值 (TValue*)(L->top)->? = value;  递增++L->top;
+	  出栈过程
+	  	地址 正数 L->ci->func + idx           idx > 0
+	  		 负数且大于注册表 L->top + idx    idx > LUA_REGISTRYINDEX
+	  		 注册表 G(L)->l_registry		  idx == LUA_REGISTRYINDEX
+	  		 UPVALUE 						  idx = LUA_REGISTRYINDEX - idx;  C函数没有UPVALUE
+	3.保护模式
+	  C语言的try catch,调用之前setjmp,如果出错调用longjmp返回
+
+
+
+
+
+
+

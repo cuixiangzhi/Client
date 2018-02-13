@@ -123,6 +123,13 @@ C++对象内存布局
 			malloc是分配一块新的内存  realloc是在原内存后加长,可能会变化地址
 编译执行  C++  GCC(LINUX) CL(WINDOWS) MINGW(WINDOWS)  
 
+C++跳转
+		goto:函数内跳转
+		setjmp longjmp 非局部跳转
+		setjmp(jmp_buf env) 设置跳转点,保存函数上下文 直接调用返回0,跳转调用返回longjmp第二个参数
+		longjmp(jmp_buf env,int ret) 调到跳转点,恢复函数上下文
+C赋值	int ? = (1,2,3,4,5); 会取最后一个值
+
 C#   托管代码会被编译为IL语言(生成的文件内包含元数据),CLR编译IL为机器语言(JIT编译)
 	  反射
 			特性,继承自System.Attribute的类,放在类上面通过构造函数初始化,可以使用GetType().GetCustomAttributes(类型,继承)获取所有特性
@@ -221,15 +228,16 @@ Lua CAPI
 库实现       以lua_open为前缀,具体实现分散在不同的.cc文件内  
 			 lauxlib.c  辅助库实现
 			 lbaselib.c base库实现
-			 liolib.c  IO库实现
-			 lmath.c   Math库实现
+			 liolib.c  io库实现
+			 lmath.c   math库实现
 			 lstrlib.c string库实现
 			 ltablib.c table库实现
 			 loslib.c  os库实现
 			 ldblib.c  debug库实现
 			 linit.c  库注册入口函数整合
  
-编译过程: 将输入的代码块转换成可执行的closure,closure是运行期对象,编译期是proto,它由指令列表、常量表、子proto表、局部变量、UpValue构成
+编译过程: 首先通过
+		  将输入的代码块转换成可执行的closure,closure是运行期对象,编译期是proto,它由指令列表、常量表、子proto表、局部变量、UpValue构成
           一个函数编译后的汇编代码首先是 push ebp(此处esp指针会递减) move ebp esp,保存当前主调函数栈初始指针,被调函数栈初始指针,即保存程序现场,调用结束后esp已恢复至初始值,再次调用pop ebp恢复ebp为主调函数栈初始指针
 核心实现  词法分析llex
           语法分析lparser

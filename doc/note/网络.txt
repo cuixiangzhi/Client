@@ -35,10 +35,10 @@ TCP/IP协议栈
 				   IP地址与子网掩码做and运算,得出网络号
 				   
 				   首先计算 源IP与目的IP的网络号,相同则发送ARP请求包给子网内所有主机,目的IP主机收到后反馈RAP附带MAC地址,IP封包完成发送数据到子网内所有主机,MAC一致的主机接收IP包
-												 不相同则发送ARP请求给网关,网关反馈MAC,收到后封包发给网关,网关收到后发给路由器,路由器经过路由选择算法一跳一跳的到达目标网络主机
-												 提供服务的主机必须拥有公网IP才可以被访问
-												 
-												 内网机器需要设置路由端口映射,把对外网IP某个端口映射到本地主机的进程
+				   不相同则发送ARP请求给网关,网关反馈MAC,收到后封包发给网关,网关收到后发给路由器,路由器经过路由选择算法一跳一跳的到达目标网络主机
+				   提供服务的主机必须拥有公网IP才可以被访问
+					 
+				   内网机器需要设置路由端口映射,把对外网IP某个端口映射到本地主机的进程
 				                                  
 			接口层,
 			
@@ -49,6 +49,9 @@ TCP/IP协议栈
 			头文件 fcntl.h      包含fcntl设置阻塞
 			windows下只需要包含winsock2.h即可
 	 服务器编程要考虑IO耗时和计算耗时	
+RTT 往返时延
+	表示从发送端发送数据开始，到发送端收到来自接收端的确认（接收端收到数据后便立即发送确认），总共经历的时延。
+	链路的传播时间、末端系统的处理时间以及路由器的缓存中的排队和处理时间
 SOCKET API 
 	如果是在windows下,首先需要初始化SOCKET环境,  
 		 WORD sockVersion = MAKEWORD(2,2);
@@ -100,13 +103,13 @@ SOCKET API
 		  fd_set fds;
 		  FD_ZERO(&fds)清0  FD_SET(fd,&fds)置1  FD_ISSET(fd,&fds)是否置1 FD_CLR(fd,&fds)重置
 		  客户端发送的connect操作,也会导致socket可读,所以select可以检测新的连接,所以FD_SET始终保持server socket句柄置为1
-	连接上之后,服务器发送校验包,不通过则断开该链接
-	select最大支持 FD_SETSIZE 个连接,也就是fd_set内的数组大小
-	struct fd_set 
-	{
-			u_int fd_count;               /* how many are SET? */
-			SOCKET  fd_array[FD_SETSIZE];   /* an array of SOCKETs */
-	}
+			连接上之后,服务器发送校验包,不通过则断开该链接
+			select最大支持 FD_SETSIZE 个连接,也就是fd_set内的数组大小
+			struct fd_set 
+			{
+					u_int fd_count;               /* how many are SET? */
+					SOCKET  fd_array[FD_SETSIZE];   /* an array of SOCKETs */
+			}
 	
 	select缺点是在链接数很多时用户与内核切换时的拷贝消耗,以及遍历消耗
 	
