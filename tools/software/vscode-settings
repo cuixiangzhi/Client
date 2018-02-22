@@ -1,0 +1,24 @@
+{
+    "debug.allowBreakpointsEverywhere": true,
+    "debug.inlineValues": true,
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true,
+        "**/*.meta":true,
+        "test*":true,
+        "Test*":true
+    },
+    "workbench.startupEditor": "newUntitledFile",
+    "extensions.autoUpdate": false,
+    "luaide.scriptRoots": 
+    [
+     "E:/mmo/src/client/trunk/Client-Demo/Assets/Lua/",
+    ],
+    "editor.fontSize": 15,
+    "workbench.colorTheme": "Monokai",
+    "workbench.iconTheme": "vscode-icons",
+    "git.ignoreMissingGitWarning": true
+}
