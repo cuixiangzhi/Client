@@ -96,19 +96,7 @@ BASE64  HTTP请求发送数据只能发送ASCII码,因此需要进行编码操�
         1.生成导航网格 
 
         3.构造导航网格
-             文件头  :magic&version标记NAVMESH数据版本
-                      x&y&layer&id 标记导航块信息,坐标和AABB包围盒
-                      polyCount&vertCount 多边形和顶点信息
-                      detail mesh&vert&tri 多边形详细信息
-                      walk h&r&c   角色的高度、半径、攀爬高度
-                      cs&ch        导航块单位大小,xz方向大小为cs,y方向为ch
-             凸多边形:verts        顶点数组,长度为vertCount * 3,三个一组构成一个顶点
-                      polys        凸多边形数组,长度为polyCount * nvp * 2;nvp个顶点、nvp个边标记(特殊邻边或者标准邻边或者没有邻边)
-                      flags        标记凸多边形移动类型,跑、跳、游泳。。
-                      areas        标记凸多边形地形类型,草地、水池、沼泽。。
-             子三角形:凸多边形内详细的三角形信息,每个凸多边形都有,顶点信息和多边形信息附加在主信息之后
-             跳转信息:就是OffMesh,用户自定义的跳转点,顶点和多边形信息附加在主信息之后
-             包围盒树:针对凸多边形构建的包围盒树,叶子结点记录了凸多边形ID,非叶子结点记录了有序数组下一次查找的结点偏移
+             NavMesh由凸多边形、凸多边形三角形、OffMesh、tileLink、bvtree等构成,polyRef由tileID和polyID共同构成
         2.导航网格寻路
             启发式搜索算法A*
                 F = G + H
