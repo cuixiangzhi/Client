@@ -19,16 +19,12 @@ namespace GameCore
         [Conditional("ENABLE_LOG")]
         public static void Init()
         {
+#if !UNITY_EDITOR
             if (!Directory.Exists(GameConst.LOG_PATH))
                 Directory.CreateDirectory(GameConst.LOG_PATH);
             LOG_STREAM = new FileStream(string.Format("{0}/{1}.log", GameConst.LOG_PATH, DateTime.Now.ToString("yyyy_MM_dd_HH_mm")), FileMode.Create);
             STRING_BYTE_BUFFER = new byte[MAX_BYTE_LEN_OF_MSG];
-        }
-
-        [Conditional("ENABLE_LOG")]
-        public static void LateLoop()
-        {
-
+#endif
         }
 
         [Conditional("ENABLE_LOG")]

@@ -68,10 +68,6 @@ namespace GameCore
             UtilProfiler.LateLoop();
             UEP.EndSample();
 
-            UEP.BeginSample("LuaMgr.LateLoop();");
-            LuaMgr.LateLoop();
-            UEP.EndSample();
-
             UEP.BeginSample("AssetMgr.LateLoop();");
             AssetMgr.LateLoop();
             UEP.EndSample();     

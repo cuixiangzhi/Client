@@ -8,7 +8,6 @@ public class GameCore_LogMgrWrap
 	{
 		L.BeginStaticLibs("LogMgr");
 		L.RegFunction("Init", Init);
-		L.RegFunction("LateLoop", LateLoop);
 		L.RegFunction("Exit", Exit);
 		L.RegFunction("Log", Log);
 		L.RegFunction("LogError", LogError);
@@ -23,21 +22,6 @@ public class GameCore_LogMgrWrap
 		{
 			ToLua.CheckArgsCount(L, 0);
 			GameCore.LogMgr.Init();
-			return 0;
-		}
-		catch (Exception e)
-		{
-			return LuaDLL.toluaL_exception(L, e);
-		}
-	}
-
-	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int LateLoop(IntPtr L)
-	{
-		try
-		{
-			ToLua.CheckArgsCount(L, 0);
-			GameCore.LogMgr.LateLoop();
 			return 0;
 		}
 		catch (Exception e)
