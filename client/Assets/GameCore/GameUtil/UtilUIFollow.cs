@@ -50,13 +50,13 @@ namespace GameCore
             {
                 if(mFollowList[i].mSource == null || mFollowList[i].mSourceObj == null)
                 {
-                    LogMgr.LogError("follow source is null!");
+                    UtilLog.LogError("follow source is null!");
                     mFollowList.RemoveAt(i--);
                     continue;
                 }
                 if(mFollowList[i].mTarget == null)
                 {
-                    LogMgr.LogError("follow target is null {0}!", mFollowList[i].mSource.name);
+                    UtilLog.LogError("follow target is null {0}!", mFollowList[i].mSource.name);
                     mFollowList.RemoveAt(i--);
                     continue;
                 }

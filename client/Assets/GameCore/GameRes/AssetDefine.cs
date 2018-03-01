@@ -40,7 +40,7 @@ namespace GameCore
         {
             Dictionary<string, ByteData> map32 = old ? mOldFile32 : mNewFile32;
             Dictionary<string, ByteData> map64 = old ? mOldFile64 : mNewFile64;
-            DllMgr.common_decode(data, len);
+            UtilDll.common_decode(data, len);
             for (int i = 0; i < len; i += 44)
             {
                 string name = Encoding.UTF8.GetString(data, i, 36);
@@ -69,13 +69,13 @@ namespace GameCore
 
         public bool IsNewFile(string path)
         {
-            string name = DllMgr.common_md5(path);
+            string name = UtilDll.common_md5(path);
             return (IntPtr.Size == 8 && mNewFile64.ContainsKey(name)) || (mNewFile32.ContainsKey(name));
         }
 
         public ByteData GetByteData(string path)
         {
-            string name = DllMgr.common_md5(path);
+            string name = UtilDll.common_md5(path);
             if (IntPtr.Size == 8 && mNewFile64.ContainsKey(name))
             {
                 return mNewFile64[name];

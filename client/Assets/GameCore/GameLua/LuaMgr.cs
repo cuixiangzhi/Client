@@ -96,6 +96,7 @@ namespace GameCore
 
             //LUA逻辑入口
             mLuaState.DoFile("GameMain");
+            CallLuaFunc("GameMain.GameInit");
         }
 
         public static void Loop()
@@ -131,7 +132,7 @@ namespace GameCore
 
         public static void Exit()
         {
-            mLuaState.DoFile("GameExit");
+            CallLuaFunc("GameMain.GameQuit");
             mLuaState.Dispose();
             mLuaState = null;
             mLuaReader.Dispose();
@@ -153,6 +154,15 @@ namespace GameCore
         public static void DoFile(string fileName)
         {
             mLuaState.DoFile(fileName);
+        }
+
+        public static void CallLuaFunc(string funcName)
+        {
+            LuaFunction func = mLuaState.GetFunction(funcName);
+            if (func != null)
+            {
+                func.Call();
+            }
         }
     }
 }

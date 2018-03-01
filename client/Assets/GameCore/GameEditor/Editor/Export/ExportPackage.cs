@@ -23,8 +23,8 @@ namespace GameCore
 
         private static void ExportAllBundles()
         {
-            FileStream package = new FileStream(EXPORT_PATH + "/" + DllMgr.common_md5(GameConst.PACKAGE_NAME), FileMode.Create);
-            FileStream filemap = new FileStream(EXPORT_PATH + "/" + DllMgr.common_md5(GameConst.FILEMAP_NAME), FileMode.Create);
+            FileStream package = new FileStream(EXPORT_PATH + "/" + UtilDll.common_md5(GameConst.PACKAGE_NAME), FileMode.Create);
+            FileStream filemap = new FileStream(EXPORT_PATH + "/" + UtilDll.common_md5(GameConst.FILEMAP_NAME), FileMode.Create);
             uint offset = 0;
             List<string> files = GetFiles(BUNDLE_PATH);
             byte[] file_byte_info = new byte[44];
@@ -32,16 +32,16 @@ namespace GameCore
             {
                 //写入随机长度的加密字符串
                 int random = UnityEngine.Random.Range(1, 36);
-                string randomuuid = DllMgr.common_md5(random.ToString());
+                string randomuuid = UtilDll.common_md5(random.ToString());
                 Encoding.UTF8.GetBytes(randomuuid, 0, random, file_byte_info,0);
-                DllMgr.common_encode(file_byte_info,random);
+                UtilDll.common_encode(file_byte_info,random);
                 offset += (uint)random;
                 package.Write(file_byte_info,0,random);
                 //写入AB数据
                 byte[] bytes = File.ReadAllBytes(files[i]);
                 package.Write(bytes, 0, bytes.Length);
                 //写入偏移信息
-                string uuid = DllMgr.common_md5(files[i]);
+                string uuid = UtilDll.common_md5(files[i]);
                 Encoding.UTF8.GetBytes(uuid, 0, uuid.Length, file_byte_info, 0);
                 UtilByte.ToBytes(file_byte_info, uuid.Length, offset);
                 UtilByte.ToBytes(file_byte_info, uuid.Length + 4, (uint)bytes.Length);
@@ -54,8 +54,8 @@ namespace GameCore
 
         private static void ExportAllBytes()
         {
-            FileStream package = new FileStream(EXPORT_PATH + "/" + DllMgr.common_md5(GameConst.PACKAGE_NAME), FileMode.Append);
-            FileStream filemap = new FileStream(EXPORT_PATH + "/" + DllMgr.common_md5(GameConst.FILEMAP_NAME), FileMode.Append);
+            FileStream package = new FileStream(EXPORT_PATH + "/" + UtilDll.common_md5(GameConst.PACKAGE_NAME), FileMode.Append);
+            FileStream filemap = new FileStream(EXPORT_PATH + "/" + UtilDll.common_md5(GameConst.FILEMAP_NAME), FileMode.Append);
             uint offset = 0;
             List<string> files = GetFiles(BYTES_PATH);
             byte[] file_byte_info = new byte[44];
@@ -63,10 +63,10 @@ namespace GameCore
             {
                 //写入加密后的数据
                 byte[] bytes = File.ReadAllBytes(files[i]);
-                DllMgr.common_encode(bytes, bytes.Length);
+                UtilDll.common_encode(bytes, bytes.Length);
                 package.Write(bytes, 0, bytes.Length);
                 //写入偏移信息
-                string uuid = DllMgr.common_md5(files[i].Replace("_32","").Replace("_64",""));
+                string uuid = UtilDll.common_md5(files[i].Replace("_32","").Replace("_64",""));
                 Encoding.UTF8.GetBytes(uuid, 0, uuid.Length, file_byte_info, 0);
                 UtilByte.ToBytes(file_byte_info, uuid.Length, offset);
                 UtilByte.ToBytes(file_byte_info, uuid.Length + 4, (uint)bytes.Length);
@@ -80,9 +80,9 @@ namespace GameCore
         private static void ExportFileMap()
         {
             //加密偏移信息
-            string fileMapPath = EXPORT_PATH + "/" + DllMgr.common_md5(GameConst.FILEMAP_NAME);
+            string fileMapPath = EXPORT_PATH + "/" + UtilDll.common_md5(GameConst.FILEMAP_NAME);
             byte[] bytes = File.ReadAllBytes(fileMapPath);
-            DllMgr.common_encode(bytes, bytes.Length);
+            UtilDll.common_encode(bytes, bytes.Length);
             FileStream filemap = new FileStream(fileMapPath, FileMode.Create);
             filemap.Write(bytes, 0, bytes.Length);
             filemap.Close();

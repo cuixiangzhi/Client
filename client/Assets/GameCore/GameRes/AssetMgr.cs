@@ -147,7 +147,7 @@ namespace GameCore
 
         public static void Init()
         {
-            mPoolParent = new GameObject("ASSET_POOL").transform;
+            mPoolParent = new GameObject("GAME_POOL").transform;
             mPoolParent.position = new Vector3(-1000,-1000,-1000);
             UnityObj.DontDestroyOnLoad(mPoolParent);
             mPool = new List<ObjectPool>(POOL_SIZE);
@@ -282,7 +282,7 @@ namespace GameCore
                 }
                 if (sync)
                 {
-                    UnityObj obj = ab.LoadAsset<UnityObj>(DllMgr.common_md5(path));
+                    UnityObj obj = ab.LoadAsset<UnityObj>(UtilDll.common_md5(path));
                     ab.Unload(false);
                     OnObjectLoad(path, obj);
                 }
@@ -291,11 +291,11 @@ namespace GameCore
                     AsyncOperation aop = null;
                     if (ab.isStreamedSceneAssetBundle)
                     {
-                        aop = SceneMgr.LoadSceneAsync(DllMgr.common_md5(path));
+                        aop = SceneMgr.LoadSceneAsync(UtilDll.common_md5(path));
                     }
                     else
                     {
-                        aop = ab.LoadAssetAsync<UnityObj>(DllMgr.common_md5(path));
+                        aop = ab.LoadAssetAsync<UnityObj>(UtilDll.common_md5(path));
                     }
                     mAsyncBundle.Add(ab);
                     mAsyncOp.Add(aop);

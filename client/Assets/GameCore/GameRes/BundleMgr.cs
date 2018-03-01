@@ -33,39 +33,39 @@ namespace GameCore
             mBuffer = new byte[MAX_BYTE_LEN];            
             mFileMap = new FileMap();
             //旧包数据
-            string fileMapOldPath = Application.streamingAssetsPath + "/" + DllMgr.common_md5(GameConst.FILEMAP_NAME);
-            packageOldPath = Application.streamingAssetsPath + "/" + DllMgr.common_md5(GameConst.PACKAGE_NAME);
+            string fileMapOldPath = Application.streamingAssetsPath + "/" + UtilDll.common_md5(GameConst.FILEMAP_NAME);
+            packageOldPath = Application.streamingAssetsPath + "/" + UtilDll.common_md5(GameConst.PACKAGE_NAME);
             if (Application.platform == RuntimePlatform.Android)
             {
                 AndroidJavaClass player = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
                 AndroidJavaObject context = player.GetStatic<AndroidJavaObject>("currentActivity");
                 AndroidJavaObject assetMgr = context.Call<AndroidJavaObject>("getAssets");
-                mFilePtr = DllMgr.common_android_open(DllMgr.common_md5(GameConst.FILEMAP_NAME), assetMgr.GetRawObject(), 1);
-                int len = DllMgr.common_android_read(mFilePtr, mBuffer, mBuffer.Length);
-                DllMgr.common_android_close(mFilePtr);
-                LogMgr.Log("old filemap read {0} byte",len);
+                mFilePtr = UtilDll.common_android_open(UtilDll.common_md5(GameConst.FILEMAP_NAME), assetMgr.GetRawObject(), 1);
+                int len = UtilDll.common_android_read(mFilePtr, mBuffer, mBuffer.Length);
+                UtilDll.common_android_close(mFilePtr);
+                UtilLog.Log("old filemap read {0} byte",len);
                 mFileMap.CreateOldFileMap(mBuffer, len);
                 //随机读取块数据
-                mFilePtr = DllMgr.common_android_open(DllMgr.common_md5(GameConst.PACKAGE_NAME), assetMgr.GetRawObject(), 1); 
+                mFilePtr = UtilDll.common_android_open(UtilDll.common_md5(GameConst.PACKAGE_NAME), assetMgr.GetRawObject(), 1); 
             }
             else
             {
                 FileStream fs = File.OpenRead(fileMapOldPath);
                 int len = fs.Read(mBuffer, 0, mBuffer.Length);
                 fs.Close();
-                LogMgr.Log("old filemap read {0} byte", len);
+                UtilLog.Log("old filemap read {0} byte", len);
                 mFileMap.CreateOldFileMap(mBuffer, len);
                 mStreamingStream = File.OpenRead(packageOldPath);
             }
             //新包数据
-            string fileMapNewPath = persistentPath + "/" + DllMgr.common_md5(GameConst.FILEMAP_NAME);
-            packageNewPath = persistentPath + "/" + DllMgr.common_md5(GameConst.PACKAGE_NAME);
+            string fileMapNewPath = persistentPath + "/" + UtilDll.common_md5(GameConst.FILEMAP_NAME);
+            packageNewPath = persistentPath + "/" + UtilDll.common_md5(GameConst.PACKAGE_NAME);
             if (File.Exists(fileMapNewPath))
             {
                 FileStream fs = File.OpenRead(fileMapNewPath);
                 int len = fs.Read(mBuffer, 0, mBuffer.Length);
                 fs.Close();
-                LogMgr.Log("new filemap read {0} byte", len);
+                UtilLog.Log("new filemap read {0} byte", len);
                 mFileMap.CreateNewFileMap(mBuffer, len);
                 mPersistStream = File.OpenRead(packageNewPath);
             }
@@ -99,7 +99,7 @@ namespace GameCore
             }
             else
             {
-                LogMgr.Log("asset is null {0}", path);
+                UtilLog.Log("asset is null {0}", path);
             }
         }
 
@@ -117,8 +117,8 @@ namespace GameCore
                 {
                     if(Application.platform == RuntimePlatform.Android)
                     {
-                        DllMgr.common_android_seek(mFilePtr,(int)data.mOffset,0);
-                        DllMgr.common_android_read(mFilePtr, mBuffer, (int)data.mLength);
+                        UtilDll.common_android_seek(mFilePtr,(int)data.mOffset,0);
+                        UtilDll.common_android_read(mFilePtr, mBuffer, (int)data.mLength);
                     }
                     else
                     {
@@ -126,12 +126,12 @@ namespace GameCore
                         mStreamingStream.Read(mBuffer, 0, (int)data.mLength);
                     }
                 }
-                DllMgr.common_decode(mBuffer, (int)data.mLength);
+                UtilDll.common_decode(mBuffer, (int)data.mLength);
                 return new LuaByteBuffer(mBuffer, (int)data.mLength);
             }
             else
             {
-                LogMgr.Log("asset is null {0}", path);
+                UtilLog.Log("asset is null {0}", path);
                 return new LuaByteBuffer(null, 0);
             }           
         }

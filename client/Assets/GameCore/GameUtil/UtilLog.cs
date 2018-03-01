@@ -7,7 +7,7 @@ using System.Reflection;
 
 namespace GameCore
 {
-    public static class LogMgr
+    public static class UtilLog
     {
         //日志文件流
         private static FileStream LOG_STREAM = null;

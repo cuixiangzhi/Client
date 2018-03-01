@@ -8,7 +8,7 @@ using System.Text;
 
 namespace GameCore
 {
-    public static class DllMgr
+    public static class UtilDll
     {
 #if UNITY_IPHONE && !UNITY_EDITOR
         private const string DLLNAME = "__Internal";
