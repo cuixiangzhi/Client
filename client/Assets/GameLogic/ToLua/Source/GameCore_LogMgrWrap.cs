@@ -2,11 +2,11 @@
 using System;
 using LuaInterface;
 
-public class GameCore_LogMgrWrap
+public class GameCore_UtilLogWrap
 {
 	public static void Register(LuaState L)
 	{
-		L.BeginStaticLibs("LogMgr");
+		L.BeginStaticLibs("UtilLog");
 		L.RegFunction("Init", Init);
 		L.RegFunction("Exit", Exit);
 		L.RegFunction("Log", Log);
@@ -21,7 +21,7 @@ public class GameCore_LogMgrWrap
 		try
 		{
 			ToLua.CheckArgsCount(L, 0);
-			GameCore.LogMgr.Init();
+			GameCore.UtilLog.Init();
 			return 0;
 		}
 		catch (Exception e)
@@ -36,7 +36,7 @@ public class GameCore_LogMgrWrap
 		try
 		{
 			ToLua.CheckArgsCount(L, 0);
-			GameCore.LogMgr.Exit();
+			GameCore.UtilLog.Exit();
 			return 0;
 		}
 		catch (Exception e)
@@ -55,19 +55,19 @@ public class GameCore_LogMgrWrap
 			if (count == 1 && TypeChecker.CheckTypes<string>(L, 1))
 			{
 				string arg0 = ToLua.ToString(L, 1);
-				GameCore.LogMgr.Log(arg0);
+				GameCore.UtilLog.Log(arg0);
 				return 0;
 			}
 			else if (TypeChecker.CheckTypes<string>(L, 1) && TypeChecker.CheckParamsType<object>(L, 2, count - 1))
 			{
 				string arg0 = ToLua.ToString(L, 1);
 				object[] arg1 = ToLua.ToParamsObject(L, 2, count - 1);
-				GameCore.LogMgr.Log(arg0, arg1);
+				GameCore.UtilLog.Log(arg0, arg1);
 				return 0;
 			}
 			else
 			{
-				return LuaDLL.luaL_throw(L, "invalid arguments to method: GameCore.LogMgr.Log");
+				return LuaDLL.luaL_throw(L, "invalid arguments to method: GameCore.UtilLog.Log");
 			}
 		}
 		catch (Exception e)
@@ -86,19 +86,19 @@ public class GameCore_LogMgrWrap
 			if (count == 1 && TypeChecker.CheckTypes<string>(L, 1))
 			{
 				string arg0 = ToLua.ToString(L, 1);
-				GameCore.LogMgr.LogError(arg0);
+				GameCore.UtilLog.LogError(arg0);
 				return 0;
 			}
 			else if (TypeChecker.CheckTypes<string>(L, 1) && TypeChecker.CheckParamsType<object>(L, 2, count - 1))
 			{
 				string arg0 = ToLua.ToString(L, 1);
 				object[] arg1 = ToLua.ToParamsObject(L, 2, count - 1);
-				GameCore.LogMgr.LogError(arg0, arg1);
+				GameCore.UtilLog.LogError(arg0, arg1);
 				return 0;
 			}
 			else
 			{
-				return LuaDLL.luaL_throw(L, "invalid arguments to method: GameCore.LogMgr.LogError");
+				return LuaDLL.luaL_throw(L, "invalid arguments to method: GameCore.UtilLog.LogError");
 			}
 		}
 		catch (Exception e)
@@ -117,19 +117,19 @@ public class GameCore_LogMgrWrap
 			if (count == 1 && TypeChecker.CheckTypes<string>(L, 1))
 			{
 				string arg0 = ToLua.ToString(L, 1);
-				GameCore.LogMgr.LogWarning(arg0);
+				GameCore.UtilLog.LogWarning(arg0);
 				return 0;
 			}
 			else if (TypeChecker.CheckTypes<string>(L, 1) && TypeChecker.CheckParamsType<object>(L, 2, count - 1))
 			{
 				string arg0 = ToLua.ToString(L, 1);
 				object[] arg1 = ToLua.ToParamsObject(L, 2, count - 1);
-				GameCore.LogMgr.LogWarning(arg0, arg1);
+				GameCore.UtilLog.LogWarning(arg0, arg1);
 				return 0;
 			}
 			else
 			{
-				return LuaDLL.luaL_throw(L, "invalid arguments to method: GameCore.LogMgr.LogWarning");
+				return LuaDLL.luaL_throw(L, "invalid arguments to method: GameCore.UtilLog.LogWarning");
 			}
 		}
 		catch (Exception e)

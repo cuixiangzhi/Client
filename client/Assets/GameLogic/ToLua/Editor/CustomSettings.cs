@@ -46,7 +46,7 @@ public static class CustomSettings
         //基础
         _GT(typeof(GameCore.UtilUIFollow)),
         _GT(typeof(GameCore.UtilTimer)),
-        _GT(typeof(GameCore.LogMgr)),        
+        _GT(typeof(GameCore.UtilLog)),        
         _GT(typeof(GameCore.AssetMgr)),
         //NGUI
         //NGUIEXT
