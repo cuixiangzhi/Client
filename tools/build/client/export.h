@@ -16,14 +16,14 @@
 
 extern "C"
 {
-	//¶ş½øÖÆ²î·Ö¹¤¾ß
+	//äºŒè¿›åˆ¶å·®åˆ†å·¥å…·
 	DLLAPI int common_diff(char* oldpath,char* newpath,char* patchpath) VISIBILITY_FUNCTION;
 	DLLAPI int common_patch(char* oldpath, char* patchpath, char* newpath) VISIBILITY_FUNCTION;
-	//¼ÓÃÜ½âÃÜUUID¹¤¾ß
+	//åŠ å¯†è§£å¯†UUIDå·¥å…·
 	DLLAPI void common_md5(char* data, int startIndex, char* outhash) VISIBILITY_FUNCTION;
 	DLLAPI void common_encode(unsigned char* data, int len) VISIBILITY_FUNCTION;
 	DLLAPI void common_decode(unsigned char* data, int len) VISIBILITY_FUNCTION;
-	//°²×¿IO¹¤¾ß
+	//å®‰å“IOå·¥å…·
 	DLLAPI void* common_android_open(char* file, void* mgr, int mode) VISIBILITY_FUNCTION;
 	DLLAPI int common_android_read(void* asset,unsigned char* buffer, int len) VISIBILITY_FUNCTION;
 	DLLAPI void common_android_seek(void* asset,int offset,int where) VISIBILITY_FUNCTION;

@@ -1,16 +1,16 @@
 #include "export.h"
 #include "uuid/uuid32.h"
 
-extern "C" int diff(char* oldpath, char* newpath, char* patchpath);
+extern "C" int bsdiff(char* oldpath, char* newpath, char* patchpath);
 DLLAPI int common_diff(char* oldpath, char* newpath, char* patchpath)
 {
-	return diff(oldpath, newpath, patchpath);
+	return bsdiff(oldpath, newpath, patchpath);
 }
 
-extern "C"  int patch(char* oldpath, char* patchpath, char* newpath);
+extern "C"  int bspatch(char* oldpath, char* patchpath, char* newpath);
 DLLAPI int common_patch(char* oldpath, char* patchpath, char* newpath)
 {
-	return patch(oldpath, patchpath, newpath);
+	return bspatch(oldpath, patchpath, newpath);
 }
 
 DLLAPI void common_md5(char* data, int startIndex, char* outhash)
