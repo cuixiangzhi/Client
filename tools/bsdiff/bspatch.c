@@ -207,7 +207,7 @@ int _patch(int argc,char * argv[])
 	return 0;
 }
 
-int patch(char* oldpath, char* patchpath, char* newpath)
+int bspatch(char* oldpath, char* patchpath, char* newpath)
 {
 	char* argv[] = {"error_input", oldpath ,newpath ,patchpath };
 	return _patch(4, argv);

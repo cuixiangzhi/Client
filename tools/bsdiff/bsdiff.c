@@ -405,7 +405,7 @@ int _diff(int argc,char *argv[])
 	return 0;
 }
 
-int diff(char* oldpath, char* newpath, char* patchpath)
+int bsdiff(char* oldpath, char* newpath, char* patchpath)
 {
 	char* argv[] = { "error_input", oldpath ,newpath ,patchpath };
 	return _diff(4, argv);
