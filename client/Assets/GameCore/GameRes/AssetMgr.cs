@@ -142,7 +142,7 @@ namespace GameCore
         //池子大小,缓存时间
         private static int CALL_BACK_SIZE = 16;
         private static int POOL_SIZE = 1024;
-        private static int CACHE_DURATION = 900;
+        private static int CACHE_DURATION = 300;
         private static Transform mPoolParent;
 
         public static void Init()
@@ -158,8 +158,6 @@ namespace GameCore
             mAsyncOp = new List<AsyncOperation>(CALL_BACK_SIZE);
             mAsyncBundle = new List<AssetBundle>(CALL_BACK_SIZE);
             mNullAssets = new HashSet<int>();
-
-            BundleMgr.Init();
         }
 
         public static void LateLoop()
@@ -179,8 +177,12 @@ namespace GameCore
             mAsyncOp = null;
             mAsyncBundle = null;
             mNullAssets = null;
-            BundleMgr.Exit();
         }
+
+		public static void SetAssetCacheTime(int time)
+		{
+			CACHE_DURATION = time;
+		}
 
         public static void LoadAsset(string path, Action<UnityObj> callBack, bool sync)
         {

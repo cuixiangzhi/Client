@@ -74,22 +74,12 @@ public class GameCore_AssetMgrWrap
 				ToLua.Push(L, o);
 				return 1;
 			}
-			else if (count == 4 && TypeChecker.CheckTypes<System.Action<int,LuaInterface.LuaByteBuffer>, bool>(L, 3))
+			else if (count == 3)
 			{
 				string arg0 = ToLua.CheckString(L, 1);
-				int arg1 = (int)LuaDLL.luaL_checknumber(L, 2);
-				System.Action<int,LuaInterface.LuaByteBuffer> arg2 = (System.Action<int,LuaInterface.LuaByteBuffer>)ToLua.ToObject(L, 3);
-				bool arg3 = LuaDLL.lua_toboolean(L, 4);
-				//GameCore.AssetMgr.LoadAsset(arg0, arg1, arg2, arg3);
-				return 0;
-			}
-			else if (count == 4 && TypeChecker.CheckTypes<System.Action<int,UnityEngine.Object>, bool>(L, 3))
-			{
-				string arg0 = ToLua.CheckString(L, 1);
-				int arg1 = (int)LuaDLL.luaL_checknumber(L, 2);
-				System.Action<int,UnityEngine.Object> arg2 = (System.Action<int,UnityEngine.Object>)ToLua.ToObject(L, 3);
-				bool arg3 = LuaDLL.lua_toboolean(L, 4);
-				//GameCore.AssetMgr.LoadAsset(arg0, arg1, arg2, arg3);
+				System.Action<UnityEngine.Object> arg1 = (System.Action<UnityEngine.Object>)ToLua.CheckDelegate<System.Action<UnityEngine.Object>>(L, 2);
+				bool arg2 = LuaDLL.luaL_checkboolean(L, 3);
+				GameCore.AssetMgr.LoadAsset(arg0, arg1, arg2);
 				return 0;
 			}
 			else

@@ -27,7 +27,7 @@ namespace GameCore
                 return base.ReadFile(fileName);
 #else
                 //读取LUA字节码               
-                return AssetManager.LoadAsset(fileName);
+                return AssetMgr.LoadAsset(fileName);
 #endif
             }
 

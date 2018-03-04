@@ -24,6 +24,7 @@ public class DelegateFactory
 		dict.Add(typeof(System.Action<LuaValueInfo>), factory.System_Action_LuaValueInfo);
 		dict.Add(typeof(System.Comparison<LuaValueInfo>), factory.System_Comparison_LuaValueInfo);
 		dict.Add(typeof(GameCore.UtilTimer.TimerCallBack), factory.GameCore_UtilTimer_TimerCallBack);
+		dict.Add(typeof(System.Action<UnityEngine.Object>), factory.System_Action_UnityEngine_Object);
 
 		DelegateTraits<System.Action<int,LuaInterface.LuaByteBuffer>>.Init(factory.System_Action_int_LuaInterface_LuaByteBuffer);
 		DelegateTraits<System.Action<int,UnityEngine.Object>>.Init(factory.System_Action_int_UnityEngine_Object);
@@ -32,6 +33,7 @@ public class DelegateFactory
 		DelegateTraits<System.Action<LuaValueInfo>>.Init(factory.System_Action_LuaValueInfo);
 		DelegateTraits<System.Comparison<LuaValueInfo>>.Init(factory.System_Comparison_LuaValueInfo);
 		DelegateTraits<GameCore.UtilTimer.TimerCallBack>.Init(factory.GameCore_UtilTimer_TimerCallBack);
+		DelegateTraits<System.Action<UnityEngine.Object>>.Init(factory.System_Action_UnityEngine_Object);
 
 		TypeTraits<System.Action<int,LuaInterface.LuaByteBuffer>>.Init(factory.Check_System_Action_int_LuaInterface_LuaByteBuffer);
 		TypeTraits<System.Action<int,UnityEngine.Object>>.Init(factory.Check_System_Action_int_UnityEngine_Object);
@@ -40,6 +42,7 @@ public class DelegateFactory
 		TypeTraits<System.Action<LuaValueInfo>>.Init(factory.Check_System_Action_LuaValueInfo);
 		TypeTraits<System.Comparison<LuaValueInfo>>.Init(factory.Check_System_Comparison_LuaValueInfo);
 		TypeTraits<GameCore.UtilTimer.TimerCallBack>.Init(factory.Check_GameCore_UtilTimer_TimerCallBack);
+		TypeTraits<System.Action<UnityEngine.Object>>.Init(factory.Check_System_Action_UnityEngine_Object);
 
 		StackTraits<System.Action<int,LuaInterface.LuaByteBuffer>>.Push = factory.Push_System_Action_int_LuaInterface_LuaByteBuffer;
 		StackTraits<System.Action<int,UnityEngine.Object>>.Push = factory.Push_System_Action_int_UnityEngine_Object;
@@ -48,6 +51,7 @@ public class DelegateFactory
 		StackTraits<System.Action<LuaValueInfo>>.Push = factory.Push_System_Action_LuaValueInfo;
 		StackTraits<System.Comparison<LuaValueInfo>>.Push = factory.Push_System_Comparison_LuaValueInfo;
 		StackTraits<GameCore.UtilTimer.TimerCallBack>.Push = factory.Push_GameCore_UtilTimer_TimerCallBack;
+		StackTraits<System.Action<UnityEngine.Object>>.Push = factory.Push_System_Action_UnityEngine_Object;
 	}
     
     public static Delegate CreateDelegate(Type t, LuaFunction func = null)
@@ -568,6 +572,63 @@ public class DelegateFactory
 	}
 
 	void Push_GameCore_UtilTimer_TimerCallBack(IntPtr L, GameCore.UtilTimer.TimerCallBack o)
+	{
+		ToLua.Push(L, o);
+	}
+
+	class System_Action_UnityEngine_Object_Event : LuaDelegate
+	{
+		public System_Action_UnityEngine_Object_Event(LuaFunction func) : base(func) { }
+		public System_Action_UnityEngine_Object_Event(LuaFunction func, LuaTable self) : base(func, self) { }
+
+		public void Call(UnityEngine.Object param0)
+		{
+			func.BeginPCall();
+			func.Push(param0);
+			func.PCall();
+			func.EndPCall();
+		}
+
+		public void CallWithSelf(UnityEngine.Object param0)
+		{
+			func.BeginPCall();
+			func.Push(self);
+			func.Push(param0);
+			func.PCall();
+			func.EndPCall();
+		}
+	}
+
+	public System.Action<UnityEngine.Object> System_Action_UnityEngine_Object(LuaFunction func, LuaTable self, bool flag)
+	{
+		if (func == null)
+		{
+			System.Action<UnityEngine.Object> fn = delegate(UnityEngine.Object param0) { };
+			return fn;
+		}
+
+		if(!flag)
+		{
+			System_Action_UnityEngine_Object_Event target = new System_Action_UnityEngine_Object_Event(func);
+			System.Action<UnityEngine.Object> d = target.Call;
+			target.method = d.Method;
+			return d;
+		}
+		else
+		{
+			System_Action_UnityEngine_Object_Event target = new System_Action_UnityEngine_Object_Event(func, self);
+			System.Action<UnityEngine.Object> d = target.CallWithSelf;
+			target.method = d.Method;
+			return d;
+		}
+	}
+
+	bool Check_System_Action_UnityEngine_Object(IntPtr L, int pos)
+	{
+		return TypeChecker.CheckDelegateType(typeof(System.Action<UnityEngine.Object>), L, pos);
+	}
+
+	void Push_System_Action_UnityEngine_Object(IntPtr L, System.Action<UnityEngine.Object> o)
 	{
 		ToLua.Push(L, o);
 	}
