@@ -59,7 +59,7 @@ namespace GameCore
             }
             //渲染设置
             PlayerSettings.colorSpace = ColorSpace.Gamma;
-            PlayerSettings.mobileMTRendering = true;
+            PlayerSettings.SetMobileMTRendering(BuildTargetGroup.Android,true);
             PlayerSettings.MTRendering = true;
             PlayerSettings.use32BitDisplayBuffer = true;
             //应用设置   
