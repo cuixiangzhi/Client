@@ -55,6 +55,9 @@ UDP  无连接、不可靠、无序,自己拆包、速度快,需要自己在数�
 RTT 往返时延
 	表示从发送端发送数据开始，到发送端收到来自接收端的确认（接收端收到数据后便立即发送确认），总共经历的时延。
 	链路的传播时间、末端系统的处理时间以及路由器的缓存中的排队和处理时间
+
+INADDR_ANY
+	本机的所有IP地址,机器可以安装多个网卡
 SOCKET API 
 	如果是在windows下,首先需要初始化SOCKET环境,  
 		 WORD sockVersion = MAKEWORD(2,2);
@@ -159,21 +162,20 @@ IO模型
   同步IO操作,请求导致进程阻塞,直到IO完成
   异步IO操作,请求不阻塞进程
   
-  LINUX 文件映射
+LINUX 文件映射
 	mmap(0表示系统选择映射区起始地址,需要映射的字节数,PROT_READ | PROT_WRITE | PROT_EXEC,RESERVE | COMMIT,-1表示匿名新建文件,0);
 	munmap(addr,len)释放文件
-	
-	共享内存
+共享内存
 	shmget()
 	shmat
 	shmdt
 	shmctl
-  WINDOWS 文件映射
-	  HANDLE handle = CreateFileMapping(0xFFFFFFFFFFFFFFFF,NULL,PAGE_READWRITE,sizeMax,sizeMin,mapKey)
-	  HANDLE handle = OpenFileMapping(FILE_MAP_ALL_ACCESS,TRUE,mapKey)
-	  void* ptr = MapViewOfFile(handle,FILE_MAP_ALL_ACCESS,0,0,0)
-	  UnmapViewOfFile(ptr)
-	  CloseHandle(handle)
+WINDOWS 文件映射
+	HANDLE handle = CreateFileMapping(0xFFFFFFFFFFFFFFFF,NULL,PAGE_READWRITE,sizeMax,sizeMin,mapKey)
+	HANDLE handle = OpenFileMapping(FILE_MAP_ALL_ACCESS,TRUE,mapKey)
+	void* ptr = MapViewOfFile(handle,FILE_MAP_ALL_ACCESS,0,0,0)
+	UnmapViewOfFile(ptr)
+	CloseHandle(handle)
 	  
 CDN多级缓存
 	首先DNS服务器解析出目的地址,这个地址是CDN中心负载均衡服务器,负责把请求分散到区域最近的CDN服务器
@@ -184,3 +186,11 @@ HTTP协议
 		无状态,就是两个请求之间没有关系
 		协议构成
 		        方法名(POST修改GET获取PUT上传DELETE删除) 资源地址 HTTP/版本
+
+服务器结构
+		  Login: 线程1,连接线程,管理与Client的连接,端口唯一
+		  		 线程2,管理与Server的连接,Billing(时间计费)、World()
+		         
+		         线程C,管理与DB的连接,
+		         线程D,
+		         线程E,主线程,守护子线程

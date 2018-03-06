@@ -87,7 +87,7 @@
 			 stdlib 内存分配 malloc free 数值与字符串转换 atoi itoa 随机数 srand(seed) rand 系统操作 system exit abort 环境变量 getenv putenv
 			 stdarg 不定长参数处理  __VA_ARGS__ va_list ap; va_start(ap,format); char buffer[512]; len = vsprintf(buffer,format,ap); va_end(ap);
 			 string strcat(dst,src) strcpy(dst,src) strlen(src) strcmp(src,dst) c_str
-			 ctime time(NULL) clock()当前运行经过的毫秒数
+			 ctime time_t time(NULL)系统时间秒 clock_t clock()运行时间毫秒 tm localtime(time_t t)具体日期
 			 基础宏定义 __LINE__ __FUNCTION__ __FILE__
 
 EFFECTIVE C++ 
