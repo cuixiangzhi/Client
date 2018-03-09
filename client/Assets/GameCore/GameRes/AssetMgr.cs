@@ -179,11 +179,6 @@ namespace GameCore
             mNullAssets = null;
         }
 
-		public static void SetAssetCacheTime(int time)
-		{
-			CACHE_DURATION = time;
-		}
-
         public static void LoadAsset(string path, Action<UnityObj> callBack, bool sync)
         {
             int hash = path.GetHashCode();

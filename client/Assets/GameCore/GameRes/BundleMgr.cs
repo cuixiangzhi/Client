@@ -17,7 +17,7 @@ namespace GameCore
         private static string persistentPath = Application.persistentDataPath + "/";
 #endif
         //IO BUFFER
-        private static int MAX_BYTE_LEN = 1024 * 1024;
+        private static int MAX_BYTE_LEN = 1024 * 1024 * 2;
         private static byte[] mBuffer = null;
         //资源包信息
         private static FileMap mFileMap = null;

@@ -19,6 +19,13 @@ namespace GameCore
         }
     }
 
+    public struct FileData
+    {
+        public uint mOffset;
+        public uint mLength;
+        public string mHash;
+    }
+
     public class FileMap
     {
         private Dictionary<string, ByteData> mOldFile32 = null;
