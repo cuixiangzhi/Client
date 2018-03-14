@@ -9,6 +9,7 @@ loadstring_ = loadstring
 else
 loadstring_ = load
 end
+local ZZBase64 = {}
 local LuaDebugTool_ = nil
 if(LuaDebugTool) then
 
@@ -595,7 +596,7 @@ local json = createJson()
 	stepNextFun = nil,
 	DebugLuaFie = "",
 	runLineCount = 0,
-	version="1.0.1"
+	version="1.0.4"
 	
 
 }
@@ -640,7 +641,7 @@ function print(...)
 			end
 			local sendMsg = {
 				event = LuaDebugger.event.C2S_LuaPrint,
-				data = {msg = str}
+				data = {msg = ZZBase64.encode( str)}
 			}
 			local sendStr = json.encode(sendMsg)
 			debug_server:send(sendStr .. "__debugger_k0204__")
@@ -724,38 +725,13 @@ local function debugger_dump(value, desciption, nesting)
 		print(line)
 	end
 end
-local function ToBase64(source_str)
-	local b64chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
-	local s64 = ''
-	local str = source_str
-	while # str > 0 do
-		local bytes_num = 0
-		local buf = 0
-		for byte_cnt = 1, 3 do
-			buf =(buf * 256)
-			if # str > 0 then
-				buf = buf + string.byte(str, 1, 1)
-				str = string.sub(str, 2)
-				bytes_num = bytes_num + 1
-			end
-		end
-		for group_cnt = 1,(bytes_num + 1) do
-			local b64char = math.fmod(math.floor(buf / 262144), 64) + 1
-			s64 = s64 .. string.sub(b64chars, b64char, b64char)
-			buf = buf * 64
-		end
-		for fill_cnt = 1,(3 - bytes_num) do
-			s64 = s64 .. '='
-		end
-	end
-	return s64
-end
+
 local function debugger_setVarInfo(name, value)
 	local vt = type(value)
 	local valueStr = ""
 	if(vt ~= "table") then
 		valueStr = tostring(value)
-		valueStr = ToBase64(valueStr)
+		valueStr = ZZBase64.encode(valueStr)
 	else
 		-- valueStr =  topointer(value)
 	end
@@ -1092,7 +1068,7 @@ local function debugger_GeVarInfoBytUserData(server,var,variablesReference,debug
 		local valueInfo = {
 			name = filed.name,
 			valueType = filed.valueType,
-			valueStr = ToBase64(filed.valueStr),
+			valueStr = ZZBase64.encode(filed.valueStr),
 			isValue = filed.isValue
 		}
 		
@@ -1113,7 +1089,6 @@ local function debugger_getBreakVar(body, server)
 	local debugSpeedIndex = body.debugSpeedIndex
 	local vinfos = {}
 	local function exe()
-		
 		local frameId = body.frameId;
 		local type_ = body.type;
 		local keys = body.keys;
@@ -1143,20 +1118,30 @@ local function debugger_getBreakVar(body, server)
 				else
 					vars = vars[v]
 				end
-			else
+			else		
 				vars = vars[v]
 			end
-			if(type(vars) == "userdata" and LuaDebugTool == nil) then
+			if(type(vars) == "userdata" and tolua ~= nil and  LuaDebugTool == nil) then
 				vars = tolua.getpeer(vars)
 			end
 			if(vars == nil) then
 				break;
 			end
 		end
-	
-		if(type(vars) == "userdata" and LuaDebugTool) then
-			debugger_GeVarInfoBytUserData(server,vars,variablesReference,debugSpeedIndex)
-			return;
+		local varType = type(vars)
+		if(varType == "userdata" ) then
+			if(LuaDebugTool) then
+				debugger_GeVarInfoBytUserData(server,vars,variablesReference,debugSpeedIndex)
+				return;
+			elseif(tolua == nil) then
+					debugger_sendMsg(server, LuaDebugger.event.C2S_ReqVar, {
+						variablesReference = variablesReference,
+						debugSpeedIndex = debugSpeedIndex,
+						vars = vinfos,
+						isComplete = 1
+					})
+					return
+			end
 		end
 
 		local count = 0;
@@ -1181,6 +1166,9 @@ local function debugger_getBreakVar(body, server)
 					for _k,_v in pairs(v) do
 						add_value(_k.name,vars[_k.name]);
 					end
+					add_value("MRID",vars["MRID"]);
+					add_value("GROUPID",vars["GROUPID"]);
+					add_value("UNITID",vars["UNITID"]);
 				else
 					add_value(k,v);
 				end
@@ -1206,7 +1194,7 @@ local function debugger_getBreakVar(body, server)
 				{
 					name ="error",
 					valueType = "string",
-					valueStr = ToBase64("无法获取属性值"),
+					valueStr = ZZBase64.encode("无法获取属性值"),
 					isValue = false
 				}
 			},
@@ -1316,7 +1304,7 @@ debug_hook = function(event, line)
 		local funlength =0
 		if(LuaDebugger.currentDebuggerData) then
 			funs = LuaDebugger.currentDebuggerData.funcs
-			funlength = #funs
+			funlength = funs and #funs or 0
 		end
 		local stepInfo = getinfo(2)
 		local tempFunc = stepInfo.func
@@ -1472,5 +1460,150 @@ function StartDebug(host, port)
 		print(error)
 	end)
 	return debugger_receiveDebugBreakInfo, debugger_xpcall
+end
+
+
+--base64
+
+local string = string
+
+ZZBase64.__code = {
+            'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
+            'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f',
+            'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v',
+            'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '/',
+        };
+ZZBase64.__decode = {}
+for k,v in pairs(ZZBase64.__code) do
+    ZZBase64.__decode[string.byte(v,1)] = k - 1
+end
+
+function ZZBase64.encode(text)
+    local len = string.len(text)
+    local left = len % 3
+    len = len - left
+    local res = {}
+    local index  = 1
+    for i = 1, len, 3 do
+        local a = string.byte(text, i )
+        local b = string.byte(text, i + 1)
+        local c = string.byte(text, i + 2)
+        -- num = a<<16 + b<<8 + c
+        local num = a * 65536 + b * 256 + c 
+        for j = 1, 4 do
+            --tmp = num >> ((4 -j) * 6)
+            local tmp = math.floor(num / (2 ^ ((4-j) * 6)))
+            --curPos = tmp&0x3f
+            local curPos = tmp % 64 + 1
+            res[index] = ZZBase64.__code[curPos]
+            index = index + 1
+        end
+    end
+
+    if left == 1 then
+        ZZBase64.__left1(res, index, text, len)
+    elseif left == 2 then
+        ZZBase64.__left2(res, index, text, len)        
+    end
+    return table.concat(res)
+end
+
+function ZZBase64.__left2(res, index, text, len)
+    local num1 = string.byte(text, len + 1)
+    num1 = num1 * 1024 --lshift 10 
+    local num2 = string.byte(text, len + 2)
+    num2 = num2 * 4 --lshift 2 
+    local num = num1 + num2
+   
+    local tmp1 = math.floor(num / 4096) --rShift 12
+    local curPos = tmp1 % 64 + 1
+    res[index] = ZZBase64.__code[curPos]
+    
+    local tmp2 = math.floor(num / 64)
+    curPos = tmp2 % 64 + 1
+    res[index + 1] = ZZBase64.__code[curPos]
+
+    curPos = num % 64 + 1
+    res[index + 2] = ZZBase64.__code[curPos]
+    
+    res[index + 3] = "=" 
+end
+
+function ZZBase64.__left1(res, index,text, len)
+    local num = string.byte(text, len + 1)
+    num = num * 16 
+    
+    tmp = math.floor(num / 64)
+    local curPos = tmp % 64 + 1
+    res[index ] = ZZBase64.__code[curPos]
+    
+    curPos = num % 64 + 1
+    res[index + 1] = ZZBase64.__code[curPos]
+    
+    res[index + 2] = "=" 
+    res[index + 3] = "=" 
+end
+
+function ZZBase64.decode(text)
+    local len = string.len(text)
+    local left = 0 
+    if string.sub(text, len - 1) == "==" then
+        left = 2 
+        len = len - 4
+    elseif string.sub(text, len) == "=" then
+        left = 1
+        len = len - 4
+    end
+
+    local res = {}
+    local index = 1
+    local decode = ZZBase64.__decode
+    for i =1, len, 4 do
+        local a = decode[string.byte(text,i    )] 
+        local b = decode[string.byte(text,i + 1)] 
+        local c = decode[string.byte(text,i + 2)] 
+        local d = decode[string.byte(text,i + 3)]
+
+        --num = a<<18 + b<<12 + c<<6 + d
+        local num = a * 262144 + b * 4096 + c * 64 + d
+        
+        local e = string.char(num % 256)
+        num = math.floor(num / 256)
+        local f = string.char(num % 256)
+        num = math.floor(num / 256)
+        res[index ] = string.char(num % 256)
+        res[index + 1] = f
+        res[index + 2] = e
+        index = index + 3
+    end
+
+    if left == 1 then
+        ZZBase64.__decodeLeft1(res, index, text, len)
+    elseif left == 2 then
+        ZZBase64.__decodeLeft2(res, index, text, len)
+    end
+    return table.concat(res)
+end
+
+function ZZBase64.__decodeLeft1(res, index, text, len)
+    local decode = ZZBase64.__decode
+    local a = decode[string.byte(text, len + 1)] 
+    local b = decode[string.byte(text, len + 2)] 
+    local c = decode[string.byte(text, len + 3)] 
+    local num = a * 4096 + b * 64 + c
+    
+    local num1 = math.floor(num / 1024) % 256
+    local num2 = math.floor(num / 4) % 256
+    res[index] = string.char(num1)
+    res[index + 1] = string.char(num2)
+end
+
+function ZZBase64.__decodeLeft2(res, index, text, len)
+    local decode = ZZBase64.__decode
+    local a = decode[string.byte(text, len + 1)] 
+    local b = decode[string.byte(text, len + 2)]
+    local num = a * 64 + b
+    num = math.floor(num / 16)
+    res[index] = string.char(num)
 end
 return StartDebug
