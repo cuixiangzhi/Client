@@ -1,17 +1,79 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
+    <Filter Include="main">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    <Filter Include="bsdiff">
+      <UniqueIdentifier>{0d64a481-2209-484e-a83f-e8f96b3bf81e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="uuid">
+      <UniqueIdentifier>{a33ebf73-4170-491e-9b9a-f05b58b03c49}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="export.h">
+      <Filter>main</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\bsdiff\bstype.h">
+      <Filter>bsdiff</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\bsdiff\bzlib.h">
+      <Filter>bsdiff</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\bsdiff\bzlib_private.h">
+      <Filter>bsdiff</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\uuid\cdatatype.h">
+      <Filter>uuid</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\uuid\md5.h">
+      <Filter>uuid</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\uuid\uuid32.h">
+      <Filter>uuid</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="export.cc">
+      <Filter>main</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\bsdiff\blocksort.c">
+      <Filter>bsdiff</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\bsdiff\bsdiff.c">
+      <Filter>bsdiff</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\bsdiff\bspatch.c">
+      <Filter>bsdiff</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\bsdiff\bzlib.c">
+      <Filter>bsdiff</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\bsdiff\compress.c">
+      <Filter>bsdiff</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\bsdiff\crctable.c">
+      <Filter>bsdiff</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\bsdiff\decompress.c">
+      <Filter>bsdiff</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\bsdiff\huffman.c">
+      <Filter>bsdiff</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\bsdiff\randtable.c">
+      <Filter>bsdiff</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\uuid\bitcoder.cpp">
+      <Filter>uuid</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\uuid\md5.cpp">
+      <Filter>uuid</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\uuid\uuid32.cpp">
+      <Filter>uuid</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
