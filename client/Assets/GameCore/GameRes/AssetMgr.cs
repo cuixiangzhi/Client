@@ -142,7 +142,6 @@ namespace GameCore
         //池子大小,缓存时间
         private static int CALL_BACK_SIZE = 16;
         private static int POOL_SIZE = 1024;
-        private static int CACHE_DURATION = 300;
         private static Transform mPoolParent;
 
         public static void Init()
@@ -198,7 +197,7 @@ namespace GameCore
             {
                 //添加回调
                 LoadCallBack.CreateCallBack(path,hash,callBack,sync);
-                BundleMgr.LoadBundle(path, OnBundleLoad);
+                OnBundleLoad(path,BundleMgr.LoadBundle(path));
             }
         }
 
@@ -220,12 +219,12 @@ namespace GameCore
             }
         }
 
-        private static void CollectAsset()
+        public static void CollectAsset(float sec = 180)
         {
             for(int i = 0;i < mPool.Count;i++)
             {
                 //最后一次使用的时间到现在超过缓存时长,就清理掉
-                if(mPool[i].mUsingObj.Count == 0 && mPool[i].mLastUseTime + CACHE_DURATION < Time.time)
+                if(mPool[i].mUsingObj.Count == 0 && Time.time - mPool[i].mLastUseTime >= sec)
                 {
                     for(int j = 0;j < mPool[i].mUnUsingObj.Count;j++)
                     {

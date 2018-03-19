@@ -7,6 +7,6 @@ function log(format,...)
     xpcall(print,traceback,string.format(format,...))
 end
 
-function error(format,...)
+function err(format,...)
     xpcall(print_error,traceback,string.format(format,...))
 end

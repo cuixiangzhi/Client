@@ -58,7 +58,20 @@ namespace GameCore
         public static extern int common_patch(string oldpath, string patchpath, string newpath);
 
         [DllImport(DLLNAME)]
-        public static extern IntPtr common_android_open(string file, IntPtr mgr, int mode);
+        private static extern IntPtr common_android_open(string file, IntPtr mgr, int mode);
+
+        private static IntPtr mAssetMgr = IntPtr.Zero;
+        public static IntPtr common_android_open(string file)
+        {
+            if(mAssetMgr == IntPtr.Zero)
+            {
+                AndroidJavaClass player = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+                AndroidJavaObject context = player.GetStatic<AndroidJavaObject>("currentActivity");
+                AndroidJavaObject assetMgr = context.Call<AndroidJavaObject>("getAssets");
+                mAssetMgr = assetMgr.GetRawObject();
+            }
+            return common_android_open(file, mAssetMgr, 1);
+        }
 
         [DllImport(DLLNAME)]
         public static extern int common_android_read(IntPtr asset, byte[] buffer, int len);

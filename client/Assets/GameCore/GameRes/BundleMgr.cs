@@ -11,129 +11,47 @@ namespace GameCore
 {
     public static class BundleMgr
     {
-#if UNITY_EDITOR
-        private static string persistentPath = Application.dataPath + "/../";
-#else
-        private static string persistentPath = Application.persistentDataPath + "/";
-#endif
+        private static string persistentPath = Application.streamingAssetsPath;
         //IO BUFFER
         private static int MAX_BYTE_LEN = 1024 * 1024 * 2;
         private static byte[] mBuffer = null;
-        //资源包信息
-        private static FileMap mFileMap = null;
-        //文件流
-        private static string packageOldPath;
-        private static string packageNewPath;
-        private static FileStream mPersistStream = null;
-        private static FileStream mStreamingStream = null;
-        private static IntPtr mFilePtr;
 
         public static void Init()
         {
-            mBuffer = new byte[MAX_BYTE_LEN];            
-            mFileMap = new FileMap();
-            //旧包数据
-            string fileMapOldPath = Application.streamingAssetsPath + "/" + UtilDll.common_md5(GameConst.FILEMAP_NAME);
-            packageOldPath = Application.streamingAssetsPath + "/" + UtilDll.common_md5(GameConst.PACKAGE_NAME);
-            if (Application.platform == RuntimePlatform.Android)
-            {
-                AndroidJavaClass player = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
-                AndroidJavaObject context = player.GetStatic<AndroidJavaObject>("currentActivity");
-                AndroidJavaObject assetMgr = context.Call<AndroidJavaObject>("getAssets");
-                mFilePtr = UtilDll.common_android_open(UtilDll.common_md5(GameConst.FILEMAP_NAME), assetMgr.GetRawObject(), 1);
-                int len = UtilDll.common_android_read(mFilePtr, mBuffer, mBuffer.Length);
-                UtilDll.common_android_close(mFilePtr);
-                UtilLog.Log("old filemap read {0} byte",len);
-                mFileMap.CreateOldFileMap(mBuffer, len);
-                //随机读取块数据
-                mFilePtr = UtilDll.common_android_open(UtilDll.common_md5(GameConst.PACKAGE_NAME), assetMgr.GetRawObject(), 1); 
-            }
-            else
-            {
-                FileStream fs = File.OpenRead(fileMapOldPath);
-                int len = fs.Read(mBuffer, 0, mBuffer.Length);
-                fs.Close();
-                UtilLog.Log("old filemap read {0} byte", len);
-                mFileMap.CreateOldFileMap(mBuffer, len);
-                mStreamingStream = File.OpenRead(packageOldPath);
-            }
-            //新包数据
-            string fileMapNewPath = persistentPath + "/" + UtilDll.common_md5(GameConst.FILEMAP_NAME);
-            packageNewPath = persistentPath + "/" + UtilDll.common_md5(GameConst.PACKAGE_NAME);
-            if (File.Exists(fileMapNewPath))
-            {
-                FileStream fs = File.OpenRead(fileMapNewPath);
-                int len = fs.Read(mBuffer, 0, mBuffer.Length);
-                fs.Close();
-                UtilLog.Log("new filemap read {0} byte", len);
-                mFileMap.CreateNewFileMap(mBuffer, len);
-                mPersistStream = File.OpenRead(packageNewPath);
-            }
+            mBuffer = new byte[MAX_BYTE_LEN];
         }
 
         public static void Exit()
         {
             mBuffer = null;
-            mFileMap = null;
-            if(mPersistStream != null)
-                mPersistStream.Close();
-            mPersistStream = null;
-            if (mStreamingStream != null)
-                mStreamingStream.Close();
-            mStreamingStream = null;
         }
 
-        public static void LoadBundle(string path, Action<string, AssetBundle> callBack)
+        public static AssetBundle LoadBundle(string relativePath)
         {
-            ByteData data = mFileMap.GetByteData(path);
-            if(data.mLength != 0)
+            string fullPath = string.Format("{0}/{1}", persistentPath, relativePath);
+            if (File.Exists(fullPath))
             {
-                if(mFileMap.IsNewFile(path))
-                {
-                    callBack(path, AssetBundle.LoadFromFile(packageNewPath, 0, data.mOffset));
-                }
-                else
-                {
-                    callBack(path, AssetBundle.LoadFromFile(packageOldPath, 0, data.mOffset));
-                }
+                return AssetBundle.LoadFromFile(fullPath);
             }
             else
             {
-                UtilLog.Log("asset is null {0}", path);
+                UtilLog.LogWarning("asset is null {0}", relativePath);
+                return null;
             }
         }
 
-        public static LuaByteBuffer LoadBytes(string path)
+        public static LuaByteBuffer LoadBytes(string relativePath)
         {
-            ByteData data = mFileMap.GetByteData(path);
-            if(data.mLength != 0)
+            string fullPath = string.Format("{0}/{1}", persistentPath, relativePath);
+            if (File.Exists(fullPath))
             {
-                if(mFileMap.IsNewFile(path))
-                {
-                    mPersistStream.Seek(data.mOffset, SeekOrigin.Begin);
-                    mPersistStream.Read(mBuffer, 0, (int)data.mLength);
-                }
-                else
-                {
-                    if(Application.platform == RuntimePlatform.Android)
-                    {
-                        UtilDll.common_android_seek(mFilePtr,(int)data.mOffset,0);
-                        UtilDll.common_android_read(mFilePtr, mBuffer, (int)data.mLength);
-                    }
-                    else
-                    {
-                        mStreamingStream.Seek(data.mOffset, SeekOrigin.Begin);
-                        mStreamingStream.Read(mBuffer, 0, (int)data.mLength);
-                    }
-                }
-                UtilDll.common_decode(mBuffer, (int)data.mLength);
-                return new LuaByteBuffer(mBuffer, (int)data.mLength);
+                return new LuaByteBuffer(File.ReadAllBytes(fullPath));
             }
             else
             {
-                UtilLog.Log("asset is null {0}", path);
+                UtilLog.LogWarning("asset is null {0}", relativePath);
                 return new LuaByteBuffer(null, 0);
-            }           
+            }
         }
     }
 }
