@@ -1,5 +1,4 @@
 #include "export.h"
-#include "uuid/uuid32.h"
 
 extern "C" int bsdiff(char* oldpath, char* newpath, char* patchpath);
 DLLAPI int common_diff(char* oldpath, char* newpath, char* patchpath)
