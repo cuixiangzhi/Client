@@ -7,9 +7,6 @@
 
 #ifdef __ANDROID__ 
 #define VISIBILITY_FUNCTION __attribute__((visibility("default")))
-#include "jni.h"
-#include "android/asset_manager.h"
-#include "android/asset_manager_jni.h"
 #else
 #define VISIBILITY_FUNCTION
 #endif
@@ -28,4 +25,9 @@ extern "C"
 	DLLAPI int common_android_read(void* asset,unsigned char* buffer, int len) VISIBILITY_FUNCTION;
 	DLLAPI void common_android_seek(void* asset,int offset,int where) VISIBILITY_FUNCTION;
 	DLLAPI void common_android_close(void* asset) VISIBILITY_FUNCTION;
+	//通用IO工具
+	DLLAPI void* common_open(char* file,char* mode) VISIBILITY_FUNCTION;
+	DLLAPI int common_read(void* asset, int size, unsigned char* buffer) VISIBILITY_FUNCTION;
+	DLLAPI void common_seek(void* asset,int offset,int where) VISIBILITY_FUNCTION;
+	DLLAPI void common_close(void* asset) VISIBILITY_FUNCTION;
 };

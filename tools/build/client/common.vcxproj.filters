@@ -11,6 +11,9 @@
     <Filter Include="uuid">
       <UniqueIdentifier>{a33ebf73-4170-491e-9b9a-f05b58b03c49}</UniqueIdentifier>
     </Filter>
+    <Filter Include="io">
+      <UniqueIdentifier>{d8934766-b688-4386-9d85-d54a5bc0b7f2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="export.h">
@@ -66,13 +69,19 @@
     <ClCompile Include="..\..\bsdiff\randtable.c">
       <Filter>bsdiff</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\uuid\bitcoder.cpp">
-      <Filter>uuid</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\uuid\md5.cpp">
       <Filter>uuid</Filter>
     </ClCompile>
     <ClCompile Include="..\..\uuid\uuid32.cpp">
+      <Filter>uuid</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\io\io_android.cc">
+      <Filter>io</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\io\io_common.cc">
+      <Filter>io</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\uuid\encrypt.cpp">
       <Filter>uuid</Filter>
     </ClCompile>
   </ItemGroup>

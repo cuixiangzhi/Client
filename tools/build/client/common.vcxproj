@@ -135,7 +135,9 @@
     <ClCompile Include="..\..\bsdiff\decompress.c" />
     <ClCompile Include="..\..\bsdiff\huffman.c" />
     <ClCompile Include="..\..\bsdiff\randtable.c" />
-    <ClCompile Include="..\..\uuid\bitcoder.cpp" />
+    <ClCompile Include="..\..\io\io_android.cc" />
+    <ClCompile Include="..\..\io\io_common.cc" />
+    <ClCompile Include="..\..\uuid\encrypt.cpp" />
     <ClCompile Include="..\..\uuid\md5.cpp" />
     <ClCompile Include="..\..\uuid\uuid32.cpp" />
     <ClCompile Include="export.cc" />
