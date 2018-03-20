@@ -1,0 +1,547 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		016C68192060D9D4003A8A80 /* export.cc in Sources */ = {isa = PBXBuildFile; fileRef = 016C68172060D9D4003A8A80 /* export.cc */; };
+		016C682A2060DA1A003A8A80 /* blocksort.c in Sources */ = {isa = PBXBuildFile; fileRef = 016C681E2060DA1A003A8A80 /* blocksort.c */; };
+		016C682B2060DA1A003A8A80 /* bsdiff.c in Sources */ = {isa = PBXBuildFile; fileRef = 016C681F2060DA1A003A8A80 /* bsdiff.c */; };
+		016C682C2060DA1A003A8A80 /* bspatch.c in Sources */ = {isa = PBXBuildFile; fileRef = 016C68202060DA1A003A8A80 /* bspatch.c */; };
+		016C682D2060DA1A003A8A80 /* bzlib.c in Sources */ = {isa = PBXBuildFile; fileRef = 016C68222060DA1A003A8A80 /* bzlib.c */; };
+		016C682E2060DA1A003A8A80 /* compress.c in Sources */ = {isa = PBXBuildFile; fileRef = 016C68252060DA1A003A8A80 /* compress.c */; };
+		016C682F2060DA1A003A8A80 /* crctable.c in Sources */ = {isa = PBXBuildFile; fileRef = 016C68262060DA1A003A8A80 /* crctable.c */; };
+		016C68302060DA1A003A8A80 /* decompress.c in Sources */ = {isa = PBXBuildFile; fileRef = 016C68272060DA1A003A8A80 /* decompress.c */; };
+		016C68312060DA1A003A8A80 /* huffman.c in Sources */ = {isa = PBXBuildFile; fileRef = 016C68282060DA1A003A8A80 /* huffman.c */; };
+		016C68322060DA1A003A8A80 /* randtable.c in Sources */ = {isa = PBXBuildFile; fileRef = 016C68292060DA1A003A8A80 /* randtable.c */; };
+		016C68362060DA3A003A8A80 /* io_android.cc in Sources */ = {isa = PBXBuildFile; fileRef = 016C68342060DA3A003A8A80 /* io_android.cc */; };
+		016C68372060DA3A003A8A80 /* io_common.cc in Sources */ = {isa = PBXBuildFile; fileRef = 016C68352060DA3A003A8A80 /* io_common.cc */; };
+		016C683F2060DA41003A8A80 /* encrypt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 016C683A2060DA41003A8A80 /* encrypt.cpp */; };
+		016C68402060DA41003A8A80 /* md5.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 016C683B2060DA41003A8A80 /* md5.cpp */; };
+		016C68412060DA41003A8A80 /* uuid32.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 016C683D2060DA41003A8A80 /* uuid32.cpp */; };
+		016C68662060DFE1003A8A80 /* encrypt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 016C683A2060DA41003A8A80 /* encrypt.cpp */; };
+		016C68672060DFE1003A8A80 /* md5.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 016C683B2060DA41003A8A80 /* md5.cpp */; };
+		016C68682060DFE1003A8A80 /* uuid32.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 016C683D2060DA41003A8A80 /* uuid32.cpp */; };
+		016C68692060DFE1003A8A80 /* io_android.cc in Sources */ = {isa = PBXBuildFile; fileRef = 016C68342060DA3A003A8A80 /* io_android.cc */; };
+		016C686A2060DFE1003A8A80 /* io_common.cc in Sources */ = {isa = PBXBuildFile; fileRef = 016C68352060DA3A003A8A80 /* io_common.cc */; };
+		016C686B2060DFE1003A8A80 /* blocksort.c in Sources */ = {isa = PBXBuildFile; fileRef = 016C681E2060DA1A003A8A80 /* blocksort.c */; };
+		016C686C2060DFE1003A8A80 /* bsdiff.c in Sources */ = {isa = PBXBuildFile; fileRef = 016C681F2060DA1A003A8A80 /* bsdiff.c */; };
+		016C686D2060DFE1003A8A80 /* bspatch.c in Sources */ = {isa = PBXBuildFile; fileRef = 016C68202060DA1A003A8A80 /* bspatch.c */; };
+		016C686E2060DFE1003A8A80 /* bzlib.c in Sources */ = {isa = PBXBuildFile; fileRef = 016C68222060DA1A003A8A80 /* bzlib.c */; };
+		016C686F2060DFE1003A8A80 /* compress.c in Sources */ = {isa = PBXBuildFile; fileRef = 016C68252060DA1A003A8A80 /* compress.c */; };
+		016C68702060DFE1003A8A80 /* crctable.c in Sources */ = {isa = PBXBuildFile; fileRef = 016C68262060DA1A003A8A80 /* crctable.c */; };
+		016C68712060DFE1003A8A80 /* decompress.c in Sources */ = {isa = PBXBuildFile; fileRef = 016C68272060DA1A003A8A80 /* decompress.c */; };
+		016C68722060DFE1003A8A80 /* huffman.c in Sources */ = {isa = PBXBuildFile; fileRef = 016C68282060DA1A003A8A80 /* huffman.c */; };
+		016C68732060DFE1003A8A80 /* randtable.c in Sources */ = {isa = PBXBuildFile; fileRef = 016C68292060DA1A003A8A80 /* randtable.c */; };
+		016C68742060DFE1003A8A80 /* export.cc in Sources */ = {isa = PBXBuildFile; fileRef = 016C68172060D9D4003A8A80 /* export.cc */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		016C67F22060D90D003A8A80 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		016C68172060D9D4003A8A80 /* export.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = export.cc; sourceTree = "<group>"; };
+		016C68182060D9D4003A8A80 /* export.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = export.h; sourceTree = "<group>"; };
+		016C681E2060DA1A003A8A80 /* blocksort.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = blocksort.c; sourceTree = "<group>"; };
+		016C681F2060DA1A003A8A80 /* bsdiff.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = bsdiff.c; sourceTree = "<group>"; };
+		016C68202060DA1A003A8A80 /* bspatch.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = bspatch.c; sourceTree = "<group>"; };
+		016C68212060DA1A003A8A80 /* bstype.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bstype.h; sourceTree = "<group>"; };
+		016C68222060DA1A003A8A80 /* bzlib.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = bzlib.c; sourceTree = "<group>"; };
+		016C68232060DA1A003A8A80 /* bzlib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bzlib.h; sourceTree = "<group>"; };
+		016C68242060DA1A003A8A80 /* bzlib_private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bzlib_private.h; sourceTree = "<group>"; };
+		016C68252060DA1A003A8A80 /* compress.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = compress.c; sourceTree = "<group>"; };
+		016C68262060DA1A003A8A80 /* crctable.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = crctable.c; sourceTree = "<group>"; };
+		016C68272060DA1A003A8A80 /* decompress.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = decompress.c; sourceTree = "<group>"; };
+		016C68282060DA1A003A8A80 /* huffman.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = huffman.c; sourceTree = "<group>"; };
+		016C68292060DA1A003A8A80 /* randtable.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = randtable.c; sourceTree = "<group>"; };
+		016C68342060DA3A003A8A80 /* io_android.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = io_android.cc; sourceTree = "<group>"; };
+		016C68352060DA3A003A8A80 /* io_common.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = io_common.cc; sourceTree = "<group>"; };
+		016C68392060DA41003A8A80 /* cdatatype.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cdatatype.h; sourceTree = "<group>"; };
+		016C683A2060DA41003A8A80 /* encrypt.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = encrypt.cpp; sourceTree = "<group>"; };
+		016C683B2060DA41003A8A80 /* md5.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = md5.cpp; sourceTree = "<group>"; };
+		016C683C2060DA41003A8A80 /* md5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = md5.h; sourceTree = "<group>"; };
+		016C683D2060DA41003A8A80 /* uuid32.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = uuid32.cpp; sourceTree = "<group>"; };
+		016C683E2060DA41003A8A80 /* uuid32.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = uuid32.h; sourceTree = "<group>"; };
+		016C68422060DA94003A8A80 /* libcommon.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libcommon.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		016C68472060DEE5003A8A80 /* common.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = common.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		016C67F12060D90D003A8A80 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		016C68442060DEE5003A8A80 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		016C67E92060D88D003A8A80 = {
+			isa = PBXGroup;
+			children = (
+				016C68382060DA41003A8A80 /* uuid */,
+				016C68332060DA3A003A8A80 /* io */,
+				016C681D2060DA1A003A8A80 /* bsdiff */,
+				016C67FE2060D945003A8A80 /* main */,
+				016C68422060DA94003A8A80 /* libcommon.a */,
+				016C68472060DEE5003A8A80 /* common.bundle */,
+			);
+			sourceTree = "<group>";
+		};
+		016C67FE2060D945003A8A80 /* main */ = {
+			isa = PBXGroup;
+			children = (
+				016C68172060D9D4003A8A80 /* export.cc */,
+				016C68182060D9D4003A8A80 /* export.h */,
+			);
+			name = main;
+			sourceTree = "<group>";
+		};
+		016C681D2060DA1A003A8A80 /* bsdiff */ = {
+			isa = PBXGroup;
+			children = (
+				016C681E2060DA1A003A8A80 /* blocksort.c */,
+				016C681F2060DA1A003A8A80 /* bsdiff.c */,
+				016C68202060DA1A003A8A80 /* bspatch.c */,
+				016C68212060DA1A003A8A80 /* bstype.h */,
+				016C68222060DA1A003A8A80 /* bzlib.c */,
+				016C68232060DA1A003A8A80 /* bzlib.h */,
+				016C68242060DA1A003A8A80 /* bzlib_private.h */,
+				016C68252060DA1A003A8A80 /* compress.c */,
+				016C68262060DA1A003A8A80 /* crctable.c */,
+				016C68272060DA1A003A8A80 /* decompress.c */,
+				016C68282060DA1A003A8A80 /* huffman.c */,
+				016C68292060DA1A003A8A80 /* randtable.c */,
+			);
+			name = bsdiff;
+			path = ../../bsdiff;
+			sourceTree = "<group>";
+		};
+		016C68332060DA3A003A8A80 /* io */ = {
+			isa = PBXGroup;
+			children = (
+				016C68342060DA3A003A8A80 /* io_android.cc */,
+				016C68352060DA3A003A8A80 /* io_common.cc */,
+			);
+			name = io;
+			path = ../../io;
+			sourceTree = "<group>";
+		};
+		016C68382060DA41003A8A80 /* uuid */ = {
+			isa = PBXGroup;
+			children = (
+				016C68392060DA41003A8A80 /* cdatatype.h */,
+				016C683A2060DA41003A8A80 /* encrypt.cpp */,
+				016C683B2060DA41003A8A80 /* md5.cpp */,
+				016C683C2060DA41003A8A80 /* md5.h */,
+				016C683D2060DA41003A8A80 /* uuid32.cpp */,
+				016C683E2060DA41003A8A80 /* uuid32.h */,
+			);
+			name = uuid;
+			path = ../../uuid;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		016C67F32060D90D003A8A80 /* iphoneos */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 016C67FD2060D90D003A8A80 /* Build configuration list for PBXNativeTarget "iphoneos" */;
+			buildPhases = (
+				016C67F02060D90D003A8A80 /* Sources */,
+				016C67F12060D90D003A8A80 /* Frameworks */,
+				016C67F22060D90D003A8A80 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = iphoneos;
+			productName = iphoneos;
+			productReference = 016C68422060DA94003A8A80 /* libcommon.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		016C68462060DEE5003A8A80 /* macos */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 016C684A2060DEE6003A8A80 /* Build configuration list for PBXNativeTarget "macos" */;
+			buildPhases = (
+				016C68432060DEE5003A8A80 /* Sources */,
+				016C68442060DEE5003A8A80 /* Frameworks */,
+				016C68452060DEE5003A8A80 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = macos;
+			productName = macos;
+			productReference = 016C68472060DEE5003A8A80 /* common.bundle */;
+			productType = "com.apple.product-type.bundle";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		016C67EA2060D88D003A8A80 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0830;
+				TargetAttributes = {
+					016C67F32060D90D003A8A80 = {
+						CreatedOnToolsVersion = 8.3.3;
+						DevelopmentTeam = 57JGBTX2EM;
+						ProvisioningStyle = Automatic;
+					};
+					016C68462060DEE5003A8A80 = {
+						CreatedOnToolsVersion = 8.3.3;
+						DevelopmentTeam = 57JGBTX2EM;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 016C67ED2060D88D003A8A80 /* Build configuration list for PBXProject "common" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 016C67E92060D88D003A8A80;
+			productRefGroup = 016C67E92060D88D003A8A80;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				016C67F32060D90D003A8A80 /* iphoneos */,
+				016C68462060DEE5003A8A80 /* macos */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		016C68452060DEE5003A8A80 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		016C67F02060D90D003A8A80 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				016C68192060D9D4003A8A80 /* export.cc in Sources */,
+				016C68322060DA1A003A8A80 /* randtable.c in Sources */,
+				016C68312060DA1A003A8A80 /* huffman.c in Sources */,
+				016C682E2060DA1A003A8A80 /* compress.c in Sources */,
+				016C68372060DA3A003A8A80 /* io_common.cc in Sources */,
+				016C68302060DA1A003A8A80 /* decompress.c in Sources */,
+				016C682F2060DA1A003A8A80 /* crctable.c in Sources */,
+				016C68412060DA41003A8A80 /* uuid32.cpp in Sources */,
+				016C682A2060DA1A003A8A80 /* blocksort.c in Sources */,
+				016C682B2060DA1A003A8A80 /* bsdiff.c in Sources */,
+				016C683F2060DA41003A8A80 /* encrypt.cpp in Sources */,
+				016C682D2060DA1A003A8A80 /* bzlib.c in Sources */,
+				016C682C2060DA1A003A8A80 /* bspatch.c in Sources */,
+				016C68402060DA41003A8A80 /* md5.cpp in Sources */,
+				016C68362060DA3A003A8A80 /* io_android.cc in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		016C68432060DEE5003A8A80 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				016C68662060DFE1003A8A80 /* encrypt.cpp in Sources */,
+				016C68672060DFE1003A8A80 /* md5.cpp in Sources */,
+				016C68682060DFE1003A8A80 /* uuid32.cpp in Sources */,
+				016C68692060DFE1003A8A80 /* io_android.cc in Sources */,
+				016C686A2060DFE1003A8A80 /* io_common.cc in Sources */,
+				016C686B2060DFE1003A8A80 /* blocksort.c in Sources */,
+				016C686C2060DFE1003A8A80 /* bsdiff.c in Sources */,
+				016C686D2060DFE1003A8A80 /* bspatch.c in Sources */,
+				016C686E2060DFE1003A8A80 /* bzlib.c in Sources */,
+				016C686F2060DFE1003A8A80 /* compress.c in Sources */,
+				016C68702060DFE1003A8A80 /* crctable.c in Sources */,
+				016C68712060DFE1003A8A80 /* decompress.c in Sources */,
+				016C68722060DFE1003A8A80 /* huffman.c in Sources */,
+				016C68732060DFE1003A8A80 /* randtable.c in Sources */,
+				016C68742060DFE1003A8A80 /* export.cc in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		016C67EE2060D88D003A8A80 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Debug;
+		};
+		016C67EF2060D88D003A8A80 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Release;
+		};
+		016C67FB2060D90D003A8A80 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 57JGBTX2EM;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = common;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SYMROOT = libs;
+			};
+			name = Debug;
+		};
+		016C67FC2060D90D003A8A80 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 57JGBTX2EM;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = common;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SYMROOT = libs;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		016C684B2060DEE6003A8A80 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 57JGBTX2EM;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.cxz.macos;
+				PRODUCT_NAME = common;
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				SYMROOT = libs;
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Debug;
+		};
+		016C684C2060DEE6003A8A80 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 57JGBTX2EM;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = com.cxz.macos;
+				PRODUCT_NAME = common;
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				SYMROOT = libs;
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		016C67ED2060D88D003A8A80 /* Build configuration list for PBXProject "common" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				016C67EE2060D88D003A8A80 /* Debug */,
+				016C67EF2060D88D003A8A80 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		016C67FD2060D90D003A8A80 /* Build configuration list for PBXNativeTarget "iphoneos" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				016C67FB2060D90D003A8A80 /* Debug */,
+				016C67FC2060D90D003A8A80 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		016C684A2060DEE6003A8A80 /* Build configuration list for PBXNativeTarget "macos" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				016C684B2060DEE6003A8A80 /* Debug */,
+				016C684C2060DEE6003A8A80 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 016C67EA2060D88D003A8A80 /* Project object */;
+}
