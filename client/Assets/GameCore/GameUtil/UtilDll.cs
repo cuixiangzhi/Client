@@ -82,6 +82,18 @@ namespace GameCore
         [DllImport(DLLNAME)]
         public static extern void common_android_close(IntPtr asset);
 
+        [DllImport(DLLNAME)]
+        public static extern IntPtr common_open(string file, string mode);
+
+        [DllImport(DLLNAME)]
+        public static extern int common_read(IntPtr asset, int size, byte[] buffer);
+
+        [DllImport(DLLNAME)]
+        public static extern void common_seek(IntPtr asset, int offset, int where);
+
+        [DllImport(DLLNAME)]
+        public static extern void common_close(IntPtr asset);
+
         public static void Init()
         {
             mCacheMD5Result.Clear();

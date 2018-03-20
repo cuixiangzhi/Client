@@ -13,7 +13,8 @@ namespace GameLogic
 
         private void Start()
         {
-            
+            IntPtr file = UtilDll.common_open(Application.streamingAssetsPath + "/t.bytes", "rb");
+            int x = 0;
         }
 
         private void OnGUI()

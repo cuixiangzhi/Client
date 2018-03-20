@@ -81,7 +81,10 @@ LINUX
 			   管道    : 命令不是一次性输出完毕在读取的
 	    嵌入式 : ABI,二进制接口,允许编译好的代码不做修改的移植到其他系统 调用约定,参数传递,返回值,ABI包括了系统API的实现约定
 		         与API不同,API是源代码调用接口,ABI是系统二进制接口
-				
+
+		xcode   一个scheme对应一个target
+				导出archive  xcodebuild archive -scheme xx -configuration Debug|Release -archivePath *.xcarchive -quiet>null
+				导出ipa xcodebuild -exportArchive -archivePath *.xcarchive -configuration D|R -exportPath *.ipa -exportOptionsPlist
 	文件系统 VFS是对硬盘设备的抽象,管理硬盘分区,以目录+文件的形式   
 	        应用程序->系统调用->VFS->文件系统->硬件驱动->硬件
 			
