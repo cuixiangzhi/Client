@@ -199,7 +199,7 @@ int _diff(int argc,char *argv[])
 	u_char *old = NULL,*new;
 	off_t_int oldsize,newsize;
 	off_t_int *I,*V = NULL;
-	off_t_int scan,pos,len;
+	off_t_int scan,pos = 0,len;
 	off_t_int lastscan,lastpos,lastoffset;
 	off_t_int oldscore,scsc;
 	off_t_int s,Sf,lenf,Sb,lenb;
@@ -219,7 +219,7 @@ int _diff(int argc,char *argv[])
 		that we never try to malloc(0) and get a NULL pointer */
 	if(((fd=fopen(argv[1],"rb")) == NULL) ||
 		(fseek(fd,0,SEEK_END) == -1) ||
-		((oldsize = ftell(fd)) < 0) ||
+		((oldsize = (int)ftell(fd)) < 0) ||
 		((old=malloc(oldsize+1))==NULL) ||
 		(fseek(fd,0,SEEK_SET) == -1) ||
 		(fread(old,1,oldsize,fd)!=oldsize) ||
@@ -236,7 +236,7 @@ int _diff(int argc,char *argv[])
 		that we never try to malloc(0) and get a NULL pointer */
 	if(((fd=fopen(argv[2],"rb")) == NULL) ||
 		(fseek(fd, 0, SEEK_END) == -1) ||
-		((newsize = ftell(fd)) < 0) ||
+		((newsize = (int)ftell(fd)) < 0) ||
 		((new=malloc(newsize+1))==NULL) ||
 		(fseek(fd, 0, SEEK_SET) == -1) ||
 		(fread(new,1 ,newsize, fd)!=newsize) ||
@@ -358,7 +358,7 @@ int _diff(int argc,char *argv[])
 		errx(1, "BZ2_bzWriteClose, bz2err = %d", bz2err);
 
 	/* Compute size of compressed ctrl data */
-	if ((len = ftello(pf)) == -1)
+	if ((len = (int)ftello(pf)) == -1)
 		err(1, "ftello");
 	offtout(len-32, header + 8);
 
@@ -373,7 +373,7 @@ int _diff(int argc,char *argv[])
 		errx(1, "BZ2_bzWriteClose, bz2err = %d", bz2err);
 
 	/* Compute size of compressed diff data */
-	if ((newsize = ftello(pf)) == -1)
+	if ((newsize = (int)ftello(pf)) == -1)
 		err(1, "ftello");
 	offtout(newsize - len, header + 16);
 

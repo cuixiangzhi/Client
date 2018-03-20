@@ -137,7 +137,7 @@ int _patch(int argc,char * argv[])
 
 	if(((fd=fopen(argv[1],"rb")) == NULL) ||
 		(fseek(fd, 0, SEEK_END) == -1) ||
-		((oldsize = ftell(fd)) < 0) ||
+		((oldsize = (int)ftell(fd)) < 0) ||
 		((old=malloc(oldsize+1))==NULL) ||
 		(fseek(fd, 0, SEEK_SET) == -1) ||
 		(fread(old,1,oldsize, fd)!=oldsize) ||

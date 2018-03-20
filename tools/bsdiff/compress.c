@@ -202,7 +202,7 @@ void generateMTFValues ( EState* s )
                *ryy_j = rtmp2;
             };
             yy[0] = rtmp;
-            j = ryy_j - &(yy[0]);
+            j = (int)(ryy_j - &(yy[0]));
             mtfv[wr] = j+1; wr++; s->mtfFreq[j+1]++;
          }
 
@@ -239,7 +239,7 @@ static
 void sendMTFValues ( EState* s )
 {
    Int32 v, t, i, j, gs, ge, totc, bt, bc, iter;
-   Int32 nSelectors, alphaSize, minLen, maxLen, selCtr;
+   Int32 nSelectors = 0, alphaSize, minLen, maxLen, selCtr;
    Int32 nGroups, nBytes;
 
    /*--

@@ -7,7 +7,7 @@ void* common_fopen(char* file,char* mode)
 
 int common_fread(void* asset, int size, unsigned char* buffer)
 {
-	return fread(buffer, size, 1, (FILE*)asset);
+	return (int)fread(buffer, size, 1, (FILE*)asset);
 }
 
 void common_fseek(void* asset, int offset, int where)
