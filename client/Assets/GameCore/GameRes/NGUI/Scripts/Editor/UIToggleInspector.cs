@@ -27,7 +27,7 @@ public class UIToggleInspector : UIWidgetContainerEditor
 		GUI.changed = false;
 
 		GUILayout.BeginHorizontal();
-		SerializedProperty sp = NGUIEditorTools.DrawProperty("Group", serializedObject, "group", GUILayout.Width(120f));
+		SerializedProperty sp = NGUIEditorTools.DrawProperty("Group", serializedObject, "group", GUILayout.Width(150f));
 		GUILayout.Label(" - zero means 'none'");
 		GUILayout.EndHorizontal();
 
