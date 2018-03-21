@@ -86,7 +86,7 @@ namespace GameCore
             {
                 mUsingObj.Remove(obj);
                 mUnUsingObj.Add(obj);
-                mLastUseTime = Time.unscaledTime;
+                mLastUseTime = Time.time;
             }
         }
         private class LoadCallBack
@@ -276,26 +276,25 @@ namespace GameCore
                     int idx = mCallBackIndex[hash];
                     sync = mCallBack[idx].sync;
                 }
-                if (sync)
+                if(ab.isStreamedSceneAssetBundle)
                 {
-                    UnityObj obj = ab.LoadAsset<UnityObj>(UtilDll.common_md5(path));
-                    ab.Unload(false);
-                    OnObjectLoad(path, obj);
+                    OnObjectLoad(path,null);
                 }
                 else
                 {
-                    AsyncOperation aop = null;
-                    if (ab.isStreamedSceneAssetBundle)
+                    if(sync)
                     {
-                        aop = SceneMgr.LoadSceneAsync(UtilDll.common_md5(path));
+                        UnityObj obj = ab.LoadAsset<UnityObj>(path);
+                        ab.Unload(false);
+                        OnObjectLoad(path, obj);
                     }
                     else
                     {
-                        aop = ab.LoadAssetAsync<UnityObj>(UtilDll.common_md5(path));
+                        AsyncOperation aop = ab.LoadAssetAsync<UnityObj>(path);
+                        mAsyncBundle.Add(ab);
+                        mAsyncOp.Add(aop);
+                        mAsyncPath.Add(path);
                     }
-                    mAsyncBundle.Add(ab);
-                    mAsyncOp.Add(aop);
-                    mAsyncPath.Add(path);
                 }
             }
         }

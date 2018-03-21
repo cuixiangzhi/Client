@@ -11,7 +11,11 @@ namespace GameCore
 {
     public static class BundleMgr
     {
-        private static string persistentPath = Application.streamingAssetsPath;
+#if UNITY_EDITOR
+        private static string persistentPath = Application.dataPath + "/../../assets";
+#else
+        private static string persistentPath = Application.persistentDataPath;
+#endif
         //IO BUFFER
         private static int MAX_BYTE_LEN = 1024 * 1024 * 2;
         private static byte[] mBuffer = null;
@@ -29,29 +33,29 @@ namespace GameCore
         public static AssetBundle LoadBundle(string relativePath)
         {
             string fullPath = string.Format("{0}/{1}", persistentPath, relativePath);
-            if (File.Exists(fullPath))
+            AssetBundle bundle = AssetBundle.LoadFromFile(fullPath);
+            if (bundle == null)
             {
-                return AssetBundle.LoadFromFile(fullPath);
+                UtilLog.LogWarning("asset is null {0}", fullPath);
             }
-            else
-            {
-                UtilLog.LogWarning("asset is null {0}", relativePath);
-                return null;
-            }
+            return bundle;
         }
 
         public static LuaByteBuffer LoadBytes(string relativePath)
         {
             string fullPath = string.Format("{0}/{1}", persistentPath, relativePath);
-            if (File.Exists(fullPath))
+            IntPtr file = UtilDll.common_open(fullPath, "rb");
+            int len = 0;
+            if (file != IntPtr.Zero)
             {
-                return new LuaByteBuffer(File.ReadAllBytes(fullPath));
+                len = UtilDll.common_read(file, mBuffer.Length, mBuffer);
+                UtilDll.common_close(file);
             }
             else
             {
-                UtilLog.LogWarning("asset is null {0}", relativePath);
-                return new LuaByteBuffer(null, 0);
+                UtilLog.LogWarning("asset is null {0}", fullPath);
             }
+            return new LuaByteBuffer(mBuffer, len);
         }
     }
 }

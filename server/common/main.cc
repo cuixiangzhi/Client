@@ -2,12 +2,12 @@
 #include <gl/glut.h>
 #include <windows.h>
 
-void loop()
+void render_loop()
 {
 
 }
 
-int main(int argc, char** argv)
+void render_init(int argc, char** argv)
 {
 	glutInit(&argc, argv);
 
@@ -25,9 +25,32 @@ int main(int argc, char** argv)
 	glutCreateWindow("Unity");
 
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH | GLUT_STENCIL | GLUT_ALPHA);
-	glutDisplayFunc(loop);
+	glutDisplayFunc(render_loop);
 
 	const GLubyte* version = glGetString(GL_VERSION);
 
 	glutMainLoop();
+}
+
+void server_loop()
+{
+
+}
+
+void server_init(int argc, char** argv)
+{
+	//WORD wd = MAKEWORD(2, 2);
+	//LPWSADATA lpwsaData = NULL;
+	//if (WSAStartup(wd, lpwsaData) != 0)
+	//{
+	//	return;
+	//}
+	//hostent* host = gethostbyname("www.baidu.com");
+	//int x = 0;
+}
+
+int main(int argc, char** argv)
+{
+	render_init(argc,argv);
+	server_init(argc, argv);
 }
