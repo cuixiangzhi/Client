@@ -2,9 +2,20 @@
 #include <gl/glut.h>
 #include <windows.h>
 
+#pragma comment(linker,"/subsystem:windows /ENTRY:mainCRTStartup")
+
 void render_loop()
 {
+	glClearColor(0, 0, 0, 0);
+	glBegin(GL_POLYGON);
+	glVertex2d(0, 0);
+	glVertex2d(5, 5);
+	glVertex2d(10, 10);
+	glEnd();
 
+	
+
+	glFlush();
 }
 
 void render_init(int argc, char** argv)

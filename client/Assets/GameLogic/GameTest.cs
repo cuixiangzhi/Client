@@ -12,17 +12,17 @@ namespace GameLogic
     public class GameTest : MonoBehaviour
     {
         public int byteLen = 0;
+        public Vector3 pos;
 
         private void Start()
         {
-            IntPtr file = UtilDll.common_open(Application.streamingAssetsPath + "/t.bytes", "rb");
-            int x = 0;
-            
+            pos = Camera.main.WorldToScreenPoint(Vector3.zero);
         }
 
-        private void OnGUI()
+        private void Update()
         {
             
+                
         }
     }
 }
