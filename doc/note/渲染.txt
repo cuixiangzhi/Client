@@ -34,11 +34,38 @@
 			视图坐标系
 				摄像机局部坐标系
 		坐标变换
+		图元属性
+				颜色模式 RGBA模式 索引模式
 		图元装配
-		光栅化
-			基本图元转换为像素点
-			软光栅 通过画像素函数,自己实现扫描转换算法,CPU来计算
-			硬光栅 把点线面信息传给GPU,GPU进行计算 
+		正面反面 三角形顶点环绕逆时针为正向,和摄像机法线方向叉乘可以求出朝向摄像机还是背向摄像机
+		扫描转换 线框图扫描转换,根据直线、曲线等等相关方程算法计算像素点
+				 三角面扫描转换,根据pnpoly算法计算像素点在区域内还是区域外,即射线与多边形的交点是奇数还是偶数
+		显示列表 预编译的指令集合,存放在GPU显示列表内存,不可修改,不是所有的命令都可以使用
+				 创建显示列表 GLuint id = glGenLists(1);
+				 			  glNewList(id,GL_TRIANGLE);
+				 			  	glBegin();
+				 			  	^^^^^^^^
+				 			  	glEnd();
+				 			  glEndList();
+				 绘制显示列表 glCallList(id);
+				 删除显示列表 glDeleteLists(id,1);
+		顶点数组 减少glVertex调用次数
+				 数组有6种,GL_VERTEX顶点 GL_COLOR颜色RGB GL_NORMAL法线 GL_INDEX颜色索引 GL_TEXCOORD纹理坐标
+				 启用/禁用数组 glEnableClientState() glDisableClientState()
+				 指定数组位置 glVertexPointer glNormalPointer glColorPointer glIndexPointer glTexCoordPointer 
+				 绘制顶点数组 glDrawArrays(GL_TRIANGLES, 0, 36)  有重复的顶点
+				 			  glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_BYTE, ptr); 无重复顶点
+		VBO模式 网格信息存放在显存内,有两份内存
+				创建缓存数组 glGenBuffers(1,&id);
+				绑定数组类型 glBindBuffer(GL_ARRAY_BUFFER_ARB,id);
+				更新缓存数据 glBufferData(GL_ARRAY_BUFFER_ARB,size,ptr,GL_STREAM_DRAW); 静态读写 动态读写 帧读写
+
+				绘制缓存数据 glEnableClientState();
+							 glVertexPointer(3,GL_FLOAT,0,0);
+							 glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_BYTE, ptr);
+							 glDisableClientState();
+				删除缓存数组 glDeleteBuffers(id);
+		位图字体
 OpenGL  
 
 

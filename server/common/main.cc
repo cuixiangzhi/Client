@@ -13,7 +13,7 @@ void render_loop()
 	glVertex2d(10, 10);
 	glEnd();
 
-	
+	clock();
 
 	glFlush();
 }
