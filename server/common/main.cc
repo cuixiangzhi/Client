@@ -1,6 +1,7 @@
 
 #include <gl/glut.h>
 #include <windows.h>
+#include <stdio.h>
 
 #pragma comment(linker,"/subsystem:windows /ENTRY:mainCRTStartup")
 
@@ -62,6 +63,9 @@ void server_init(int argc, char** argv)
 
 int main(int argc, char** argv)
 {
+	printf("%s", itoa(0xD638333B,NULL,0));
 	render_init(argc,argv);
-	server_init(argc, argv);
+	//server_init(argc, argv);
+
+	
 }

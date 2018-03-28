@@ -85,7 +85,18 @@ LINUX
 		xcode   一个scheme对应一个target
 				导出archive  xcodebuild archive -scheme xx -configuration Debug|Release -archivePath *.xcarchive -quiet>null
 				导出ipa xcodebuild -exportArchive -archivePath *.xcarchive -configuration D|R -exportPath *.ipa -exportOptionsPlist
-	文件系统 VFS是对硬盘设备的抽象,管理硬盘分区,以目录+文件的形式   
+		文件格式 pe格式, windows下的dll exe都是这种格式,没加密的文件带有DOS文件头,前两个字符是MZ
+		         mach-o格式, mac iphone下的exe dll都是这种格式,
+
+		文件加密 有码加密 __attribute__设置函数属性				
+						section特性把指定函数放入输入段(link的输入)
+						对指定的section加密,需要熟悉ELF文件格式
+						constructor特性 标记该函数在main函数之前执行
+						对指定的section加密,需要获取so地址(/proc/pid/maps),修改权限
+				 无码加密 根据ELF格式查找函数代码段,对.dynamic内的重要函数进行加密
+						  函数查找过程: name->hash->nbuckets->bucket->.dynamic->Elf32_Sym->st_name->.dynstr->chain
+						  解密过程也是需要找到so地址,获取权限,解密内存
+		文件系统 VFS是对硬盘设备的抽象,管理硬盘分区,以目录+文件的形式   
 	        应用程序->系统调用->VFS->文件系统->硬件驱动->硬件
 			
 			硬盘由扇区组成,扇区大小为512字节
