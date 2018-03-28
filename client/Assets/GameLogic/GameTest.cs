@@ -11,18 +11,6 @@ namespace GameLogic
 {
     public class GameTest : MonoBehaviour
     {
-        public int byteLen = 0;
-        public Vector3 pos;
 
-        private void Start()
-        {
-            pos = Camera.main.WorldToScreenPoint(Vector3.zero);
-        }
-
-        private void Update()
-        {
-            
-                
-        }
     }
 }
