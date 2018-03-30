@@ -30,7 +30,11 @@ namespace GameCore
 			UtilProfiler.Init();
 			UEP.EndSample();
 
-			UEP.BeginSample("BundleMgr.Init();");
+            UEP.BeginSample("UpdateMgr.Init();");
+            UpdateMgr.Init();
+            UEP.EndSample();
+
+            UEP.BeginSample("BundleMgr.Init();");
 			BundleMgr.Init();
 			UEP.EndSample();
 
@@ -38,7 +42,11 @@ namespace GameCore
 			AssetMgr.Init();
 			UEP.EndSample();
 
-			UEP.BeginSample("LuaMgr.Init();");
+            UEP.BeginSample("UIMgr.Init();");
+            UIMgr.Init();
+            UEP.EndSample();
+
+            UEP.BeginSample("LuaMgr.Init();");
 			LuaMgr.Init();
 			UEP.EndSample();
         }
@@ -52,7 +60,11 @@ namespace GameCore
 
         private void LateUpdate()
         {
-			UEP.BeginSample("AssetMgr.LateLoop();");
+            UEP.BeginSample("UpdateMgr.LateLoop();");
+            UpdateMgr.LateLoop();
+            UEP.EndSample();
+
+            UEP.BeginSample("AssetMgr.LateLoop();");
 			AssetMgr.LateLoop();
 			UEP.EndSample();
 
@@ -75,7 +87,11 @@ namespace GameCore
 
         private void OnApplicationQuit()
         {
-			UEP.BeginSample("BundleMgr.Exit();");
+            UEP.BeginSample("UpdateMgr.Exit();");
+            UpdateMgr.Exit();
+            UEP.EndSample();
+
+            UEP.BeginSample("BundleMgr.Exit();");
 			BundleMgr.Exit();
 			UEP.EndSample();
 
@@ -83,7 +99,11 @@ namespace GameCore
 			AssetMgr.Exit();
 			UEP.EndSample();
 
-			UEP.BeginSample("LuaMgr.Exit();");
+            UEP.BeginSample("UIMgr.Exit();");
+            UIMgr.Exit();
+            UEP.EndSample();
+
+            UEP.BeginSample("LuaMgr.Exit();");
 			LuaMgr.Exit();
 			UEP.EndSample();
 
