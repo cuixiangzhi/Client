@@ -1,2 +1,0 @@
-RealTime Collision Dectection
-RealTime Rendering 3

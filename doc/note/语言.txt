@@ -1,42 +1,41 @@
-语言的基本构成
-类型&变量
-		 int uint 32位
-		 short ushort 16位
-		 float double 单精度32位 有效6位  双精度64位 lua采用双精度浮点数
-					  IEEE754编码方式 符号位(1) + 指数位(8) + 尾数(23)
-		 string char uchar 
-					 字符数组和字符 
-					 char*最后是一个\0字符  
-					 C# char代表一个字符或者一个中文符号,长度不固定 
-					 lua和C++一样 字符编码分为ASCII和Unicode  UTF-8和GBK是一种UNICODE实现方式
-									UTF-8不定字节编码以字节数开头,0xxxxxxx 表示一个字节  110xxxxx表示2个字节,后续字节以10开头  最多会有6个字节
-		 指针	它也是个变量,它的值是对象的地址,使用&运算符获取对象  p->等价于(&p).
-				指针和引用变量赋值时必须匹配类型
-		 引用	变量换了个名字,没有内存分配,它和它引用的变量用的是一份内存
-				引用必须在声明时初始化
-		 const  C++字面字符串 文件内的常量不可以const_cast 函数内的可以
-				C#变量必须属于类,函数内变量不能加const和static
-				顶层const：指针本身是个常量
-				底层const：指针所指的对象是个常量
-		 static	静态全局常量(文件内有效)
-		 extern 外部变量
-		 #define 宏定义 ##宏拼接 #宏替换
-		 typedef 类型组合定义		 
+变量类型
+	int uint 32位
+	short ushort 16位
+	float double 单精度32位 有效6位  双精度64位 lua采用双精度浮点数
+				 IEEE754编码方式 符号位(1) + 指数位(8) + 尾数(23)
+	string char uchar 
+				 字符数组和字符 
+				 char*最后是一个\0字符  
+				 C# char代表一个字符或者一个中文符号,长度不固定 
+				 lua和C++一样 字符编码分为ASCII和Unicode  UTF-8和GBK是一种UNICODE实现方式
+								UTF-8不定字节编码以字节数开头,0xxxxxxx 表示一个字节  110xxxxx表示2个字节,后续字节以10开头  最多会有6个字节
+	 指针	它也是个变量,它的值是对象的地址,使用&运算符获取对象  p->等价于(&p).
+			指针和引用变量赋值时必须匹配类型
+	 引用	变量换了个名字,没有内存分配,它和它引用的变量用的是一份内存
+			引用必须在声明时初始化
+	 const  C++字面字符串 文件内的常量不可以const_cast 函数内的可以
+			C#变量必须属于类,函数内变量不能加const和static
+			顶层const：指针本身是个常量
+			底层const：指针所指的对象是个常量
+	 static	静态全局常量(文件内有效)
+	 extern 外部变量
+	 #define 宏定义 ##宏拼接 #宏替换
+	 typedef 类型组合定义		 
 类型转换 basic-type 隐式转换	
-		 static_cast 基本类型之间相互转换,可替代隐式转换
+		static_cast 基本类型之间相互转换,可替代隐式转换
 					 类层次转换,父类到子类没有类型检查
 					 void转换
-		 const_cast只能改变底层const,也就是指针所指向的对象的const
-		 dynamic_cast 用于指针和引用的类层次转换
-		 reinterpret_cast 用于将二进制位解释为另一种类型
-宏：	#代表后面的是个字符串
+		const_cast只能改变底层const,也就是指针所指向的对象的const
+		dynamic_cast 用于指针和引用的类层次转换
+		reinterpret_cast 用于将二进制位解释为另一种类型
+宏：	    #代表后面的是个字符串
 	    ##用于拼接变量
-函数   引用&值参数传递 ...传递参数时只能传递基本类型
+函数    引用&值参数传递 ...传递参数时只能传递基本类型
 	   数组作为参数无法拷贝,所以传递过来之后会退化为指针
 	   注意不要返回栈变量的指针,因为已经销毁了
 	   函数指针  指针指向一个函数,可以直接P()调用
 	   定义一个函数,返回函数指针 int (*f())()
-类&继承 private public protected friend class 
+类&继承  private public protected friend class 
 		virtual vptr 重载 覆盖 vtable virtual=0 
 		每个带有虚函数的类都有一个静态的虚表,每个带有虚函数的类对象都有一个虚表指针,在构造函数内初始化
 		编译时多态性,模板,重载   运行时多态性,虚函数重写  
@@ -145,6 +144,16 @@ C#   托管代码会被编译为IL语言(生成的文件内包含元数据),CLR�
 	        lua table里key和value都可以是弱引用
 			结构体是值类型,参数传递是值传递  ref out会进行装箱拆箱操作,会创建class,数组是引用类型
 			接口继承 : XX  interface XX  实现继承,继承class
+PInvoke方式实现静态方法调用
+			C++使用__cdecl __declspec(dllexport)导出API
+			C#使用DllImport("dll") static extern调用API
+			参数: 基本类型直接传递int float bool uint long
+				  字符串string对应char* byte[]对应unsigned char*,传递时需要使用Marshal.Copy用于在托管与非托管之间转换内存 Marshal.Copy(src, start, dst, len);  Marshal.Copy(src, dst, start, len);
+				  函数指针C#方法MonoPInvoke声明 MonoPInvokeCallback(typeof(C#CallBack))
+			      结构体和类传递需要给C#结构体或者类添加StructLayout特性,用来标记这个对象的内存布局,使得传递给C++之后,C++可以直接转换为C++对象  StructLayout(LayoutKind.Sequential),RequiredByNativeCode
+				  结构体或者类指针传递加上ref或者out标记
+[MethodImpl(MethodImplOptions.InternalCall), WrapperlessIcall] 实现类方法调用			  
+C++使用mono运行C# DLL,需要mono提供的库和头文件,注意c# dll需要使用 mono命令来生成, msc *.cs -t:library
 
 python 
 	   函数定义
@@ -228,46 +237,27 @@ Lua CAPI
 常量定义 luaconf.h       
 基础函数定义lua.h        以lua_为前缀
 辅助函数定义luaxlib.h    以luaL_为前缀
-库实现       以lua_open为前缀,具体实现分散在不同的.cc文件内  
-			 lauxlib.c  辅助库实现
-			 lbaselib.c base库实现
-			 liolib.c  io库实现
-			 lmath.c   math库实现
-			 lstrlib.c string库实现
-			 ltablib.c table库实现
-			 loslib.c  os库实现
-			 ldblib.c  debug库实现
-			 linit.c  库注册入口函数整合
- 
-编译过程: 首先通过
-		  将输入的代码块转换成可执行的closure,closure是运行期对象,编译期是proto,它由指令列表、常量表、子proto表、局部变量、UpValue构成
-          一个函数编译后的汇编代码首先是 push ebp(此处esp指针会递减) move ebp esp,保存当前主调函数栈初始指针,被调函数栈初始指针,即保存程序现场,调用结束后esp已恢复至初始值,再次调用pop ebp恢复ebp为主调函数栈初始指针
-核心实现  词法分析llex
-          语法分析lparser
-		  代码生成lcode
-		  内存管理lmem lgc
-		  元表ltm 表ltable 字符串lstring 函数lfunc
-		  编译过的代码加载lundump
-		  类型定义lobject  包括变量类型判断、类型转换、相等判断、获取&设置Tvalue不同的变量值
-		  虚拟机lvm   基于栈的虚拟机(java python),操作数是放在虚拟机的栈上,模拟CPU操作  指令数较多,内存复制操作比较多  需要复制函数栈帧变量到虚拟机的栈上
-		              注册表的虚拟机,操作数存放在虚拟寄存器内,使用一条指令即可完成,但是需要在代码生成阶段进行寄存器分配,指令直接包含操作数地址(函数栈帧的变量都已经对应好了虚拟寄存器),不需要复制数据到VM的栈上
-					  luaV_execute() switch语句执行
-		  操作码lopcodes Lua指令大小为32位6位操作码,剩余位数为操作数的寄存器
+库实现       
+	 以lua_open为前缀,具体实现分散在不同的.cc文件内  
+	 lauxlib.c  辅助库实现
+	 lbaselib.c base库实现
+	 liolib.c  io库实现
+	 lmath.c   math库实现
+	 lstrlib.c string库实现
+	 ltablib.c table库实现
+	 loslib.c  os库实现
+	 ldblib.c  debug库实现
+	 linit.c  库注册入口函数整合
+常用API:  
+	出栈: lua_pop lua_toboolean lua_tocfunction lua_tointeger lua_tolstring lua_tonumber lua_tostring
+	类型判断: lua_isnil lua_isnumber lua_istable lua_isstring
+	函数注册luaL_Reg注册函数结构体 luaL_Reg[] = { {"func_name",func},{"func_name1",func1} }
+	函数调用lua_call(L,narg,nresult) lua_pcall(L,nargs,nresults,err_func)
+	table字段获取lua_getfield(L,stackid,k) lua_getmetatable lua_gettable lua_gettop 
+	table字段创建lua_newtable 
+	lua get和new push操作会在栈顶插入数据, pop set to会移除数据
+	pushvalue复制指定位置数据到栈顶
 
-		   -1代表栈顶 1代表栈底
-常用API:   C库函数实现&C#函数包装:  压栈: lua_pushnil lua_pushboolean lua_pushcfunction lua_pushcclosure lua_pushfstring(L,fmt,...) lua_pushinteger lua_pushnumber lua_pushlstring(L,s,l) lua_pushvalue(L,n)复制指定栈位置数据到栈顶
-                                    出栈: lua_pop lua_toboolean lua_tocfunction lua_tointeger lua_tolstring lua_tonumber lua_tostring
-									类型判断: lua_isnil lua_isnumber lua_istable lua_isstring
-									函数注册luaL_Reg注册函数结构体 luaL_Reg[] = { {"func_name",func},{"func_name1",func1} }
-									函数调用lua_call(L,narg,nresult) lua_pcall(L,nargs,nresults,err_func)
-									table字段获取lua_getfield(L,stackid,k) lua_getmetatable lua_gettable lua_gettop 
-									table字段创建lua_newtable 
-									lua get和new push操作会在栈顶插入数据, pop set to会移除数据
-									pushvalue复制指定位置数据到栈顶
-       
-lua库实现方式 1. 纯lua编写,作为模块文件存在,直接使用require加载即可使用
-              2. C编写,lua.dll内部实现,C#去调用导出的注册函数,加入到全局table内
-              3. C#编写,通过tolua框架生成WRAP文件,启动时调用注册函数添加到全局table内
 			  
 
 
