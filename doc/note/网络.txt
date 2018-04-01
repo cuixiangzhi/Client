@@ -161,21 +161,6 @@ IO模型
   IO多路复用,阻塞在select、epoll这样的系统调用上,这个函数是在任意socket有数据准备好就返回,而不是阻塞在一个socket上
   同步IO操作,请求导致进程阻塞,直到IO完成
   异步IO操作,请求不阻塞进程
-  
-LINUX 文件映射
-	mmap(0表示系统选择映射区起始地址,需要映射的字节数,PROT_READ | PROT_WRITE | PROT_EXEC,RESERVE | COMMIT,-1表示匿名新建文件,0);
-	munmap(addr,len)释放文件
-共享内存
-	shmget()
-	shmat
-	shmdt
-	shmctl
-WINDOWS 文件映射
-	HANDLE handle = CreateFileMapping(0xFFFFFFFFFFFFFFFF,NULL,PAGE_READWRITE,sizeMax,sizeMin,mapKey)
-	HANDLE handle = OpenFileMapping(FILE_MAP_ALL_ACCESS,TRUE,mapKey)
-	void* ptr = MapViewOfFile(handle,FILE_MAP_ALL_ACCESS,0,0,0)
-	UnmapViewOfFile(ptr)
-	CloseHandle(handle)
 	  
 CDN多级缓存
 	首先DNS服务器解析出目的地址,这个地址是CDN中心负载均衡服务器,负责把请求分散到区域最近的CDN服务器
