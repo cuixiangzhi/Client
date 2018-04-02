@@ -10,7 +10,74 @@
 			  tty调用open打开终端等待用户输入用户名,
 			  启动login进程等待输入密码,
 			  登录成功,切换到当前用户主目录chdir,修改终端拥有者chown,修改终端权限chmod,设置进程组ID
+文件管理
+		硬盘
+			硬盘由N各盘片组成,盘片两个面都可以读写
+			磁头: 盘片的读写装置,每个面一个
+			磁道: 同一盘片不同半径的同心圆
+			柱面: 不同盘片相同半径的同心圆
+			扇区: 同一盘片的扇形区域
+			容量: 磁头数量*磁道数量*扇区数量*扇区字节数
+			分区: 操作系统进行管理的逻辑上的分区,必须格式化为指定的文件系统才可以使用
+		文件系统
+			文件系统定义了磁盘分区的存储、读写方式,FAT32 NTFS NFS EXT等等
+			虚拟文件系统,对文件系统的抽象,封装了不同文件系统之间的差异性
+			设备文件也属于一种文件系统
+		存储结构
+			基本信息存储在INODE内,INODE包含了文件的大小、读写日期、拥有者、偏移地址
+			目录文件由一系列文件名->INODE号组成
+			硬链接: 文件名不同,INODE相同
+			软连接: 文件名不同,其中一个指向另一个文件,相当于快捷方式 ls -s
+		文件编码
+			大端模式: 把字节按顺序存储,即低地址存储高字节,高地址存储低字节
+			小端模式: 正好相反
+			字符集和字符编码,字符集是一个数字,编码是这个数字的存储方式
+			UNICODE字符集,有UTF-8 UTF-16 UTF-32等
+			ASCII既是字符集也是字符编码
+			GB2312是字符集
+			zh_cn.utf-8 是本地系统语言及字符集,国家_语言.字符编码
+			C# string是unicode对象,静态字符串初始化会根据cs文件编码解码
+			python 分为str和unicode两种对象,decode解码为unicode对象,encode编码为str对象
+			terminal 会根据设置的编码来显示传输的字节
+			MSVC
+				bom 字节序标记,表明了文件编码,不带BOM的话会按照系统编码来解释
+				源码编码: 源代码文件的编码,分为带BOM和不带BOM
+				执行编码: 二进制文件内字符编码,编译时会根据系统编码来设定
+				解释编码: 终端编码
+			GCC
+				源码编码: -finput-charset=utf-8 不设置则默认UTF-8
+				执行编码: -fexec-charset=utf-8 -fwexec-charset= 不设置则默认UTF-8
+		文件格式
+			PE格式 windows下二进制文件格式
+			ELF格式 unix下二进制文件格式
+				.text代码段 .data数据段 .rodata只读数据段 .bss全局、静态数据段 
+				.init _init函数 .init_array constructor特性标记的函数
+				.fini _fini函数 .fini_array destructor特性标记的函数
+				.got 外部模块变量、函数地址
+				有码加密 
+					__attribute__(section(.text))
+					__attribute__(constructor())
+					__attribute__(destructor())			
+			 	无码加密 
+			 		根据ELF格式查找函数代码段,对.dynamic内的重要函数进行加密
+				  	函数查找过程: name->hash->nbuckets->bucket->.dynamic->Elf32_Sym->st_name->.dynstr->chain
+				  	解密过程也是需要找到so地址,获取权限,解密内存 
+			MACH-O格式
+
 内存管理
+		内存布局: 
+				stack-map-heap-bss-rwdata-rodata-code
+		内存分配: 
+			  	new/delete new[]/delete[] 分配/释放内存,然后调用构造/析构函数
+			  	malloc/free 只负责分配/释放内存
+			  	以上两种方式均使用,
+			  	mmap(NULL,size,PROT_READ|PROT_WRITE|PROT_EXEC,MMAP_PRIVATE,fd,offset);
+			  	munmap(PTR,size);
+			  	brk系统调用分配小于128KB内存,中间内存碎片无法释放
+			  	mmap系统调用分配大于128KB内存,自由释放
+			  	具体大小可由M_MMAP_THRESHOLD来调节
+			  	M_TRIM_THRESHOLD调节堆碎片紧缩值
+
 	mmap(0表示系统选择映射区起始地址,需要映射的字节数,PROT_READ | PROT_WRITE | PROT_EXEC,RESERVE | COMMIT,-1表示匿名新建文件,0);
 	munmap(addr,len)释放文件
 	shmget()
@@ -34,46 +101,6 @@
 			  不在内存中,发生页面错误,内存换出换入页面文件,换入换出越频繁,内存访问就越慢
 	  执行文件
 			  进程启动时,会把程序可执行文件映射到进程虚拟内存中,这样就不需要物理内存了
-文件管理
-		硬盘
-			硬盘由N各盘片组成,盘片两个面都可以读写
-			磁头: 盘片的读写装置,每个面一个
-			磁道: 同一盘片不同半径的同心圆
-			柱面: 不同盘片相同半径的同心圆
-			扇区: 同一盘片的扇形区域
-			容量: 磁头数量*磁道数量*扇区数量*扇区字节数
-			分区: 操作系统进行管理的逻辑上的分区,必须格式化为指定的文件系统才可以使用
-		文件系统
-			文件系统定义了磁盘分区的存储、读写方式,FAT32 NTFS NFS EXT等等
-			虚拟文件系统,对文件系统的抽象,封装了不同文件系统之间的差异性
-			设备文件也属于一种文件系统
-		存储结构
-			基本信息存储在INODE内,INODE包含了文件的大小、读写日期、拥有者、偏移地址
-			目录文件由一系列文件名->INODE号组成
-			硬链接: 文件名不同,INODE相同
-			软连接: 文件名不同,其中一个指向另一个文件,相当于快捷方式 ls -s
-		文件编码
-			UNICODE是编码方式,UTF-8是存储方式
-					C# string编码和cs文件编码有关系,对string进行初始化会按照cs文件编码进行解码
-				文件内容和cs文件编码无关,文件内容读取时要和写入时使用的编码一致
-				printf打印时只是输出了字节,字节的解释是靠终端来进行的,因此终端编码和输出编码要一致
-			C++ MSVC编译期处理C++字符串时会把文件编码格式的字符串转码为本地操作系统的编码格式,所以C++代码内最好别用中文,除非是日志。
-				GCC字符串编码和文件编码一样的
-				读取文件时或者接收网络数据时都是按照二进制接收的,所以二进制是UTF-8编码,那么接收到的也是UTF-8
-		文件格式
-			PE格式
-			ELF格式
-			MACH-O格式
-		文件加密 
-			有码加密 __attribute__设置函数属性				
-					section特性把指定函数放入输入段(link的输入)
-					对指定的section加密,需要熟悉ELF文件格式
-					constructor特性 标记该函数在main函数之前执行
-					对指定的section加密,需要获取so地址(/proc/pid/maps),修改权限
-			 无码加密 
-			 		根据ELF格式查找函数代码段,对.dynamic内的重要函数进行加密
-				  函数查找过程: name->hash->nbuckets->bucket->.dynamic->Elf32_Sym->st_name->.dynstr->chain
-				  解密过程也是需要找到so地址,获取权限,解密内存 
 进程管理
 		进程关系
 			父子进程: fork创建进程,pid为0是子进程,大于0是父进程

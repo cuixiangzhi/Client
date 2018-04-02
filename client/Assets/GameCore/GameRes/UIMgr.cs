@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.Timeline;
+using UnityEngine.Playables;
 
 namespace GameCore
 {
@@ -32,7 +34,10 @@ namespace GameCore
 
         public static void Init()
         {
-
+            ExposedReference<MonoBehaviour> tt;
+            Playable p;
+            PlayableBehaviour pp;
+            PlayableDirector pd;
         }
 
         public static void Exit()
