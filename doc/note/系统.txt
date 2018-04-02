@@ -68,18 +68,13 @@
 		内存布局: 
 				stack-map-heap-bss-rwdata-rodata-code
 		内存分配: 
+			  	brk系统调用分配小于128KB内存,中间内存碎片无法释放,mmap系统调用分配大于128KB内存,自由释放
+			  	具体大小可由M_MMAP_THRESHOLD来调节 M_TRIM_THRESHOLD调节堆碎片紧缩值
+
 			  	new/delete new[]/delete[] 分配/释放内存,然后调用构造/析构函数
 			  	malloc/free 只负责分配/释放内存
-			  	以上两种方式均使用,
 			  	mmap(NULL,size,PROT_READ|PROT_WRITE|PROT_EXEC,MMAP_PRIVATE,fd,offset);
 			  	munmap(PTR,size);
-			  	brk系统调用分配小于128KB内存,中间内存碎片无法释放
-			  	mmap系统调用分配大于128KB内存,自由释放
-			  	具体大小可由M_MMAP_THRESHOLD来调节
-			  	M_TRIM_THRESHOLD调节堆碎片紧缩值
-
-	mmap(0表示系统选择映射区起始地址,需要映射的字节数,PROT_READ | PROT_WRITE | PROT_EXEC,RESERVE | COMMIT,-1表示匿名新建文件,0);
-	munmap(addr,len)释放文件
 	shmget()
 	shmat
 	shmdt
