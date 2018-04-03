@@ -75,27 +75,30 @@
 			  	malloc/free 只负责分配/释放内存
 			  	mmap(NULL,size,PROT_READ|PROT_WRITE|PROT_EXEC,MMAP_PRIVATE,fd,offset);
 			  	munmap(PTR,size);
-	shmget()
-	shmat
-	shmdt
-	shmctl
-	HANDLE handle = CreateFileMapping(0xFFFFFFFFFFFFFFFF,NULL,PAGE_READWRITE,sizeMax,sizeMin,mapKey)
-	HANDLE handle = OpenFileMapping(FILE_MAP_ALL_ACCESS,TRUE,mapKey)
-	void* ptr = MapViewOfFile(handle,FILE_MAP_ALL_ACCESS,0,0,0)
-	UnmapViewOfFile(ptr)
-	CloseHandle(handle)
-  虚拟内存
-	  每个进程都有自己独立的虚拟内存空间,32位系统是4G,64位系统是16EB,这个地址是逻辑地址
-	  进程地址空间划分
-	    1.内核空间,存放所有进程共享的dll及其数据 32位一般为2G,64位为248TB
-		2.用户空间,真实可用的进程虚拟内存空间    32位一般为2G,64位为8TB
-	  内存分配
-			  预定 RESERVE 和 COMMIT两步,第一步预定虚拟地址空间,第二步分配并映射物理内存  PAGE_READWRITE 物理页面可读可写
-	  交换内存
-			  访问数据时,虚拟地址映射到内存,直接访问内存,
-			  不在内存中,发生页面错误,内存换出换入页面文件,换入换出越频繁,内存访问就越慢
-	  执行文件
-			  进程启动时,会把程序可执行文件映射到进程虚拟内存中,这样就不需要物理内存了
+			  		头文件 sys/mman
+			  		mmap有SHARED和PRIVATE两种方式,即共享内存和私有内存,前者会写入文件,后者不会
+			  		mmap共享模式下映射大小不大于文件大小,多余部分不会写入文件(页对齐)
+			  		fseek可以设置文件大小
+			  		msync同步共享内存写入到映射文件
+			  	shmget(key,size,IPC_CREAT)
+			  		头文件 sys/shm sys/ipc
+			  		SHM需要先创建共享内存,然后映射到进程地址空间内,shmat(&sid,NULL,0);
+			  		取消映射使用shmdt(PTR);
+			  		删除内存使用shmctl(sid,IPC_RMID,NULL);
+			  		shm映射内存不会写入文件,进程退出不删除则系统关机才会删除
+			  	FileMap
+			  		windows共享内存机制
+			  		创建共享内存 CreateFileMapping(INVALID_HANDLE_VALUE,NULL,PAGE_READWRITE,0,SIZE,KEY);
+			  		打开共享内存 OpenFileMapping(FILE_MAP_ALL_ACCESS,TRUE,KEY);
+			  		进程映射内存 MapViewOfFile(handle,FILE_MAP_ALL_ACCESS,0,0,0);
+			  		取消内存映射 UnmapViewOfFile(PTR);
+			  		关闭共享内存 CloseHandle(handle)
+		  		VirtualAlloc
+		  			ntdll的API,windows虚拟内存
+			  	DLL映射
+			  		映射到内存,内存修改不会写入文件
+		内存权限
+				mprotect(ADDR,LEN,PROT_READ | PROT_WRITE | PROT_EXEC);
 进程管理
 		进程关系
 			父子进程: fork创建进程,pid为0是子进程,大于0是父进程
@@ -107,6 +110,11 @@
 			孤儿进程循环或者周期检测目标程序,崩溃后重启,监视运行状态
 			该进程后台运行,没有终端与之关联
 			fork();setsid();fork();close(0);close(1);close(2);open("/dev/null",O_RDWR);dup(0);dup(0);
+		进程外挂
+			ptrace提供控制另一个进程的能力,检测、修改代码、数据、寄存器、断点、注入、跟踪
+			调试 PTRACE_ATTACH PTRACE_DETACH PTRACE_CONT PTRACE_SINGLESTEP PTRACE_SYSCALL
+			读取 PTRACE_PEEKTEXT PTRACE_PEEKDATA PTRACE_PEEKUSR
+			写入 PTRACE_POKETEXT PTRACE_POKEDATA PTRACE_POKEUSR
 线程管理
 		线程创建
 			pthread_create(&pid,NULL,loopfunc,NULL);
@@ -120,26 +128,12 @@
 			pthread_rwlock_rdlock(&rwid);
 			pthread_rwlock_rdunlock(&rwid);
 进程通信
-	  	本地进程
-			pipe(&fds) fds[0]是读管道,fds[1]是写管道,匿名管道只能在父子进程间使用  unistd
-			popen,打开一个进程并传递一些数据,他不会阻塞进程,返回FILE*文件流        stdio
-			mkfifo("",)创建命名管道,不同进程以只读或者只写打开文件                 sys/types sys/stat
-			共享内存,同一块物理内存,进程分别映射到自己的逻辑地址,共享内存不提供同步机制,需要自己额外控制,共享内存由进程控制 sys/shm
-				  共享内存是一个对象需要的堆空间
-				  int shmget(key,size,666) 创建共享内存
-				  void* shmat(HANDLE,NULL,0)  把共享内存映射到进程逻辑地址,返回映射地址指针
-				  int shmdt(addr)		   取消映射
-				  shmctl(key,IPC_RMID,NULL)删除共享内存
-				  
-				  windows下使用文件映射
-				    handle = CreateFileMapping(INVALID_HANDLE_VALUE,NULL,PAGE_READWRITE,0,SIZE,"key对应的字符串");
-					handle = OpenFileMapping(FILE_MAP_ALL_ACCESS,TRUE,"KEY")
-					char* PTR = MapViewOfFile(handle,FILE_MAP_ALL_ACCESS,0,0,0)
-					UnMapViewOfFile(PTR);
-					CloseHandle(handle);
-			信号量,用于控制系统资源可用数量,互斥锁是非0即1的变量,只能控制线程资源 sys/sem.h
-				  int semget(key,1,IPC_CREAT)创建或者返回已有的信号量	
-网络通信
+		本地通信
+				mmap shm filemap
+		网络通信
+				pthread.h
+				创建连接
+						SOCKET socket();
 交叉编译
 		GCC编译 
             -g -c -o -I -static -l -std -fPIC -shared -Wl 
