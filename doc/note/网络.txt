@@ -30,17 +30,38 @@ TCP/IP协议栈
 			   内网机器需要设置路由端口映射,把对外网IP某个端口映射到本地主机的进程	                                  
 		接口层
 TCP连接与断开
-	三次握手  client->send状态,发送syn请求连接
-			  server收到syn请求,发送syn+ack,进入recv状态
-			  client收到syn+ack,发送ack,进入establistened
-			  server收到ack,进入establistened
+	三次握手  
+		client->send状态,发送syn请求连接
+		server收到syn请求,发送syn+ack,进入recv状态
+		client收到syn+ack,发送ack,进入establistened
+		server收到ack,进入establistened
 	四次挥手
-			  client发送fin请求断开连接,表示我不会再给你发数据了进入FIN_WAIT1
-			  server收到fin请求,返回ack给client,表示我还有数据要发送,client进入FIN_WAIT2状态,server进入close_wait
-			  server发送fin给client,告诉它我没有数据要发送了,server进入last_wait
-			  client返回ack给server,进入TIME_WAIT,server收到ack进入closed,client等待Nms后进入closed
+	  	client发送fin请求断开连接,表示我不会再给你发数据了进入FIN_WAIT1
+	  	server收到fin请求,返回ack给client,表示我还有数据要发送,client进入FIN_WAIT2状态,server进入close_wait
+	  	server发送fin给client,告诉它我没有数据要发送了,server进入last_wait
+	  	client返回ack给server,进入TIME_WAIT,server收到ack进入closed,client等待Nms后进入closed
 TCP粘包
 	是指接收数据时数据包是相连的,没多大意义,因为应用层自己实现协议一定会判断数据包长度和标记位
+同步
+	区域同步AOI:主要是为了避免场景内对象频繁移动导致推送数据量过大,只推送给AOI半径范围内的实体
+	         	具体实现可以采用八叉树(二叉树)场景划分管理,每个结点是一个立方体的格子
+	状态同步: 
+		随机种子: 随机种子需要服务器生成返回给客户端
+	   	发送指令: 客户端发送点击指令给服务器,同时客户端开始执行表现
+		同步状态: 服务器把每个客户端的状态反馈的一定区域内的玩家
+		延迟补偿: 服务器根据传输延迟做补偿,例如服务器对技能时间补偿
+	              客户端需要对技能更新时间做补偿,因为技能每次更新的间隔不稳定、其它客户端收到状态变化有延迟
+	锁定同步: 
+		初始化帧: 所有战斗单位进入第一帧,随机种子保持一致,这样所有玩家的逻辑状态是完全一致的
+	    等待输入: 锁定同步算法会导致一人延迟卡住,其它人也跟着卡住
+		同步输入: 每一帧的逻辑时间是固定的,所以输入一致,那么所有人的逻辑状态也是一致的
+		战斗模拟: 需要实现一个与表现完全分离的战斗模拟器,服务器可以利用该模拟器进行模拟验证,客户端使用该模拟器同步逻辑状态
+	乐观同步: 
+		初始化帧: 和锁定同步一样
+		定时采集: 服务器定时采集所有客户端的输入(摇杆移动也是输入的移动指令,定时时间延迟是否会感觉到?)
+		定时发送: 服务器同步每个定时间隔内的输入给所有客户端
+		战斗模拟: 和锁定同步一样
+		网络要求: 40ms以内应该是比较流畅
 服务器结构
 		  Login: 线程1,连接线程,管理与Client的连接,端口唯一
 		  		 线程2,管理与Server的连接,Billing(时间计费)、World()		        
