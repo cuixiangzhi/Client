@@ -1,85 +1,34 @@
-Tomcat  负载均衡,反向代理 
-Nginx   负载均衡,反向代理 
-NodeJs  javascript语言,使用googleV8引擎来解释脚本,服务器框架pomelo
-
-HTTP网址参数 #位置 ?表示参数 &参数分隔符
-			
+Tomcat  静态+动态HTTP服务,动态是通过运行JAVA应用实现
+Apache	静态HTTP服务
+Nginx   负载均衡,反向代理 http tcp
+NodeJs  基于V8的JS框架,基于NODEJS的服务器框架pomelo
+cdn     内容分发网络,分区域部署服务器,选取距离最近的服务器获取内容
+HTTP    url?arg1=&arg2=
 TCP/IP协议栈
-			应用层,自定义消息,序列化为字节数据,发给传输层,这一层是用户控制的,跟具体应用关系密切
-			传输层,TCP UDP
-			       把下层消息传递到上层进程
-				   把上层进程的消息加入端口号后传给网络层
-				   传递之前会有分组和合并的操作,确保消息完整
-				   TCP流量控制  
-				       TCP有一个接收缓冲区和发送缓冲区,三次握手时会通知其大小
-					   TCP不能发送超出该缓冲的数据,缓冲区满了以后会返回给发送方一个WINDOW大小,代表可以接收的数据大小
-					   TCP发送数据时,一次能够发送的数据有限
-					   setsockopt(socket,SOL_SOCKET || IPPROTO_TCP || IPPROTO_IP,选项,值,值SIZE);
-					   setsockopt(socket,SOL_SOCKET,SO_RCVBUF,&size,sizeof(UINT))   设置接收缓冲区大小
-					   setsockopt(socket,SOL_SOCKET,SO_SNDBUF,&size,sizeof(UINT))   设置发送缓冲区大小
-					   setsockopt(socket,SOL_SOCKET,SO_LINGER,linger,sizeof(linger))设置断开连接时是否丢弃未发送的数据 linger结构体 l_onoff l_linger
-				       ping命令发包, -f数据不分段 -l设置发送缓冲区大小
-					   WIN ioctlsocket(socket,FIONBIO,0 || 1) 设置socket是否阻塞
-					   LIX fcntl(socket,F_GETFL,O_NONBLOCK)
-				   TCP超时重传 socket发送数据后,收到接收方反馈确认数据被接收,否则超过一定时间重新发送,被接收之前数据会一直存放在缓冲区内
-				       心跳包,定时发送心跳数据包,用来确定连接是否断开				   
-			网络层,IP ARP&RARP
-				   IP地址分为ABCDE五类,A类0-127 0三字节主机号 B类128-191 10两字节主机号 C类192-223 110一字节主机号 .0是网络地址 255是广播地址
-				   IP地址由网络号+主机号构成
-				   子网,子网掩码用于计算两个IP地址是否属于同一个网络,
-				   IP地址与子网掩码做and运算,得出网络号
-				   
-				   首先计算 源IP与目的IP的网络号,相同则发送ARP请求包给子网内所有主机,目的IP主机收到后反馈RAP附带MAC地址,IP封包完成发送数据到子网内所有主机,MAC一致的主机接收IP包
-				   不相同则发送ARP请求给网关,网关反馈MAC,收到后封包发给网关,网关收到后发给路由器,路由器经过路由选择算法一跳一跳的到达目标网络主机
-				   提供服务的主机必须拥有公网IP才可以被访问
-					 
-				   内网机器需要设置路由端口映射,把对外网IP某个端口映射到本地主机的进程
-				                                  
-			接口层,
-RTT 往返时延
-	表示从发送端发送数据开始，到发送端收到来自接收端的确认（接收端收到数据后便立即发送确认），总共经历的时延。
-	链路的传播时间、末端系统的处理时间以及路由器的缓存中的排队和处理时间
-select
-	  检测一组socket是否有数据到达
-	  int select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, struct timeval *timeout) 
-	  传入socket个数,socket读标记,socket写标记,socket异常标记,超时时间
-	  fd_set fds;
-	  FD_ZERO(&fds)清0  FD_SET(fd,&fds)置1  FD_ISSET(fd,&fds)是否置1 FD_CLR(fd,&fds)重置
-	  客户端发送的connect操作,也会导致socket可读,所以select可以检测新的连接,所以FD_SET始终保持server socket句柄置为1
-		连接上之后,服务器发送校验包,不通过则断开该链接
-		select最大支持 FD_SETSIZE 个连接,也就是fd_set内的数组大小
-		struct fd_set 
-		{
-				u_int fd_count;               /* how many are SET? */
-				SOCKET  fd_array[FD_SETSIZE];   /* an array of SOCKETs */
-		}
-
-select缺点是在链接数很多时用户与内核切换时的拷贝消耗,以及遍历消耗
-	
-epoll事件驱动
-    select有连接数限制,最大2048
-	select会有内存拷贝开销
-	select连接数越多,遍历消耗越大,因为活跃的连接数占比较少
-	  我们必须在select之后遍历描述符,找出标志位设为TRUE的那个,即轮询IO
-	epoll没有连接限制
-	epoll只通知我们哪个描述符发生了变化,也就是产生了事件,即事件驱动异步IO
-	   返回epoll数组
-	API
-	   int handle = epoll_create(maxfds); 创建epoll文件
-	   int ret = epoll_ctl(handle,op,fd,evt);     注册监听者  op可以是EPOLL_CTL_ADD EPOLL_CTL_MOD EPOLL_CTL_DEL 
-	   epoll_event结构体表示事件,相关宏 EPOLLIN EPOLLOUT 可读可写事件 EPOLLERR 错误  EPOLLET  EPOLLLT
-	   
-		epoll_event ev;
-		ev.data.fd=listenfd;
-		ev.events=EPOLLIN|EPOLLET;	
-	   int ret = epoll_wait(handle,events,max_count_perframe,-1);    等待事件发生
-IOCP事件驱动
-	创建IOCP对象 HANDLE hd = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, 0, 0);
-	绑定新连接到IOCP对象 HANDLE nd = CreateIoCompletionPort((HANDLE)n, hd, n, 0);   
-	
-	IOCP需要一个连接线程,多个IO线程,连接线程在接收连接后绑定客户socket到iocp对象
-	IO读线程调用GetQueuedCompletionStatus()阻塞等待IO请求完成,处理完成调用异步WSARecv继续等待
-	IO写线程
+		应用层,自定义消息,序列化为字节数据,发给传输层,这一层是用户控制的,跟具体应用关系密切
+		传输层,TCP UDP
+		       把下层消息传递到上层进程
+			   把上层进程的消息加入端口号后传给网络层
+			   传递之前会有分组和合并的操作,确保消息完整
+			   TCP流量控制  
+			       TCP有一个接收缓冲区和发送缓冲区,三次握手时会通知其大小
+				   TCP不能发送超出该缓冲的数据,缓冲区满了以后会返回给发送方一个WINDOW大小,代表可以接收的数据大小
+				   TCP发送数据时,一次能够发送的数据有限
+			   TCP超时重传 
+			   	   socket发送数据后,收到接收方反馈确认数据被接收,否则超过一定时间重新发送,被接收之前数据会一直存放在缓冲区内
+			       心跳包,定时发送心跳数据包,用来确定连接是否断开				   
+		网络层,IP ARP&RARP
+			   IP地址分为ABCDE五类,A类0-127 0三字节主机号 B类128-191 10两字节主机号 C类192-223 110一字节主机号 .0是网络地址 255是广播地址
+			   IP地址由网络号+主机号构成
+			   子网,子网掩码用于计算两个IP地址是否属于同一个网络,
+			   IP地址与子网掩码做and运算,得出网络号		   
+			   首先计算 源IP与目的IP的网络号,相同则发送ARP请求包给子网内所有主机,目的IP主机收到后反馈RAP附带MAC地址,
+			   IP封包完成发送数据到子网内所有主机,MAC一致的主机接收IP包
+			   不相同则发送ARP请求给网关,网关反馈MAC,收到后封包发给网关,网关收到后发给路由器,
+			   路由器经过路由选择算法一跳一跳的到达目标网络主机
+			   提供服务的主机必须拥有公网IP才可以被访问			 
+			   内网机器需要设置路由端口映射,把对外网IP某个端口映射到本地主机的进程	                                  
+		接口层
 TCP连接与断开
 	三次握手  client->send状态,发送syn请求连接
 			  server收到syn请求,发送syn+ack,进入recv状态
@@ -90,29 +39,11 @@ TCP连接与断开
 			  server收到fin请求,返回ack给client,表示我还有数据要发送,client进入FIN_WAIT2状态,server进入close_wait
 			  server发送fin给client,告诉它我没有数据要发送了,server进入last_wait
 			  client返回ack给server,进入TIME_WAIT,server收到ack进入closed,client等待Nms后进入closed
-	协议栈
-		应用(应用消息头+消息体)->TCP(TCP头+应用头+消息体)->IP(IP头+TCP头+应用头+消息体)->网卡
-IO模型
-  阻塞IO,阻塞在read、recv这样的系统调用上,也就是阻塞在当前socket的处理上
-  非阻塞IO,需要设置socket为非阻塞io,unix使用fcntl的函数fcntl(fd,F_SETFL,O_NONBLOCK)
-  IO多路复用,阻塞在select、epoll这样的系统调用上,这个函数是在任意socket有数据准备好就返回,而不是阻塞在一个socket上
-  同步IO操作,请求导致进程阻塞,直到IO完成
-  异步IO操作,请求不阻塞进程
-	  
-CDN多级缓存
-	首先DNS服务器解析出目的地址,这个地址是CDN中心负载均衡服务器,负责把请求分散到区域最近的CDN服务器
-	区域CDN负载均衡服务器根据用户IP地址选择最优的缓存服务器
-	
-HTTP协议 
-		URL构成 协议://域名或者IP:端口/路径?数据k=v&k=v&k=v#锚
-		无状态,就是两个请求之间没有关系
-		协议构成
-		        方法名(POST修改GET获取PUT上传DELETE删除) 资源地址 HTTP/版本
-
+TCP粘包
+	是指接收数据时数据包是相连的,没多大意义,因为应用层自己实现协议一定会判断数据包长度和标记位
 服务器结构
 		  Login: 线程1,连接线程,管理与Client的连接,端口唯一
-		  		 线程2,管理与Server的连接,Billing(时间计费)、World()
-		         
+		  		 线程2,管理与Server的连接,Billing(时间计费)、World()		        
 		         线程C,管理与DB的连接,
 		         线程D,
 		         线程E,主线程,守护子线程
