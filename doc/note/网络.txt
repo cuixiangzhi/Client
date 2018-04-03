@@ -1,16 +1,11 @@
-Tomcat  JAVA应用容器 负载均衡,反向代理
-Nginx   负载均衡,反向代理
+Tomcat  负载均衡,反向代理 
+Nginx   负载均衡,反向代理 
 NodeJs  javascript语言,使用googleV8引擎来解释脚本,服务器框架pomelo
-
-服务器软件是以系统服务的形式运行,守护进程监测其运行状态,异常时进行重启
 
 HTTP网址参数 #位置 ?表示参数 &参数分隔符
 			
-单进程多线程非阻塞模式
-			
 TCP/IP协议栈
 			应用层,自定义消息,序列化为字节数据,发给传输层,这一层是用户控制的,跟具体应用关系密切
-				    HTTP传输使用Base64编码
 			传输层,TCP UDP
 			       把下层消息传递到上层进程
 				   把上层进程的消息加入端口号后传给网络层
@@ -41,83 +36,25 @@ TCP/IP协议栈
 				   内网机器需要设置路由端口映射,把对外网IP某个端口映射到本地主机的进程
 				                                  
 			接口层,
-
-TCP  面向连接、可靠、有序、自动拆包、流量控制、简单,数据包丢失之后后续数据会被加入到等待队列里,直到该数据重发正确接收,所以TCP是有序可靠的
-UDP  无连接、不可靠、无序,自己拆包、速度快,需要自己在数据包里加入序号
-			
-网络进程
-	 socket 头文件 sys/socket.h 包含socket bind listen recv recvfrom send sendto
-			头文件 arpa/inet.h  包含htons htonl ntohs ntohl inet_addr inet_ntoa inet_ntop inet_pton  端口号字节序转换,IP字节序转换
-			头文件 netinet/in.h 包含sockaddr_in结构
-			头文件 fcntl.h      包含fcntl设置阻塞
-			windows下只需要包含winsock2.h即可
-	 服务器编程要考虑IO耗时和计算耗时	
 RTT 往返时延
 	表示从发送端发送数据开始，到发送端收到来自接收端的确认（接收端收到数据后便立即发送确认），总共经历的时延。
 	链路的传播时间、末端系统的处理时间以及路由器的缓存中的排队和处理时间
-
-INADDR_ANY
-	本机的所有IP地址,机器可以安装多个网卡
-SOCKET API 
-	如果是在windows下,首先需要初始化SOCKET环境,  
-		 WORD sockVersion = MAKEWORD(2,2);
-		 WSADATA wsaData;
-		if(WSAStartup(sockVersion, &wsaData)!=0)
+select
+	  检测一组socket是否有数据到达
+	  int select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, struct timeval *timeout) 
+	  传入socket个数,socket读标记,socket写标记,socket异常标记,超时时间
+	  fd_set fds;
+	  FD_ZERO(&fds)清0  FD_SET(fd,&fds)置1  FD_ISSET(fd,&fds)是否置1 FD_CLR(fd,&fds)重置
+	  客户端发送的connect操作,也会导致socket可读,所以select可以检测新的连接,所以FD_SET始终保持server socket句柄置为1
+		连接上之后,服务器发送校验包,不通过则断开该链接
+		select最大支持 FD_SETSIZE 个连接,也就是fd_set内的数组大小
+		struct fd_set 
 		{
-			return 0;
+				u_int fd_count;               /* how many are SET? */
+				SOCKET  fd_array[FD_SETSIZE];   /* an array of SOCKETs */
 		}
-	socket()：创建socket
-			int socket(int domain, int type, int protocol);  
-			AF_INET(ipv4) AF_INET6(ipv6)  
-			SOCK_STREAM(面向连接流式数据) SOCK_DGRAM(无连接数据报) 
-			IPPROTO_TCP IPPROTO_UDP
-			创建错误返回INVALID_SOCKET
-	bind()：绑定socket到本地地址和端口，通常由服务端调用
-			sockaddr_in  .sin_family = AF_INET;
-						 .sin_addr.s_addr = inet_addr(IP_ADDRESS);  inet_ntoa inet_addr
-						 .sin_port = htons(PORT);  htons ntohs  字节序转换  头文件arpa/inet.h
-			(sockaddr*)&addr
-			创建错误返回SOCKET_ERROR
-	listen()：TCP专用，开启监听模式
-			TCP状态机从close转换为listen,第二个参数代表排队最多个数
-			创建错误返回SOCKET_ERROR
-	accept()：TCP专用，服务器等待客户端连接，一般是阻塞态
-			阻塞调用,与bind参数一致,不过它的参数是传进去获取数据的
-			accpet(server,(sockaddr)&addr,sizeof(sockaddr))
-			创建错误返回INVALID_SOCKET
-			accept只是从内核取出已完成三次握手的客户端SOCKET连接
-	connect()：TCP专用，客户端主动连接服务器
-			和bind用法一样,传入sockfd,sockaddr,sizeof(sockaddr),返回值-1表示出错
-			创建错误返回SOCKET_ERROR
-	send()：TCP专用，发送数据
-			send(clientsocket,buff,size,0)
-			发送和接收消息要给消息添加消息头,标识消息长度,需要一个消息缓冲区缓存接收到的数据
-			发送错误返回SOCKET_ERROR,连接关闭返回0,成功返回1
-	recv()：TCP专用，接收数据
-			recv(clientsocket,buff,size,0)
-			接收错误返回SOCKET_ERROR,连接关闭返回0,成功返回接收到的字节数
-	sendto()：UDP专用，发送数据到指定的IP地址和端口
-			比send多了两个参数,分别是server地址和地址大小
-	recvfrom()：UDP专用，接收数据，返回数据远端的IP地址和端口
 
-	closesocket(server)：关闭socket
-	
-	select
-		  检测一组socket是否有数据到达
-		  int select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, struct timeval *timeout) 
-		  传入socket个数,socket读标记,socket写标记,socket异常标记,超时时间
-		  fd_set fds;
-		  FD_ZERO(&fds)清0  FD_SET(fd,&fds)置1  FD_ISSET(fd,&fds)是否置1 FD_CLR(fd,&fds)重置
-		  客户端发送的connect操作,也会导致socket可读,所以select可以检测新的连接,所以FD_SET始终保持server socket句柄置为1
-			连接上之后,服务器发送校验包,不通过则断开该链接
-			select最大支持 FD_SETSIZE 个连接,也就是fd_set内的数组大小
-			struct fd_set 
-			{
-					u_int fd_count;               /* how many are SET? */
-					SOCKET  fd_array[FD_SETSIZE];   /* an array of SOCKETs */
-			}
-	
-	select缺点是在链接数很多时用户与内核切换时的拷贝消耗,以及遍历消耗
+select缺点是在链接数很多时用户与内核切换时的拷贝消耗,以及遍历消耗
 	
 epoll事件驱动
     select有连接数限制,最大2048

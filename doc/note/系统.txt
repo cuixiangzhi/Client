@@ -131,12 +131,36 @@
 		本地通信
 				mmap shm filemap
 		网络通信
-				pthread.h
+				sys/socket arpa/inet netinet/in
+				winsock2 comment(lib,"ws2_2.lib")
+				INVALID_SOCKET SOCKET_ERROR INADDR_ANY
 				创建连接
-						SOCKET socket();
+						int sock = socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);
+						地址
+							sockaddr_in addr;
+							addr.sin_family = AF_INET;
+							addr.sin_addr.s_addr = inet_addr(host); ntoa(); htonl();
+							addr.sin_port = htons(port); ntohs();
+							客户端不需要绑定
+							bind(sock,(sockaddr*)&addr,sizeof(sockaddr));
+						连接						
+							connect(sock,(sockaddr*)&addr,sizeof(sockaddr));
+						监听
+							listen(sock,5);
+				接受连接
+						clientsock->id = accept(sock,(sockaddr*)&clientsock->addr,&size);
+						clientsock->port = ntohs(clientsock->addr.sin_port);
+						strncpy(clientsock->host,inet_ntoa(clientsock->addr.sin_addr),SIZE);
+				收发数据
+						send(sock,buff,size,0);
+						recv(sock,buff,size,0);
+						sendto(sock,buff,size,0,(sockaddr*)&addr,sizeof(addr));
+						recvfrom(sock,buff,size,0,(sockaddr*)&addr,sizeof(addr));
+				断开连接
+						closesocket(sock);
 交叉编译
 		GCC编译 
-            -g -c -o -I -static -l -std -fPIC -shared -Wl 
+            -g -m64 -O2 -c -o -I -static -l -std -fPIC -shared -Wl 
             ar rcs
 		NDK编译 
 			LOCAL_PATH := $(call my-dir)
