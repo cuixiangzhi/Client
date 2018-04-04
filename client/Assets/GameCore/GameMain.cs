@@ -14,12 +14,12 @@ namespace GameCore
 			UtilDll.Init();
 			UEP.EndSample();
 
-			UEP.BeginSample("UtilLog.Init();");
-			UtilLog.Init();
+			UEP.BeginSample("LogMgr.Init();");
+			LogMgr.Init();
 			UEP.EndSample();
 
-			UEP.BeginSample("UtilUIFollow.Init();");
-			UtilUIFollow.Init();
+			UEP.BeginSample("UIFollow.Init();");
+			UIFollow.Init();
 			UEP.EndSample();
 
 			UEP.BeginSample("UtilTimer.Init();");
@@ -72,8 +72,8 @@ namespace GameCore
             LuaMgr.LateLoop();
             UEP.EndSample();
 
-            UEP.BeginSample("UtilUIFollow.LateLoop();");
-            UtilUIFollow.LateLoop();
+            UEP.BeginSample("UIFollow.LateLoop();");
+            UIFollow.LateLoop();
             UEP.EndSample();
 
             UEP.BeginSample("UtilTimer.LateLoop();");
@@ -107,16 +107,16 @@ namespace GameCore
 			LuaMgr.Exit();
 			UEP.EndSample();
 
-			UEP.BeginSample("UtilUIFollow.Exit();");
-			UtilUIFollow.Exit();
+			UEP.BeginSample("UIFollow.Exit();");
+            UIFollow.Exit();
 			UEP.EndSample();
 
 			UEP.BeginSample("UtilTimer.Exit();");
 			UtilTimer.Exit();
 			UEP.EndSample();
 
-			UEP.BeginSample("UtilLog.Exit();");
-			UtilLog.Exit();
+			UEP.BeginSample("LogMgr.Exit();");
+			LogMgr.Exit();
 			UEP.EndSample();
 
 			UEP.BeginSample("UtilDll.Exit();");

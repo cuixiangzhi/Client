@@ -34,7 +34,7 @@ using System.Diagnostics;
 using LuaInterface;
 
 using Object = UnityEngine.Object;
-using Debug = GameCore.UtilLog;
+using Debug = GameCore.LogMgr;
 using System.Threading;
 
 [InitializeOnLoad]
@@ -252,17 +252,17 @@ public static class ToLuaMenu
         if (CustomSettings.sealedList.Contains(t))
         {
             CustomSettings.sealedList.Remove(t);
-            GameCore.UtilLog.LogError("{0} not a sealed class, it is parent of {1}", LuaMisc.GetTypeName(t), bt.name);
+            GameCore.LogMgr.LogError("{0} not a sealed class, it is parent of {1}", LuaMisc.GetTypeName(t), bt.name);
         }
 
         if (t.IsInterface)
         {
-            GameCore.UtilLog.LogWarning("{0} has a base type {1} is Interface, use SetBaseType to jump it", bt.name, t.FullName);
+            GameCore.LogMgr.LogWarning("{0} has a base type {1} is Interface, use SetBaseType to jump it", bt.name, t.FullName);
             bt.baseType = t.BaseType;
         }
         else if (dropType.IndexOf(t) >= 0)
         {
-            GameCore.UtilLog.LogWarning("{0} has a base type {1} is a drop type", bt.name, t.FullName);
+            GameCore.LogMgr.LogWarning("{0} has a base type {1} is a drop type", bt.name, t.FullName);
             bt.baseType = t.BaseType;
         }
         else if (!beDropBaseType || baseType.IndexOf(t) < 0)
@@ -274,17 +274,17 @@ public static class ToLuaMenu
 #if JUMP_NODEFINED_ABSTRACT
                 if (t.IsAbstract && !t.IsSealed)
                 {
-                    GameCore.UtilLog.LogWarning("not defined bindtype for {0}, it is abstract class, jump it, child class is {1}", LuaMisc.GetTypeName(t), bt.name);
+                    GameCore.LogMgr.LogWarning("not defined bindtype for {0}, it is abstract class, jump it, child class is {1}", LuaMisc.GetTypeName(t), bt.name);
                     bt.baseType = t.BaseType;
                 }
                 else
                 {
-                    GameCore.UtilLog.LogWarning("not defined bindtype for {0}, autogen it, child class is {1}", LuaMisc.GetTypeName(t), bt.name);
+                    GameCore.LogMgr.LogWarning("not defined bindtype for {0}, autogen it, child class is {1}", LuaMisc.GetTypeName(t), bt.name);
                     bt = new BindType(t);
                     allTypes.Add(bt);
                 }
 #else
-                GameCore.UtilLog.LogWarning("not defined bindtype for {0}, autogen it, child class is {1}", LuaMisc.GetTypeName(t), bt.name);                        
+                GameCore.LogMgr.LogWarning("not defined bindtype for {0}, autogen it, child class is {1}", LuaMisc.GetTypeName(t), bt.name);                        
                 bt = new BindType(t);
                 allTypes.Add(bt);
 #endif
@@ -316,13 +316,13 @@ public static class ToLuaMenu
 
             if (dropType.IndexOf(list[i].type) >= 0)
             {
-                GameCore.UtilLog.LogWarning(list[i].type.FullName + " in dropType table, not need to export");
+                GameCore.LogMgr.LogWarning(list[i].type.FullName + " in dropType table, not need to export");
                 allTypes.Remove(list[i]);
                 continue;
             }
             else if (beDropBaseType && baseType.IndexOf(list[i].type) >= 0)
             {
-                GameCore.UtilLog.LogWarning(list[i].type.FullName + " is Base Type, not need to export");
+                GameCore.LogMgr.LogWarning(list[i].type.FullName + " is Base Type, not need to export");
                 allTypes.Remove(list[i]);
                 continue;
             }
@@ -375,7 +375,7 @@ public static class ToLuaMenu
             ToLuaExport.Generate(CustomSettings.saveDir);
         }
 
-        GameCore.UtilLog.Log("Generate lua binding files over");
+        GameCore.LogMgr.Log("Generate lua binding files over");
         ToLuaExport.allTypes.Clear();
         allTypes.Clear();        
         AssetDatabase.Refresh();
@@ -477,7 +477,7 @@ public static class ToLuaMenu
         set.Clear();
         ToLuaExport.Clear();
         AssetDatabase.Refresh();
-        GameCore.UtilLog.Log("Create lua delegate over");
+        GameCore.LogMgr.Log("Create lua delegate over");
     }    
 
     static ToLuaTree<string> InitTree()
@@ -684,7 +684,7 @@ public static class ToLuaMenu
             sb.AppendLineEx("\t\tL.EndPreLoad();");
         }
 
-        sb.AppendLineEx("\t\tGameCore.UtilLog.Log(\"Register lua type cost time: {0}\", Time.realtimeSinceStartup - t);");
+        sb.AppendLineEx("\t\tGameCore.LogMgr.Log(\"Register lua type cost time: {0}\", Time.realtimeSinceStartup - t);");
         sb.AppendLineEx("\t}");
 
         for (int i = 0; i < dtList.Count; i++)
@@ -715,7 +715,7 @@ public static class ToLuaMenu
         }
 
         AssetDatabase.Refresh();
-        GameCore.UtilLog.Log("Generate LuaBinder over !");
+        GameCore.LogMgr.Log("Generate LuaBinder over !");
     }
 
     static void GenRegisterInfo(string nameSpace, StringBuilder sb, List<DelegateType> delegateList, List<DelegateType> wrappedDelegatesCache)
@@ -986,7 +986,7 @@ public static class ToLuaMenu
         CopyLuaBytesFiles(LuaConst.luaDir, destDir);
         CopyLuaBytesFiles(LuaConst.toluaDir, destDir);
         AssetDatabase.Refresh();
-        GameCore.UtilLog.Log("Copy lua files over");
+        GameCore.LogMgr.Log("Copy lua files over");
     }
 
     [MenuItem("Lua/Copy Lua  files to Persistent", false, 52)]
@@ -997,7 +997,7 @@ public static class ToLuaMenu
         CopyLuaBytesFiles(LuaConst.luaDir, destDir, false);
         CopyLuaBytesFiles(LuaConst.toluaDir, destDir, false);
         AssetDatabase.Refresh();
-        GameCore.UtilLog.Log("Copy lua files over");
+        GameCore.LogMgr.Log("Copy lua files over");
     }
 
     static void GetAllDirs(string dir, List<string> list)
@@ -1040,7 +1040,7 @@ public static class ToLuaMenu
         }
         else if (EditorUserBuildSettings.activeBuildTarget == BuildTarget.iOS)
         {
-            //GameCore.UtilLog.Log("iOS默认用64位，32位自行考虑");
+            //GameCore.LogMgr.Log("iOS默认用64位，32位自行考虑");
             File.Copy(path + "/Luajit64/Build.bat", tempDir + "/Build.bat", true);
         }
         else
@@ -1256,7 +1256,7 @@ public static class ToLuaMenu
             ToLuaExport.Generate(dir);
         }
         
-        GameCore.UtilLog.Log("Generate base type files over");
+        GameCore.LogMgr.Log("Generate base type files over");
         allTypes.Clear();
         AssetDatabase.Refresh();
     }
@@ -1300,7 +1300,7 @@ public static class ToLuaMenu
         CreateDefaultWrapFile(CustomSettings.toluaBaseType, "LuaInterface_LuaFieldWrap");
         CreateDefaultWrapFile(CustomSettings.toluaBaseType, "LuaInterface_LuaConstructorWrap");        
 
-        GameCore.UtilLog.Log("Clear base type wrap files over");
+        GameCore.LogMgr.Log("Clear base type wrap files over");
         AssetDatabase.Refresh();
     }
 }

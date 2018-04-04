@@ -747,7 +747,7 @@ public static class ToLuaExport
             return;
         }
 
-        //GameCore.UtilLog.Log("Begin Generate lua Wrap for class {0}", className);        
+        //GameCore.LogMgr.Log("Begin Generate lua Wrap for class {0}", className);        
         sb = new StringBuilder();
         usingList.Add("System");                
 
@@ -1547,7 +1547,7 @@ public static class ToLuaExport
 
             if (IsGenericMethod(m.Method))
             {
-                GameCore.UtilLog.Log("Generic Method {0}.{1} cannot be export to lua", LuaMisc.GetTypeName(type), m.GetTotalName());
+                GameCore.LogMgr.Log("Generic Method {0}.{1} cannot be export to lua", LuaMisc.GetTypeName(type), m.GetTotalName());
                 continue;
             }
 
@@ -2720,14 +2720,14 @@ public static class ToLuaExport
         {
             if (CompareMethod(list[index], r) == 2)
             {                
-                GameCore.UtilLog.LogWarning("{0}.{1} has been dropped as function {2} more match lua", className, list[index].GetTotalName(), r.GetTotalName());
+                GameCore.LogMgr.LogWarning("{0}.{1} has been dropped as function {2} more match lua", className, list[index].GetTotalName(), r.GetTotalName());
                 list.RemoveAt(index);
                 list.Add(r);
                 return;
             }
             else
             {
-                GameCore.UtilLog.LogWarning("{0}.{1} has been dropped as function {2} more match lua", className, r.GetTotalName(), list[index].GetTotalName());
+                GameCore.LogMgr.LogWarning("{0}.{1} has been dropped as function {2} more match lua", className, r.GetTotalName(), list[index].GetTotalName());
                 return;
             }
         }
@@ -3324,7 +3324,7 @@ public static class ToLuaExport
             name = beDefined ? name : type + " " + name;
             sb.AppendFormat("{0}{1} = ({2})func.CheckObject(typeof({2}));\r\n", head, name, type);
 
-            //GameCore.UtilLog.LogError("GenLuaFunctionCheckValue undefined type:" + t.FullName);
+            //GameCore.LogMgr.LogError("GenLuaFunctionCheckValue undefined type:" + t.FullName);
         }
     }
 

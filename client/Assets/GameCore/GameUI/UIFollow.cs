@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace GameCore
 {
-    public static class UtilUIFollow
+    public static class UIFollow
     {
         private static Camera mGameCamera = null;
 
@@ -50,13 +50,13 @@ namespace GameCore
             {
                 if(mFollowList[i].mSource == null || mFollowList[i].mSourceObj == null)
                 {
-                    UtilLog.LogError("follow source is null!");
+                    LogMgr.LogError("follow source is null!");
                     mFollowList.RemoveAt(i--);
                     continue;
                 }
                 if(mFollowList[i].mTarget == null)
                 {
-                    UtilLog.LogError("follow target is null {0}!", mFollowList[i].mSource.name);
+                    LogMgr.LogError("follow target is null {0}!", mFollowList[i].mSource.name);
                     mFollowList.RemoveAt(i--);
                     continue;
                 }

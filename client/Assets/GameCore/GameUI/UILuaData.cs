@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace GameCore
 {
-    public sealed class UILua : MonoBehaviour
+    public sealed class UILuaData : MonoBehaviour
     {
         private void Awake()
         {

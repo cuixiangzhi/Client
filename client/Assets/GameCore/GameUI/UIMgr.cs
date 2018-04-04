@@ -7,7 +7,7 @@ namespace GameCore
 {
     public static class UIMgr
     {
-        private static Dictionary<int, UILua> mUIDic;
+        private static Dictionary<int, UILuaData> mUIDic;
 
         public static void Init()
         {

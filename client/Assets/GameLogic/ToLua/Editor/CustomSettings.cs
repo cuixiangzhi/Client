@@ -39,17 +39,19 @@ public static class CustomSettings
         #endregion
 
         #region 框架
-        //VSCODE LUA调试
+        //调试
         _GT(typeof(LuaDebugTool)),
         _GT(typeof(LuaValueInfo)),
         _GT(typeof(List<LuaValueInfo>)),
-        //基础
-        _GT(typeof(GameCore.UtilUIFollow)),
-        _GT(typeof(GameCore.UtilTimer)),
-        _GT(typeof(GameCore.UtilLog)),        
+        //工具
+        _GT(typeof(GameCore.UtilTimer)),       
+        //资源 
         _GT(typeof(GameCore.AssetMgr)),
-        //NGUI
-        //NGUIEXT
+        _GT(typeof(GameCore.LogMgr)),
+        _GT(typeof(GameCore.UpdateMgr)),
+        _GT(typeof(GameCore.BundleMgr)),
+        //UI
+        _GT(typeof(GameCore.UIFollow)),
         #endregion
 
         #region 逻辑

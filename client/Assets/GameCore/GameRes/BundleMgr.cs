@@ -36,7 +36,7 @@ namespace GameCore
             AssetBundle bundle = AssetBundle.LoadFromFile(fullPath);
             if (bundle == null)
             {
-                UtilLog.LogWarning("asset is null {0}", fullPath);
+                LogMgr.LogWarning("asset is null {0}", fullPath);
             }
             return bundle;
         }
@@ -53,7 +53,7 @@ namespace GameCore
             }
             else
             {
-                UtilLog.LogWarning("asset is null {0}", fullPath);
+                LogMgr.LogWarning("asset is null {0}", fullPath);
             }
             return new LuaByteBuffer(mBuffer, len);
         }

@@ -105,7 +105,7 @@ public class LuaDebugTool
             }
             catch (Exception e)
             {
-                GameCore.UtilLog.Log(e.Message + "\n" + e.StackTrace);
+                GameCore.LogMgr.Log(e.Message + "\n" + e.StackTrace);
                 values.Add(new LuaValueInfo()
                 {
                     name = pinfo.Name,
@@ -148,7 +148,7 @@ public class LuaDebugTool
             }
             catch (Exception e)
             {
-                GameCore.UtilLog.Log(e.Message + "\n" + e.StackTrace);
+                GameCore.LogMgr.Log(e.Message + "\n" + e.StackTrace);
             }
         }
         return values;
