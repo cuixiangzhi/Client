@@ -11,6 +11,9 @@ namespace GameLogic
 {
     public class GameTest : MonoBehaviour
     {
+        private void Awake()
+        {
 
+        }
     }
 }
