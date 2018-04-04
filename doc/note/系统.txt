@@ -173,6 +173,7 @@
 					   	SOCKET关闭行为
 					   	linger l; l.l_onoff = 1; l.l_linger = 0;
 					   	g/setsockopt(sock,SOL_SOCKET,SO_LINGER,&L,sizeof(linger)) 设置关闭时是否发送缓冲区数据和超时时间
+					   	g/setsockopt(sock,SOL_SOCKET,SO_REUSEADDR,1,sizeof(INT)) 启动服务器时保证端口可被多个IP重用
 				多路复用
 						select FD_SETSIZE是单线程最大连接数
 							//创建轮询数组

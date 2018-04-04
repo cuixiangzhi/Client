@@ -1,4 +1,4 @@
-硬件相关
+硬件
 	独立显卡通过数据线与显示器连接
 	VGA接口输入是模拟信号,通过显卡的RAMDAC转换
 	HDMI&DVI接口输入是数字信号,显卡直接传输
@@ -9,14 +9,14 @@
 	垂直同步 显卡的一个模块每个固定间隔产生一个信号(间隔根据显示器刷新频率范围设定,一般为60HZ)
 	         这个信号每次都会发送给CRT显示器
 	         打开垂直同步是指这个信号也发送给显卡的图形处理模块
-驱动相关
+驱动
 	openGL是一个规范,各个显卡硬件厂商制作遵循该规范的驱动程序
 	驱动跟硬件关联,OpenGL个DX都是调用了驱动的API
 	OpenGL跨平台 glut跨平台输入
 	OPENGL ES用于ANDROID 
 	METAL用于IPHONE 
 	DX只能用于WIN
-坐标系
+坐标
 	世界坐标系
 		左手坐标系 x右y上z里
 		右手坐标系 x右y上z内
@@ -24,23 +24,35 @@
 		unity中左下角为(0,0) 右上角为显示屏幕的(w,h)
 		ngui中中心点为(0,0)
 		gui左上角为(0,0)
+		glut窗口左上角为(0,0)
 	模型坐标系
 		局部坐标系,是指模型本身的坐标系,以物体中心为原点,有自己的xyz轴
 		默认放入世界坐标系的模型,局部坐标系和世界坐标系是重合的
 	视图坐标系
 		摄像机局部坐标系
-坐标变换
-图元显示
+变换
+窗口
+	创建父窗口 glutCreateWindow(name) glutInitWindowSize(); glutInitWindowPosition();
+	创建子窗口 glutCreateSubWindow(parent,x,y,w,h);
+	删除子窗口 glutDestroyWindow(wID);
+	当前窗口   glutG/SetWindow(wID);
+	交换帧缓存 glutSwapBuffers();
+	窗口全屏   glutFullScreen();
+	窗口大小   glutReshapeWindow(w,h) glutPositionWindow(x,y);
+	输入回调   glutMouseFunc(void (*func) (int button, int state, int x, int y)); 鼠标
+			   glutKeyboardFunc(void (*func) (unsigned char key, int x, int y) ); 键盘
+			   glutMotionFunc(void (*func)(int x, int y));  按下移动
+			   glutPassiveMotionFunc(void (*func)(int x, int y)); 普通移动
+			   glutEntryFunc(void (*func) (int state)); 鼠标进出窗口
+传输
 	显示列表 预编译的指令集合,存放在GPU显示列表内存,不可修改,不是所有的命令都可以使用
+			 应用: 矩阵操作 材质定义 纹理定义 光照定义
 			 创建显示列表 GLuint id = glGenLists(1);
-			 			  glNewList(id,GL_TRIANGLE);
-			 			  	glBegin();
-			 			  	^^^^^^^^
-			 			  	glEnd();
+			 			  glNewList(id,GL_COMPILE);
 			 			  glEndList();
 			 绘制显示列表 glCallList(id);
 			 删除显示列表 glDeleteLists(id,1);
-	顶点数组 减少glVertex调用次数
+	顶点数组 减少glVertex调用次数,通过指定数组、维数、类型、长度一次性传输多个顶点
 			 数组有6种,GL_VERTEX顶点 GL_COLOR颜色RGB GL_NORMAL法线 GL_INDEX颜色索引 GL_TEXCOORD纹理坐标
 			 启用/禁用数组 glEnableClientState() glDisableClientState()
 			 指定数组位置 glVertexPointer glNormalPointer glColorPointer glIndexPointer glTexCoordPointer 
@@ -58,23 +70,43 @@
 			删除缓存数组 glDeleteBuffers(id);
 	位图字体
 			像素点构成的字体
-图元状态
-		颜色
-			模式 RGBA模式 索引模式
-			亮度    颜色亮度
-			饱和度  颜色纯度
-			混合	Additive模式(a+b)变亮 Blend模式a*alpha + b*(1-alpha)透明 正片叠底a*b变暗
-			空间	GAMMA空间&LINER空间
-					现实中几乎所有图片默认都是存储为GAMMA格式,即经过0.45gamma纠正 
-				  	显示器又做了2.2的逆向纠正,使得最终结果保持一致
-				  	光照计算是线性的,因此输入图片是线性的跨平台才能更精确
-					UNITY中sRGB选项表示该图片是GAMMA图片,注意:Default格式才有这个选项
-					LINER需要OPENGLES3.0支持
- 
-图元光栅
+状态
+	颜色
+		模式 RGBA模式 索引模式
+		亮度    颜色亮度
+		饱和度  颜色纯度
+		混合	Additive模式(a+b)变亮 Blend模式a*alpha + b*(1-alpha)透明 正片叠底a*b变暗
+		空间	GAMMA空间&LINER空间
+				现实中几乎所有图片默认都是存储为GAMMA格式,即经过0.45gamma纠正 
+			  	显示器又做了2.2的逆向纠正,使得最终结果保持一致
+			  	光照计算是线性的,因此输入图片是线性的跨平台才能更精确
+				UNITY中sRGB选项表示该图片是GAMMA图片,注意:Default格式才有这个选项
+				LINER需要OPENGLES3.0支持
+		过滤	摄像机的清理选项一般包括:天空盒、固定颜色、深度、不清理 
+				glClearColor*() 设置摄像机的颜色缓存清理颜色值
+				glClear(GL_COLOR_BUFFER_BIT)
+				//透明度测试
+				glEnable(GL_ALPHA_TEST);
+				glAlphaFunc(GL_GREATER,0);
+				//模板测试,类似于印章.先利用GL_ALWAYS替换指定的模板图形,然后利用GL_EQUAL过滤
+				glEnable(GL_STENCIL_TEST);
+				glClearStencil(0); 
+				glClear(GL_STENCIL_BUFFER_BIT);
+				glStencilFunc(GL_GREATER,ref,mask);
+				glStencilOp(模板未通过,模板通过深度未通过,都通过);
+				//深度测试
+				glEnable(GL_DEPTH_TEST);
+				glDepthMask(1);
+				glDepthFunc(GL_GREATER);
+				//混合
+				glEnable(GL_BLEND);
+				glBlendFunc(GL_ONE,GL_ONE); GL_ZERO GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
+光栅
 		三角形顶点环绕逆时针为正向,和摄像机法线方向叉乘可以求出朝向摄像机还是背向摄像机 
 		线框图扫描转换,根据直线、曲线等等相关方程算法计算像素点
 		三角面扫描转换,根据pnpoly算法计算像素点在区域内还是区域外,即射线与多边形的交点是奇数还是偶数
+场景
+
 粒子系统
 动画系统
 OpenGL  
