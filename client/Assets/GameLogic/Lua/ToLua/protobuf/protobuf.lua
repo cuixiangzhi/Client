@@ -844,6 +844,14 @@ local function _AddMergeFromMethod(message_meta)
     end
 end
 
+local function _AddCopyFromMethod(message_meta)
+    message_meta._member.CopyFrom = function (self, msg)
+        assert(msg ~= self)
+        message_meta._member.Clear(self)
+        message_meta._member.MergeFrom(self, msg)
+    end
+end
+
 local function _AddMessageMethods(message_descriptor, message_meta)
     _AddListFieldsMethod(message_descriptor, message_meta)
     _AddHasFieldMethod(message_descriptor, message_meta)
@@ -862,6 +870,7 @@ local function _AddMessageMethods(message_descriptor, message_meta)
     _AddMergeFromStringMethod(message_descriptor, message_meta)
     _AddIsInitializedMethod(message_descriptor, message_meta)
     _AddMergeFromMethod(message_meta)
+    _AddCopyFromMethod(message_meta)
 end
 
 local function _AddPrivateHelperMethods(message_meta)
