@@ -44,12 +44,12 @@ namespace GameCore
         public static LuaByteBuffer LoadBytes(string relativePath)
         {
             string fullPath = string.Format("{0}/{1}", persistentPath, relativePath);
-            IntPtr file = UtilDll.common_open(fullPath, "rb");
+            IntPtr file = DllMgr.common_open(fullPath, "rb");
             int len = 0;
             if (file != IntPtr.Zero)
             {
-                len = UtilDll.common_read(file, mBuffer.Length, mBuffer);
-                UtilDll.common_close(file);
+                len = DllMgr.common_read(file, mBuffer.Length, mBuffer);
+                DllMgr.common_close(file);
             }
             else
             {

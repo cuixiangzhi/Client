@@ -10,8 +10,8 @@ namespace GameCore
         private void Start()
         {
             DontDestroyOnLoad(gameObject);
-			UEP.BeginSample("UtilDll.Init();");
-			UtilDll.Init();
+			UEP.BeginSample("DllMgr.Init();");
+			DllMgr.Init();
 			UEP.EndSample();
 
 			UEP.BeginSample("LogMgr.Init();");
@@ -119,8 +119,8 @@ namespace GameCore
 			LogMgr.Exit();
 			UEP.EndSample();
 
-			UEP.BeginSample("UtilDll.Exit();");
-			UtilDll.Exit();
+			UEP.BeginSample("DllMgr.Exit();");
+			DllMgr.Exit();
 			UEP.EndSample();
 
 			UEP.BeginSample("UtilProfiler.Exit();");

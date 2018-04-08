@@ -3,7 +3,6 @@ using UnityEngine;
 using LuaInterface;
 using System;
 using UnityObj = UnityEngine.Object;
-using SceneMgr = UnityEngine.SceneManagement.SceneManager;
 
 namespace GameCore
 {
@@ -60,19 +59,17 @@ namespace GameCore
             public UnityObj CreateObj()
             {
                 UnityObj obj = null;
-                mLastUseTime = Time.time;
-                if(mUnUsingObj.Count != 0)
+                if(mLoadedObj is GameObject)
                 {
-                    obj = mUnUsingObj[mUnUsingObj.Count - 1];
-                    mUsingObj.Add(obj);
-                    mUnUsingObj.RemoveAt(mUnUsingObj.Count - 1);
-                    return obj;
-                }
-                if(obj is GameObject)
-                {
-                    GameObject go = obj as GameObject;
-                    go = UnityObj.Instantiate<GameObject>(go, mPoolParent, false);
-                    obj = go;
+                    if (mUnUsingObj.Count != 0)
+                    {
+                        obj = mUnUsingObj[mUnUsingObj.Count - 1];
+                        mUnUsingObj.RemoveAt(mUnUsingObj.Count - 1);
+                    }
+                    else
+                    {
+                        obj = UnityObj.Instantiate<GameObject>(mLoadedObj as GameObject, mPoolParent, false);
+                    }
                 }
                 else
                 {
@@ -83,10 +80,18 @@ namespace GameCore
             }
 
             public void DestroyObj(UnityObj obj)
-            {
+            {               
+                if (obj is GameObject)
+                {             
+                    mUnUsingObj.Add(obj);
+                }
                 mUsingObj.Remove(obj);
-                mUnUsingObj.Add(obj);
                 mLastUseTime = Time.time;
+            }
+
+            public void UnLoadAll()
+            {
+
             }
         }
         private class LoadCallBack
@@ -209,11 +214,29 @@ namespace GameCore
         public static void DestroyAsset(UnityObj obj)
         {
             //回收LUA脚本不再引用的资源或者C#脚本不再引用的资源
+            bool isLoadedAsset = false;
             for(int i = 0;i < mPool.Count;i++)
             {
                 if(mPool[i].mUsingObj.Contains(obj))
                 {
+                    isLoadedAsset = true;
                     mPool[i].DestroyObj(obj);
+                    break;
+                }
+            }
+            if(!isLoadedAsset)
+            {
+                UnityObj.Destroy(obj);
+            }
+        }
+
+        public static void UnLoadAsset(UnityObj obj)
+        {
+            for (int i = 0; i < mPool.Count; i++)
+            {
+                if (mPool[i].mUsingObj.Contains(obj))
+                {
+                    mPool[i].UnLoadAll();
                     break;
                 }
             }
@@ -226,12 +249,18 @@ namespace GameCore
                 //最后一次使用的时间到现在超过缓存时长,就清理掉
                 if(mPool[i].mUsingObj.Count == 0 && Time.time - mPool[i].mLastUseTime >= sec)
                 {
-                    for(int j = 0;j < mPool[i].mUnUsingObj.Count;j++)
+                    if(mPool[i].mLoadedObj is GameObject)
                     {
-                        Resources.UnloadAsset(mPool[i].mUnUsingObj[j]);
+                        for (int j = 0; j < mPool[i].mUnUsingObj.Count; j++)
+                        {
+                            UnityObj.Destroy(mPool[i].mUnUsingObj[j]);
+                        }
+                        mPool[i].mUnUsingObj.Clear();
                     }
-                    mPool[i].mUnUsingObj.Clear();
-                    Resources.UnloadAsset(mPool[i].mLoadedObj);
+                    else
+                    {
+                        Resources.UnloadAsset(mPool[i].mLoadedObj);
+                    }                                     
                     mPool[i].mLoadedObj = null;
                 }
             }
