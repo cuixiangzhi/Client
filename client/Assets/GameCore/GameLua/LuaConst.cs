@@ -2,8 +2,8 @@
 
 public static class LuaConst
 {
-    public static string luaDir = Application.dataPath + "/GameLogic/Lua";                //lua逻辑代码目录
-    public static string toluaDir = Application.dataPath + "/GameCore/GameLua/ToLua/Lua";        //tolua lua文件目录
+    public static string luaDir = Application.dataPath + "/GameLogic/Lua/Logic";                //lua逻辑代码目录
+    public static string toluaDir = Application.dataPath + "/GameLogic/Lua/ToLua";        //tolua lua文件目录
 
 #if UNITY_STANDALONE
     public static string osDir = "Win";
