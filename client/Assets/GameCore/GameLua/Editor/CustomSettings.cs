@@ -8,7 +8,7 @@ using System.Reflection;
 
 public static class CustomSettings
 {
-    public static string saveDir = Application.dataPath + "/GameLogic/ToLua/Source/";    
+    public static string saveDir = Application.dataPath + "/GameCore/GameLua/Source/";    
     public static string toluaBaseType = Application.dataPath + "/GameCore/GameLua/ToLua/BaseType/";    
 
     //导出时强制做为静态类的类型(注意customTypeList 还要添加这个类型才能导出)
@@ -43,15 +43,9 @@ public static class CustomSettings
         _GT(typeof(LuaDebugTool)),
         _GT(typeof(LuaValueInfo)),
         _GT(typeof(List<LuaValueInfo>)),
-        //工具
-        _GT(typeof(GameCore.UtilTimer)),       
+        //工具    
         //资源 
-        _GT(typeof(GameCore.AssetMgr)),
-        _GT(typeof(GameCore.LogMgr)),
-        _GT(typeof(GameCore.UpdateMgr)),
-        _GT(typeof(GameCore.BundleMgr)),
         //UI
-        _GT(typeof(GameCore.UIFollow)),
         #endregion
 
         #region 逻辑
