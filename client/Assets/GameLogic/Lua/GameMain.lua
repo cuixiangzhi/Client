@@ -2,7 +2,7 @@ module("GameMain",package.seeall)
 
 function GameInit()
     require("GameDebug")
-    require("GameUpdate")
+    require("socket")
 end
 
 function GameQuit()
