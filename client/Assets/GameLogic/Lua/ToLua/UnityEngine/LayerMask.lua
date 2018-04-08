@@ -36,7 +36,7 @@ function LayerMask.GetMask(...)
 	for i = 1, #arg do		
 		local n = LayerMask.NameToLayer(arg[i])
 		
-		if n ~= nil then
+		if n ~= nil and n ~= 0 then
 			value = value + 2 ^ n				
 		end
 	end	
