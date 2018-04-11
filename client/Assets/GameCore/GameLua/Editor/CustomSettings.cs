@@ -22,8 +22,8 @@ public static class CustomSettings
     //附加导出委托类型(在导出委托时, customTypeList 中牵扯的委托类型都会导出， 无需写在这里)
     public static DelegateType[] customDelegateList = 
     {        
-        _DT(typeof(Action<int,LuaByteBuffer>)),
-        _DT(typeof(Action<int,UnityEngine.Object>)),
+        _DT(typeof(Action<string,LuaByteBuffer>)),
+        _DT(typeof(Action<string,UnityEngine.Object>)),
     };
 
     //在这里添加你要导出注册到lua的类型列表
@@ -34,8 +34,9 @@ public static class CustomSettings
         _GT(typeof(UnityEngine.Behaviour)),
         _GT(typeof(UnityEngine.GameObject)),
         _GT(typeof(UnityEngine.Transform)),
-        _GT(typeof(UnityEngine.Camera)),
         _GT(typeof(UnityEngine.MonoBehaviour)),
+
+        _GT(typeof(UnityEngine.Camera)),
         #endregion
 
         #region 框架
@@ -44,8 +45,8 @@ public static class CustomSettings
         _GT(typeof(LuaValueInfo)),
         _GT(typeof(List<LuaValueInfo>)),
         //工具    
-        //资源 
-        //UI
+        //资源管理
+        _GT(typeof(GameCore.ResMgr)), 
         #endregion
 
         #region 逻辑

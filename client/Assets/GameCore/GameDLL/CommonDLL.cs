@@ -8,14 +8,13 @@ using System.Text;
 
 namespace GameCore
 {
-    public static class DllMgr
+    public static class CommonDLL
     {
 #if UNITY_IPHONE && !UNITY_EDITOR
         private const string DLLNAME = "__Internal";
 #else
         private const string DLLNAME = "common";
 #endif
-
 
         [DllImport(DLLNAME)]
         private static extern void common_md5(string data, int startIndex, StringBuilder outdata);
@@ -93,15 +92,5 @@ namespace GameCore
 
         [DllImport(DLLNAME)]
         public static extern void common_close(IntPtr asset);
-
-        public static void Init()
-        {
-            mCacheMD5Result.Clear();
-        }
-
-        public static void Exit()
-        {
-            mCacheMD5Result.Clear();
-        }
     }
 }

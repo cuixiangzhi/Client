@@ -27,7 +27,7 @@ namespace GameCore
                 return base.ReadFile(fileName);
 #else
                 //读取LUA字节码               
-                return AssetMgr.LoadAsset(fileName);
+                return ResMgr.LoadBytes(fileName);
 #endif
             }
 
@@ -71,21 +71,18 @@ namespace GameCore
         {
             //创建LUA文件读取器
             mLuaReader = new LuaFileReader();
-
             //创建LUA虚拟机
             mLuaState = new LuaState();
 
-            //lua protobuf库
+            //protobuf库
             mLuaState.OpenLibs(LuaDLL.luaopen_pb);
-            //lua socket 和协议
+            //socket库
             OpenLuaSocket();
-            //json 库
+            //json库
             OpenCJson();
-            //lua 模式匹配库
+            //模式匹配库
             mLuaState.OpenLibs(LuaDLL.luaopen_lpeg);
-#if UNITY_STANDALONE_OSX || UNITY_EDITOR_OSX
             mLuaState.OpenLibs(LuaDLL.luaopen_bit);
-#endif
 
             //导出C# API
             LuaBinder.Bind(mLuaState);

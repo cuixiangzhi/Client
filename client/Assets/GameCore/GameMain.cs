@@ -11,6 +11,10 @@ namespace GameCore
         {
             DontDestroyOnLoad(gameObject);
 
+            UEP.BeginSample("ResMgr.Init();");
+            ResMgr.Init();
+            UEP.EndSample();
+
             UEP.BeginSample("LuaMgr.Init();");
 			LuaMgr.Init();
 			UEP.EndSample();
@@ -32,6 +36,10 @@ namespace GameCore
 
         private void OnApplicationQuit()
         {
+            UEP.BeginSample("ResMgr.Exit();");
+            ResMgr.Exit();
+            UEP.EndSample();
+
             UEP.BeginSample("LuaMgr.Exit();");
 			LuaMgr.Exit();
 			UEP.EndSample();

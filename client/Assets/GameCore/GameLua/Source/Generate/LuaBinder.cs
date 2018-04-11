@@ -16,15 +16,15 @@ public static class LuaBinder
 		UnityEngine_BehaviourWrap.Register(L);
 		UnityEngine_GameObjectWrap.Register(L);
 		UnityEngine_TransformWrap.Register(L);
-		UnityEngine_CameraWrap.Register(L);
 		UnityEngine_MonoBehaviourWrap.Register(L);
+		UnityEngine_CameraWrap.Register(L);
 		L.BeginModule("Camera");
 		L.RegFunction("CameraCallback", UnityEngine_Camera_CameraCallback);
 		L.EndModule();
 		L.EndModule();
 		L.BeginModule("System");
-		L.RegFunction("Action_int_LuaInterface_LuaByteBuffer", System_Action_int_LuaInterface_LuaByteBuffer);
-		L.RegFunction("Action_int_UnityEngine_Object", System_Action_int_UnityEngine_Object);
+		L.RegFunction("Action_string_LuaInterface_LuaByteBuffer", System_Action_string_LuaInterface_LuaByteBuffer);
+		L.RegFunction("Action_string_UnityEngine_Object", System_Action_string_UnityEngine_Object);
 		L.RegFunction("Predicate_LuaValueInfo", System_Predicate_LuaValueInfo);
 		L.RegFunction("Action_LuaValueInfo", System_Action_LuaValueInfo);
 		L.RegFunction("Comparison_LuaValueInfo", System_Comparison_LuaValueInfo);
@@ -33,6 +33,9 @@ public static class LuaBinder
 		System_Collections_Generic_List_LuaValueInfoWrap.Register(L);
 		L.EndModule();
 		L.EndModule();
+		L.EndModule();
+		L.BeginModule("GameCore");
+		GameCore_ResMgrWrap.Register(L);
 		L.EndModule();
 		L.EndModule();
 		GameCore.LogMgr.Log("Register lua type cost time: {0}", Time.realtimeSinceStartup - t);
@@ -66,7 +69,7 @@ public static class LuaBinder
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int System_Action_int_LuaInterface_LuaByteBuffer(IntPtr L)
+	static int System_Action_string_LuaInterface_LuaByteBuffer(IntPtr L)
 	{
 		try
 		{
@@ -75,13 +78,13 @@ public static class LuaBinder
 
 			if (count == 1)
 			{
-				Delegate arg1 = DelegateTraits<System.Action<int,LuaInterface.LuaByteBuffer>>.Create(func);
+				Delegate arg1 = DelegateTraits<System.Action<string,LuaInterface.LuaByteBuffer>>.Create(func);
 				ToLua.Push(L, arg1);
 			}
 			else
 			{
 				LuaTable self = ToLua.CheckLuaTable(L, 2);
-				Delegate arg1 = DelegateTraits<System.Action<int,LuaInterface.LuaByteBuffer>>.Create(func, self);
+				Delegate arg1 = DelegateTraits<System.Action<string,LuaInterface.LuaByteBuffer>>.Create(func, self);
 				ToLua.Push(L, arg1);
 			}
 			return 1;
@@ -93,7 +96,7 @@ public static class LuaBinder
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int System_Action_int_UnityEngine_Object(IntPtr L)
+	static int System_Action_string_UnityEngine_Object(IntPtr L)
 	{
 		try
 		{
@@ -102,13 +105,13 @@ public static class LuaBinder
 
 			if (count == 1)
 			{
-				Delegate arg1 = DelegateTraits<System.Action<int,UnityEngine.Object>>.Create(func);
+				Delegate arg1 = DelegateTraits<System.Action<string,UnityEngine.Object>>.Create(func);
 				ToLua.Push(L, arg1);
 			}
 			else
 			{
 				LuaTable self = ToLua.CheckLuaTable(L, 2);
-				Delegate arg1 = DelegateTraits<System.Action<int,UnityEngine.Object>>.Create(func, self);
+				Delegate arg1 = DelegateTraits<System.Action<string,UnityEngine.Object>>.Create(func, self);
 				ToLua.Push(L, arg1);
 			}
 			return 1;
