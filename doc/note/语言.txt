@@ -28,6 +28,7 @@
 		const_cast只能改变底层const,也就是指针所指向的对象的const
 		dynamic_cast 用于指针和引用的类层次转换
 		reinterpret_cast 用于将二进制位解释为另一种类型
+		as type.IsAssignableFrom 
 宏：	    #代表后面的是个字符串
 	    ##用于拼接变量
 函数    引用&值参数传递 ...传递参数时只能传递基本类型
@@ -42,6 +43,7 @@
 		虚继承,保证基类只有一份实例virtual-base-class  如果有构造函数,那么必须在最底层派生类里实现虚基类的构造,否则会有编译错误 
 		构造初始化 拷贝赋值时指针 隐式转换
 		友元函数不受访问权限影响
+		C# internal修饰程序集内部变量或者类
 模板&泛型 template where限定 模板特例 template<> ret function<int>(){}
 		  lambda [捕捉列表](参数列表){函数体}
 		  bind 参数重新排列  bind(func,placeorders::_1,_2,var);

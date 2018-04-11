@@ -1,5 +1,5 @@
 SQL  结构化查询语言
-    数据类型: INT BIGINT TEXT FLOAT UNSIGNED
+    数据类型: INT BIGINT TEXT FLOAT UNSIGNED CHAR定长 VARCHAR变长 TEXT 
     创建数据库  CREATE DATABASE name
 	删除数据库	DROP DATABASE name
 	创建表      CREATE TABLE name (KEY TYPE,约束)
@@ -64,8 +64,8 @@ SQL  结构化查询语言
 			drop procedure name//
 	        create procedure name(var)
 			begin
-			   declare name type;
-			   set name = 1;
+			   declare @name type;
+			   set @name = 1;
 			   start transaction;
 				   if end if;
 			   commit;
@@ -100,7 +100,9 @@ SQL  结构化查询语言
 	共享内存 内存数据库,本地进程共享,一台物理机只有一个共享内存服务器,事务不会出现死锁情况
 			自己实现锁, 共享内存+死循环 只有在标记位FREE的时候可以LOCK LOCK之后修改标记位,在判断是否一致,再继续执行,否则就是被别人LOCK了
 	sqlite  轻量级硬盘数据库,适用于客户端保存临时数据
-	
+	nosql   非关系型数据库,关系型数据库以表格形式存储,非关系型以文件、KV对、图等方式存储
+			nosql结构动态,nosql感觉像是一个对象,以唯一的UID获取这个对象
+			redis mongodb sharedmemory都是nosql,方便快速获取、设置属性,适合高并发读写
 API
 	ODBC 是对数据库的封装,具体的数据库实现作为ODBC数据源进行配置,配置的时候可以选择IP、PORT、NAME、PASSWORD,连接时可以选择数据源
 	sqlite C#

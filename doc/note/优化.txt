@@ -1,0 +1,24 @@
+渲染模块
+        DrawCall数量,动态批处理、统一缩放、静态批处理,合并贴图、合并材质
+        Triangle数量,减面、模型LOD、分块加载、FOV、远平面大小
+        Shader效果,graphics.blit次数、lod、复杂度、rendertexture使用次数及大小
+UI模块
+    内存
+        UIGeometry OnFill,顶点、颜色、UV三个数组Vector3[]的动态增长
+        UIDrawCall FillDrawCall->UpdateGeometry,复制顶点、颜色、UV数组
+        UIPanel   Rebuild,任何子Widget显隐操作都会导致整个panel刷新,网格或者位置变化只会刷新自己        
+逻辑模块
+    内存
+        减少动态new list相关操作
+        使用BUFFER来IO数据
+        减少字符串操作,使用stringbuilder或者转到LUA里
+        纹理
+        音效
+        动画
+        网格
+    耗时
+        避免C#和LUA Update里不断调用
+        减少GCAlloc次数和大小,避免GC触发导致线程停顿
+        使用资源缓存池,减少实例化次数
+粒子模块
+    减少同屏粒子数目,控制在400以下
