@@ -46,9 +46,16 @@
 			  		   T * |sinA  cosA 0| * T^ = 
 			  		   	   | 0      0  1|
 			  		   三维旋转需要先将旋转轴平移旋转使其与坐标轴Z重合,然后绕Z轴旋转
-			  		   旋转轴定义: 可以由两个顶点 P1 P2确定或者一个顶点、一个方向向量确定
-			  		   			   d = P2 - P1         P2 = P1 + d
+
+			  		   旋转轴定义: 与Z轴夹角A,与X轴夹角B,可定义一个旋转轴 或者方向向量+顶点
+			  		   			   旋转时先旋转使得Z轴与旋转轴重合
+			  		   			   先绕Z轴旋转B角度,在绕Y轴旋转A角度,在绕Z轴旋转C角度,在绕Y轴逆转A角度,在绕Z转逆转B角度
+			  四元数
 	缩放变换  P' = S*P
+	堆栈      变换之前首先要设置进行什么变换
+			  GL_PROJECTION表示要设置投影矩阵,可以使用glOrtho(左右下上近远)或者glPerspective(角度,宽高比,近平面,远平面)
+			  GL_MODEVIEW表示要设置模型视图矩阵,可以使用glLookAt() glTranslate等对已有的顶点进行变换
+
 窗口
 	创建父窗口 glutCreateWindow(name) glutInitWindowSize(); glutInitWindowPosition();
 	创建子窗口 glutCreateSubWindow(parent,x,y,w,h);
