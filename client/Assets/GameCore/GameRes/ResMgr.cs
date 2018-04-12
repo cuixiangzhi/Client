@@ -8,16 +8,21 @@ using UnityObj = UnityEngine.Object;
 
 namespace GameCore
 {
-    class LoadInfo
+    internal class LoadInfo
     {
-        public bool mLoadFlag = false;
         public AssetBundle mBundle = null;
         public AsyncOperation mOption = null;
         public Action<string, UnityObj> mCallBack = null;
-        public List<Action<string, UnityObj>> mCallBacks = null;
+        public List<Action<string, UnityObj>> mCallBacks = new List<Action<string, UnityObj>>(4);
+
+        public void OnLoadFinish(AsyncOperation aop)
+        {
+            aop.completed -= OnLoadFinish;
+            
+        }
     }
 
-    class PoolInfo
+    internal class PoolInfo
     {
         public string mPath;
 
@@ -99,10 +104,10 @@ namespace GameCore
                 {
                     bundle = PkgMgr.LoadBundle(path);
                 }
-                if (bundle == null)
+                if (bundle == null || !bundle.Contains(path))
                 {
                     mNullAssets.Add(path);
-                    LogMgr.LogWarning("asset is null {0}",path);
+                    LogMgr.LogWarning("bundle asset is null {0}",path);
                     return null;
                 }
                 else
@@ -116,7 +121,51 @@ namespace GameCore
 
         public static void LoadAssetAsync(string path, Action<string, UnityObj> callBack)
         {
-            
+            //空资源
+            {
+                if (mNullAssets.Contains(path))
+                {
+                    callBack(path, null);
+                    return;
+                }
+            }
+            //旧资源
+            {
+                PoolInfo pool = null;
+                if (mPoolCacheDic.TryGetValue(path, out pool))
+                {
+                    UnityObj obj = pool.GetObj();
+                    if (obj)
+                    {
+                        callBack(path, obj);
+                        return;
+                    }
+                }
+            }
+            //新资源
+            {
+                LoadInfo load = null;
+                if (mLoadCacheDic.TryGetValue(path, out load))
+                {
+                    load.mCallBacks.Add(callBack);
+                }
+                else
+                {
+                    AssetBundle bundle = PkgMgr.LoadBundle(path);
+                    if (bundle == null || !bundle.Contains(path))
+                    {
+                        mNullAssets.Add(path);
+                        LogMgr.LogWarning("bundle is null {0}", path);
+                        callBack(path, null);
+                        return;
+                    }
+                    load = AllocLoadInfo(path);
+                    load.mBundle = bundle;
+                    load.mCallBack = callBack;
+                    load.mOption = bundle.LoadAssetAsync(path);
+                    load.mOption.completed += load.OnLoadFinish;
+                }
+            }
         }
 
         public static LuaByteBuffer LoadBytes(string path)
@@ -149,9 +198,20 @@ namespace GameCore
 
         }
 
-        private static LoadInfo AllocLoadInfo()
+        private static LoadInfo AllocLoadInfo(string path)
         {
-            return null;
+            LoadInfo load = null;
+            if (mLoadCacheDic.TryGetValue(path, out load))
+            {
+                return load;
+            }
+            load = mLoadFree.Pop();
+            if(load == null)
+            {
+                load = new LoadInfo();
+            }
+            mLoadCacheDic[path] = load;
+            return load;
         }
 
         private static PoolInfo AllocPoolInfo(string path)
