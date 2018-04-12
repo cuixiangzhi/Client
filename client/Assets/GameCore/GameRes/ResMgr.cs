@@ -32,11 +32,6 @@ namespace GameCore
     {
         internal string mPath;
 
-        internal PoolInfo(string path)
-        {
-            mPath = path;
-        }
-
         internal bool HasObj()
         {
             return false;
@@ -61,10 +56,19 @@ namespace GameCore
         internal static Stack<PoolInfo> mPoolFree = new Stack<PoolInfo>();
         internal static HashSet<string> mNullAssets = new HashSet<string>();
         internal static byte[] mBuffer = new byte[1024 * 1024 * 2];
-        internal static LuaByteBuffer mNullBuffer = new LuaByteBuffer(null, 0); 
+        internal static LuaByteBuffer mNullBuffer = new LuaByteBuffer(null, 0);
+        internal static Transform mPoolLoad = null;
+        internal static Transform mPoolInstance = null;
 
         public static void Init()
         {
+            GameObject ROOT = new GameObject("GAME_POOL");
+            mPoolLoad = new GameObject("LOAD").transform;
+            mPoolLoad.transform.parent = ROOT.transform;
+            mPoolInstance = new GameObject("INSTANCE").transform;
+            mPoolInstance.transform.parent = ROOT.transform;
+            UnityObj.DontDestroyOnLoad(ROOT);
+
             mLoadCacheDic.Clear();
             mPoolCacheDic.Clear();
             mLoadFree.Clear();
@@ -74,6 +78,8 @@ namespace GameCore
 
         public static void Exit()
         {
+            mPoolLoad = null;
+            mPoolInstance = null;
             mLoadCacheDic.Clear();
             mPoolCacheDic.Clear();
             mLoadFree.Clear();
@@ -121,8 +127,8 @@ namespace GameCore
                 else
                 {
                     UnityObj obj = bundle.LoadAsset(path);
-                    PoolInfo pool = AllocPoolInfo(path);
-                    return pool.SetObj(obj);
+                    PoolInfo pool = AllocPoolInfo(path,obj);
+                    return pool.GetObj();
                 }
             }
         }
@@ -185,35 +191,35 @@ namespace GameCore
             return null;
         }
 
-        internal static PoolInfo AllocPoolInfo(string path)
+        internal static PoolInfo AllocPoolInfo(string path,UnityObj obj)
         {
             PoolInfo pool = null;
-            if(mPoolCacheDic.TryGetValue(path,out pool))
+            if(!mPoolCacheDic.TryGetValue(path,out pool))
             {
-                return pool;
-            }
-            pool = mPoolFree.Pop();
-            if(pool == null)
-            {
-                var emr = mPoolCacheDic.GetEnumerator();
-                while(emr.MoveNext())
+                pool = mPoolFree.Pop();
+                if (pool == null)
                 {
-                    if(!emr.Current.Value.HasObj())
+                    var emr = mPoolCacheDic.GetEnumerator();
+                    while (emr.MoveNext())
                     {
-                        pool = emr.Current.Value;
-                        pool.mPath = path;
-                        break;
+                        if (!emr.Current.Value.HasObj())
+                        {
+                            pool = emr.Current.Value;
+                            break;
+                        }
+                    }
+                    if (pool != null)
+                    {
+                        mPoolCacheDic.Remove(pool.mPath);
+                    }
+                    else
+                    {
+                        pool = new PoolInfo();
                     }
                 }
-                if(pool != null)
-                {
-                    mPoolCacheDic.Remove(pool.mPath);
-                }
-                else
-                {
-                    pool = new PoolInfo(path);
-                }
             }
+            pool.mPath = path;
+            pool.SetObj(obj);
             mPoolCacheDic[path] = pool;
             return pool;
         }
