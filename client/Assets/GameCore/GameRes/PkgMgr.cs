@@ -10,6 +10,11 @@ namespace GameCore
         {
             return null;
         }
+
+        public static int LoadBytes(byte[] buffer)
+        {
+            return 0;
+        }
     }
 }
 

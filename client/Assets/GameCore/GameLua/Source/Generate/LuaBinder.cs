@@ -28,6 +28,7 @@ public static class LuaBinder
 		L.RegFunction("Predicate_LuaValueInfo", System_Predicate_LuaValueInfo);
 		L.RegFunction("Action_LuaValueInfo", System_Action_LuaValueInfo);
 		L.RegFunction("Comparison_LuaValueInfo", System_Comparison_LuaValueInfo);
+		L.RegFunction("Action_string", System_Action_string);
 		L.BeginModule("Collections");
 		L.BeginModule("Generic");
 		System_Collections_Generic_List_LuaValueInfoWrap.Register(L);
@@ -193,6 +194,33 @@ public static class LuaBinder
 			{
 				LuaTable self = ToLua.CheckLuaTable(L, 2);
 				Delegate arg1 = DelegateTraits<System.Comparison<LuaValueInfo>>.Create(func, self);
+				ToLua.Push(L, arg1);
+			}
+			return 1;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int System_Action_string(IntPtr L)
+	{
+		try
+		{
+			int count = LuaDLL.lua_gettop(L);
+			LuaFunction func = ToLua.CheckLuaFunction(L, 1);
+
+			if (count == 1)
+			{
+				Delegate arg1 = DelegateTraits<System.Action<string>>.Create(func);
+				ToLua.Push(L, arg1);
+			}
+			else
+			{
+				LuaTable self = ToLua.CheckLuaTable(L, 2);
+				Delegate arg1 = DelegateTraits<System.Action<string>>.Create(func, self);
 				ToLua.Push(L, arg1);
 			}
 			return 1;

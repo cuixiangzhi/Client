@@ -14,7 +14,7 @@ public class GameCore_ResMgrWrap
 		L.RegFunction("LoadBytes", LoadBytes);
 		L.RegFunction("LoadBytesAsync", LoadBytesAsync);
 		L.RegFunction("LoadScene", LoadScene);
-		L.RegFunction("LoadSceneAdditive", LoadSceneAdditive);
+		L.RegFunction("LoadSceneAsync", LoadSceneAsync);
 		L.RegFunction("UnloadAsset", UnloadAsset);
 		L.RegFunction("UnloadUnusedAssets", UnloadUnusedAssets);
 		L.EndStaticLibs();
@@ -123,8 +123,10 @@ public class GameCore_ResMgrWrap
 	{
 		try
 		{
-			ToLua.CheckArgsCount(L, 0);
-			GameCore.ResMgr.LoadScene();
+			ToLua.CheckArgsCount(L, 2);
+			string arg0 = ToLua.CheckString(L, 1);
+			System.Action<string> arg1 = (System.Action<string>)ToLua.CheckDelegate<System.Action<string>>(L, 2);
+			GameCore.ResMgr.LoadScene(arg0, arg1);
 			return 0;
 		}
 		catch (Exception e)
@@ -134,12 +136,14 @@ public class GameCore_ResMgrWrap
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int LoadSceneAdditive(IntPtr L)
+	static int LoadSceneAsync(IntPtr L)
 	{
 		try
 		{
-			ToLua.CheckArgsCount(L, 0);
-			GameCore.ResMgr.LoadSceneAdditive();
+			ToLua.CheckArgsCount(L, 2);
+			string arg0 = ToLua.CheckString(L, 1);
+			System.Action<string> arg1 = (System.Action<string>)ToLua.CheckDelegate<System.Action<string>>(L, 2);
+			GameCore.ResMgr.LoadSceneAsync(arg0, arg1);
 			return 0;
 		}
 		catch (Exception e)
