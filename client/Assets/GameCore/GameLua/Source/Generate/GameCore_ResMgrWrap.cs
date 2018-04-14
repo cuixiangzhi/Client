@@ -158,7 +158,7 @@ public class GameCore_ResMgrWrap
 		try
 		{
 			ToLua.CheckArgsCount(L, 0);
-			GameCore.ResMgr.UnloadAsset();
+			//GameCore.ResMgr.UnloadAsset();
 			return 0;
 		}
 		catch (Exception e)

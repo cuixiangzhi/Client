@@ -15,6 +15,11 @@ namespace GameCore
         {
             return 0;
         }
+
+        public static void UnloadBundle(AssetBundle bundle)
+        {
+
+        }
     }
 }
 

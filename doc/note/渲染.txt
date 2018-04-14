@@ -47,16 +47,52 @@
 			  		   	   | 0      0  1|
 			  		   三维旋转需要先将旋转轴平移旋转使其与坐标轴Z重合,然后绕Z轴旋转
 
-			  		   旋转轴定义: 与Z轴夹角A,与X轴夹角B,可定义一个旋转轴 或者方向向量+顶点
+			  		   旋转轴定义: 与Z轴夹角A,与X轴夹角B,可定义一个旋转轴 或者方向向量
 			  		   			   旋转时先旋转使得Z轴与旋转轴重合
 			  		   			   先绕Z轴旋转B角度,在绕Y轴旋转A角度,在绕Z轴旋转C角度,在绕Y轴逆转A角度,在绕Z转逆转B角度
-			  四元数
+			  欧拉角  xyz分别代表绕局部XYZ轴的旋转,这个旋转角度值和旋转顺序有关系、
+			  		  unity中旋转顺序是zxy
+			  		  连续差值不平滑
+			  		  同一个旋转有不同的表达方式,万向节锁
+			  		  转换为旋转矩阵需要太多的sin cos计算,没有四元数简单
+			  		  R = RzRxRy
+			  四元数  差值平滑,没有万向节锁
+			  		  表示方式  rotation = (x,y,z,w) x = VxSin(0/2) y = VySin(0/2) z = VzSin(0/2) w = Cos(0/2)
+			  		  四元数转换为旋转矩阵
+			  		  		 1-2y^2-2z^2    2(xy-zw)    2(xz+yw)     0
+			  		  		 2(xy+zw)      1−2x^2−2z^2  2(yz-xw)     0
+			  		  		 2(xz−yw)       2(yz+xw)    1−2x^2−2y^2  0
+			  		  		    0               0          0         1
+			  		  旋转矩阵转换为四元数
+			  		  		x = (m32-m23)/4w  y = (m13-m31)/4w z = (m21-m12)/4w w = (根号 1 + m11 + m22 + m33)/2
+			  		  欧拉角转换为四元数
 	缩放变换  P' = S*P
-	堆栈      变换之前首先要设置进行什么变换
+	堆栈      进入流水线的顶点都要乘上矩阵堆栈的当前堆栈,进行变换
 			  GL_PROJECTION表示要设置投影矩阵,可以使用glOrtho(左右下上近远)或者glPerspective(角度,宽高比,近平面,远平面)
 			  GL_MODEVIEW表示要设置模型视图矩阵,可以使用glLookAt() glTranslate等对已有的顶点进行变换
-
+	M矩阵     T(局部偏移) * R(局部旋转) * S(局部缩放) * 局部坐标列向量
+			  得出以父结点为世界坐标系的世界坐标,然后递归查找父结点,进行坐标变换,没有父结点那就是最终世界坐标
+	V矩阵     经过M矩阵变换,物体与摄像机均处于世界坐标系下,现在要把物体转换到摄像机坐标系下
+			  V = 摄像机矩阵的逆变换  即 T R S 列单位向量的逆矩阵
+    P矩阵     投影矩阵分为透视投影和正交投影
+    		  透视投影 fov aspect near far
+    		  		   投影变换把坐标变换到了裁剪坐标系(范围是-z到z,-z到-z,-z到z之间)
+    		  		   		假设Xn = Xp * (2 / r - l) + B; Xp为r时Xn为1,最终解得Xn=[(2n/(r-l)*Xe + (r+l)/(r-l)*Ze]/Ze
+    		  		   		同理Yn= [(2n/(t-b)*Ye + (t+b)/(t-b)*Ze]/Ze
+    		  		   		Zn = (AZe + B)/Ze; Ze范围是n到f,因此Zn=[(f+n)/(f-n)*Ze - 2fn/(f-n)]/Ze
+    		  		   		Wn为1
+    		  		   		此时Xn是-1到1之间,Yn也是-1到1之间,Zn是-1到1之间,Wn是1
+    		  		   		齐次坐标要保留Z信息,变为(Xn*Ze,Yn*Ze,Zn*Ze,Ze) 
+    		  		   		为了方便计算可以令r-l或者t-b始终为1,减少除法计算,根据宽高比计算出高度或者宽度
+    		  		   透视除法把坐标变换到了设备坐标系(范围是-1到1,-1到-1,-1到1之间)
+    		  		   		投影变换得到的裁剪齐次坐标除以Ze得出NDC坐标
+    		  		   视口变换把坐标变换到了屏幕坐标系
+    		  		   		这个时候需要根据-1到1映射到屏幕的0到w 0到h上
+    		  		   最终需要计算出NDC坐标,(Xn,Yn,Zn) = (Xp/Zcamera,Yp/Zcamera,Zp/Zcamera)
+    		  正交投影 left right bottom top near far
 窗口
+	去除CMD窗口 #pragma comment(linker,"/subsystem:\"windows\" /entry:\"mainCRTStartup\"")
+	获取屏幕   glutGet(GLUT_SCREEN_WIDTH) GLUT_SCREEN_HEIGHT
 	创建父窗口 glutCreateWindow(name) glutInitWindowSize(); glutInitWindowPosition();
 	创建子窗口 glutCreateSubWindow(parent,x,y,w,h);
 	删除子窗口 glutDestroyWindow(wID);

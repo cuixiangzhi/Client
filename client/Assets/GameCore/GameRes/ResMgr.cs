@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using System;
 using UnityObj = UnityEngine.Object;
+using System.IO;
 
 namespace GameCore
 {
@@ -12,19 +13,29 @@ namespace GameCore
     {
         internal string mPath;
         internal AssetBundle mBundle = null;
-        internal AsyncOperation mOption = null;
+        internal AssetBundleRequest mRequest = null;
         internal Action<string, UnityObj> mCallBack = null;
         internal List<Action<string, UnityObj>> mCallBacks = new List<Action<string, UnityObj>>(4);
 
-        public void OnLoadFinish(AsyncOperation aop)
+        internal void OnLoadFinish(AsyncOperation aop)
         {
-            aop.completed -= OnLoadFinish;
+            //建立缓存
+            PoolInfo pool = ResMgr.AllocPoolInfo(mPath);
+            pool.SetObj(mRequest.asset);
+            //执行回调
+            mCallBack(mPath, pool.GetObj());
+            for(int i = 0;i < mCallBacks.Count;i++)
+            {
+                mCallBacks[i](mPath, pool.GetObj());
+            }
+            //清理数据
             mBundle.Unload(false);
-            mOption = null;
-
+            mRequest.completed -= OnLoadFinish;
+            mRequest = null;
+            mCallBack = null;
+            mCallBacks.Clear();
             ResMgr.mLoadCacheDic.Remove(mPath);
             ResMgr.mLoadFree.Push(this);
-            
         }
     }
 
@@ -32,7 +43,7 @@ namespace GameCore
     {
         internal string mPath;
 
-        internal bool HasObj()
+        internal bool IsActive()
         {
             return false;
         }
@@ -42,19 +53,26 @@ namespace GameCore
             return null;
         }
 
-        internal UnityObj SetObj(UnityObj obj)
+        internal void SetObj(UnityObj obj)
         {
-            return null;
+            
+        }
+
+        internal void ClearObj()
+        {
+
         }
     }
 
     public static class ResMgr
     {
-        internal static Dictionary<string, LoadInfo> mLoadCacheDic = new Dictionary<string, LoadInfo>();
-        internal static Dictionary<string, PoolInfo> mPoolCacheDic = new Dictionary<string, PoolInfo>();
+        internal static int DEFAULT_SIZE = 1024;
+        internal static Dictionary<string, LoadInfo> mLoadCacheDic = new Dictionary<string, LoadInfo>(DEFAULT_SIZE);
+        internal static Dictionary<string, PoolInfo> mPoolCacheDic = new Dictionary<string, PoolInfo>(DEFAULT_SIZE);
         internal static Stack<LoadInfo> mLoadFree = new Stack<LoadInfo>();
         internal static Stack<PoolInfo> mPoolFree = new Stack<PoolInfo>();
         internal static HashSet<string> mNullAssets = new HashSet<string>();
+        internal static List<string> mTmpList = new List<string>(DEFAULT_SIZE);
         internal static byte[] mBuffer = new byte[1024 * 1024 * 2];
         internal static LuaByteBuffer mNullBuffer = new LuaByteBuffer(null, 0);
         internal static Transform mPoolLoad = null;
@@ -118,16 +136,19 @@ namespace GameCore
                 {
                     bundle = PkgMgr.LoadBundle(path);
                 }
-                if (bundle == null || !bundle.Contains(path))
+                string fileName = Path.GetFileNameWithoutExtension(path);
+                if (bundle == null || !bundle.Contains(fileName))
                 {
+                    PkgMgr.UnloadBundle(bundle);
                     mNullAssets.Add(path);
                     LogMgr.LogWarning("bundle asset is null {0}",path);
                     return null;
                 }
                 else
                 {
-                    UnityObj obj = bundle.LoadAsset(path);
-                    PoolInfo pool = AllocPoolInfo(path,obj);
+                    UnityObj obj = bundle.LoadAsset(fileName);
+                    PoolInfo pool = AllocPoolInfo(path);
+                    pool.SetObj(obj);
                     return pool.GetObj();
                 }
             }
@@ -135,7 +156,57 @@ namespace GameCore
 
         public static void LoadAssetAsync(string path, Action<string, UnityObj> callBack)
         {
-
+            //空资源
+            {
+                if (mNullAssets.Contains(path))
+                { 
+                    callBack(path, null);
+                    return;
+                }
+            }
+            //旧资源
+            {
+                PoolInfo pool = null;
+                if (mPoolCacheDic.TryGetValue(path, out pool))
+                {
+                    UnityObj obj = pool.GetObj();
+                    if (obj)
+                    {
+                        callBack(path,obj);
+                        return;
+                    }
+                }
+            }
+            //新资源
+            {
+                LoadInfo load = null;
+                if (mLoadCacheDic.TryGetValue(path, out load))
+                {
+                    load.mCallBacks.Add(callBack);
+                }
+                else
+                {
+                    AssetBundle bundle = PkgMgr.LoadBundle(path);
+                    string fileName = Path.GetFileNameWithoutExtension(path);
+                    if (bundle == null || !bundle.Contains(fileName))
+                    {
+                        PkgMgr.UnloadBundle(bundle);
+                        mNullAssets.Add(path);
+                        LogMgr.LogWarning("bundle asset is null {0}", path);
+                        callBack(path, null);
+                        return;
+                    }
+                    else
+                    {
+                        load = AllocLoadInfo(path);
+                        load.mCallBack = callBack;
+                        load.mBundle = bundle;
+                        load.mRequest = bundle.LoadAssetAsync(fileName);
+                        load.mRequest.completed += load.OnLoadFinish;
+                        return;
+                    }
+                }
+            }
         }
 
         public static LuaByteBuffer LoadBytes(string path)
@@ -176,22 +247,56 @@ namespace GameCore
 
         }
 
-        public static void UnloadAsset()
+        public static void UnloadAsset(UnityObj obj)
         {
+            if(obj is GameObject)
+            {
 
+            }
+            else
+            {
+                Resources.UnloadAsset(obj);
+            }
         }
 
         public static void UnloadUnusedAssets()
         {
-
+            Resources.UnloadUnusedAssets();
+            mTmpList.Clear();
+            var emrPool = mPoolCacheDic.GetEnumerator();
+            while(emrPool.MoveNext())
+            {
+                if(!emrPool.Current.Value.IsActive())
+                {
+                    emrPool.Current.Value.ClearObj();
+                    mPoolFree.Push(emrPool.Current.Value);
+                    mTmpList.Add(emrPool.Current.Key);
+                }
+            }
+            for(int i = 0;i < mTmpList.Count;i++)
+            {
+                mPoolCacheDic.Remove(mTmpList[i]);
+            }
+            Resources.UnloadUnusedAssets();
         }
 
         internal static LoadInfo AllocLoadInfo(string path)
         {
-            return null;
+            LoadInfo load = null;
+            if (!mLoadCacheDic.TryGetValue(path, out load))
+            {
+                load = mLoadFree.Pop();
+                if (load == null)
+                {
+                    load = new LoadInfo();
+                }
+            }
+            load.mPath = path;
+            mLoadCacheDic[path] = load;
+            return load;
         }
 
-        internal static PoolInfo AllocPoolInfo(string path,UnityObj obj)
+        internal static PoolInfo AllocPoolInfo(string path)
         {
             PoolInfo pool = null;
             if(!mPoolCacheDic.TryGetValue(path,out pool))
@@ -202,9 +307,10 @@ namespace GameCore
                     var emr = mPoolCacheDic.GetEnumerator();
                     while (emr.MoveNext())
                     {
-                        if (!emr.Current.Value.HasObj())
+                        if (!emr.Current.Value.IsActive())
                         {
                             pool = emr.Current.Value;
+                            pool.ClearObj();
                             break;
                         }
                     }
@@ -219,7 +325,6 @@ namespace GameCore
                 }
             }
             pool.mPath = path;
-            pool.SetObj(obj);
             mPoolCacheDic[path] = pool;
             return pool;
         }

@@ -200,6 +200,16 @@
 		GCC编译 
             -g -m64 -O2 -c -o -I -static -l -std -fPIC -shared -Wl 
             ar rcs
+        GDB调试
+        	gdb --pid
+        	r 运行
+        	c 继续
+        	n F10
+        	s F11
+        	b 文件:行号 函数 
+        	d 删除断点
+        	p 打印
+        	
 		NDK编译 
 			LOCAL_PATH := $(call my-dir)
 			include $(CLEAR_VARS)

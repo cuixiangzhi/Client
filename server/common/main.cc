@@ -1,34 +1,56 @@
 ﻿#define _CRT_SECURE_NO_WARNINGS
-#include <time.h>
+#pragma comment(linker,"/subsystem:\"windows\" /entry:\"mainCRTStartup\"")
 #include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <windows.h>
-#include <io.h>
-#include <fcntl.h>
+#include <gl/glut.h>
+
+void on_dispaly()
+{
+	glClearColor(0, 0, 0, 1);
+	glClear(GL_COLOR_BUFFER_BIT);
+	glutSwapBuffers();
+}
+
+void on_mosue(int button,int state,int x,int y)
+{
+
+}
+
+void on_key_down(unsigned char key,int x,int y)
+{
+
+}
+
+void on_key_up(unsigned char key, int x, int y)
+{
+
+}
+
+void on_reshape()
+{
+
+}
+
+void on_menu(int state)
+{
+
+}
 
 int main(int argc, char** argv)
 {
-	HANDLE file = CreateFile("E:/a.txt", GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_ALWAYS, NULL, NULL);
-	HANDLE handle = CreateFileMapping(file, NULL, PAGE_READWRITE, 0, 4, "hello_map");
-	handle = OpenFileMapping(FILE_MAP_ALL_ACCESS, true, "hello_map");
-	char* mem = (char*)MapViewOfFile(handle, FILE_MAP_ALL_ACCESS, 0, 0, 0);
-	mem[1] = '5';
-	UnmapViewOfFile(mem);
-	CloseHandle(handle);
-	CloseHandle(file);
-	file = NULL;
-	handle = NULL;
-	mem = NULL;
+	glutInit(&argc, argv);
+	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH | GLUT_ALPHA);
+	int w = glutGet(GLUT_SCREEN_WIDTH);
+	int h = glutGet(GLUT_SCREEN_HEIGHT);
+	glutInitWindowPosition(0, 0);
+	glutInitWindowSize(w, h);
+	glutCreateWindow("Unity");
+	glViewport(100, 100, 500, 500);
 
-	FILE* f = fopen("E:/a.txt", "rb");
-	int err = GetLastError();
-	fclose(f);
+	glutCreateMenu(on_menu);
 
-	int fd = _open("E:/a.txt", O_RDONLY);
-	char buff[5];
-	_read(fd, buff, sizeof(buff));
-	_close(fd);
-
-	system("pause");
+	glutDisplayFunc(on_dispaly);
+	glutKeyboardFunc(on_key_down);
+	glutKeyboardUpFunc(on_key_up);
+	glutMouseFunc(on_mosue);
+	glutMainLoop();
 }
