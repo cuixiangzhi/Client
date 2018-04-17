@@ -4,14 +4,13 @@ GameCore目录
         GameRes 封装资源加载,缓存池 
                 TODO 导出 打包 解包
     进行中
-        GameNav
+        GameAI
+        GameMap
     待完成
         GameUI
-        GameAI
         GameCamera
         GameDebug
-        GameMap
-        
+        GameNav
         GameScene
         GameSkill
         GameCG
