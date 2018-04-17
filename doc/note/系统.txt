@@ -116,8 +116,10 @@
 			读取 PTRACE_PEEKTEXT PTRACE_PEEKDATA PTRACE_PEEKUSR
 			写入 PTRACE_POKETEXT PTRACE_POKEDATA PTRACE_POKEUSR
 线程管理
-		线程创建
-			pthread_create(&pid,NULL,loopfunc,NULL);
+		线程创建   				  
+			pthread_create(pthread_t &pid,NULL,void* loopfunc,this);
+			CreateThread(NULL,0,DWORD WINAPI loopfunc,this,DWORD &pid)
+			
 			pthread_self()获取线程ID
 			pthread_exit(NULL);退出当前线程
 		线程同步
