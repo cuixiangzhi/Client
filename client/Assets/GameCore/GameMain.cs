@@ -22,6 +22,10 @@ namespace GameCore
 
         private void Update()
         {
+            UEP.BeginSample("ResMgr.Loop();");
+            ResMgr.Loop();
+            UEP.EndSample();
+
             UEP.BeginSample("LuaMgr.Loop();");
             LuaMgr.Loop();
             UEP.EndSample();

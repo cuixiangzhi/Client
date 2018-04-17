@@ -23,7 +23,6 @@ public class DelegateFactory
 		dict.Add(typeof(System.Predicate<LuaValueInfo>), factory.System_Predicate_LuaValueInfo);
 		dict.Add(typeof(System.Action<LuaValueInfo>), factory.System_Action_LuaValueInfo);
 		dict.Add(typeof(System.Comparison<LuaValueInfo>), factory.System_Comparison_LuaValueInfo);
-		dict.Add(typeof(System.Action<string>), factory.System_Action_string);
 
 		DelegateTraits<System.Action<string,LuaInterface.LuaByteBuffer>>.Init(factory.System_Action_string_LuaInterface_LuaByteBuffer);
 		DelegateTraits<System.Action<string,UnityEngine.Object>>.Init(factory.System_Action_string_UnityEngine_Object);
@@ -31,7 +30,6 @@ public class DelegateFactory
 		DelegateTraits<System.Predicate<LuaValueInfo>>.Init(factory.System_Predicate_LuaValueInfo);
 		DelegateTraits<System.Action<LuaValueInfo>>.Init(factory.System_Action_LuaValueInfo);
 		DelegateTraits<System.Comparison<LuaValueInfo>>.Init(factory.System_Comparison_LuaValueInfo);
-		DelegateTraits<System.Action<string>>.Init(factory.System_Action_string);
 
 		TypeTraits<System.Action<string,LuaInterface.LuaByteBuffer>>.Init(factory.Check_System_Action_string_LuaInterface_LuaByteBuffer);
 		TypeTraits<System.Action<string,UnityEngine.Object>>.Init(factory.Check_System_Action_string_UnityEngine_Object);
@@ -39,7 +37,6 @@ public class DelegateFactory
 		TypeTraits<System.Predicate<LuaValueInfo>>.Init(factory.Check_System_Predicate_LuaValueInfo);
 		TypeTraits<System.Action<LuaValueInfo>>.Init(factory.Check_System_Action_LuaValueInfo);
 		TypeTraits<System.Comparison<LuaValueInfo>>.Init(factory.Check_System_Comparison_LuaValueInfo);
-		TypeTraits<System.Action<string>>.Init(factory.Check_System_Action_string);
 
 		StackTraits<System.Action<string,LuaInterface.LuaByteBuffer>>.Push = factory.Push_System_Action_string_LuaInterface_LuaByteBuffer;
 		StackTraits<System.Action<string,UnityEngine.Object>>.Push = factory.Push_System_Action_string_UnityEngine_Object;
@@ -47,7 +44,6 @@ public class DelegateFactory
 		StackTraits<System.Predicate<LuaValueInfo>>.Push = factory.Push_System_Predicate_LuaValueInfo;
 		StackTraits<System.Action<LuaValueInfo>>.Push = factory.Push_System_Action_LuaValueInfo;
 		StackTraits<System.Comparison<LuaValueInfo>>.Push = factory.Push_System_Comparison_LuaValueInfo;
-		StackTraits<System.Action<string>>.Push = factory.Push_System_Action_string;
 	}
     
     public static Delegate CreateDelegate(Type t, LuaFunction func = null)
@@ -511,63 +507,6 @@ public class DelegateFactory
 	}
 
 	void Push_System_Comparison_LuaValueInfo(IntPtr L, System.Comparison<LuaValueInfo> o)
-	{
-		ToLua.Push(L, o);
-	}
-
-	class System_Action_string_Event : LuaDelegate
-	{
-		public System_Action_string_Event(LuaFunction func) : base(func) { }
-		public System_Action_string_Event(LuaFunction func, LuaTable self) : base(func, self) { }
-
-		public void Call(string param0)
-		{
-			func.BeginPCall();
-			func.Push(param0);
-			func.PCall();
-			func.EndPCall();
-		}
-
-		public void CallWithSelf(string param0)
-		{
-			func.BeginPCall();
-			func.Push(self);
-			func.Push(param0);
-			func.PCall();
-			func.EndPCall();
-		}
-	}
-
-	public System.Action<string> System_Action_string(LuaFunction func, LuaTable self, bool flag)
-	{
-		if (func == null)
-		{
-			System.Action<string> fn = delegate(string param0) { };
-			return fn;
-		}
-
-		if(!flag)
-		{
-			System_Action_string_Event target = new System_Action_string_Event(func);
-			System.Action<string> d = target.Call;
-			target.method = d.Method;
-			return d;
-		}
-		else
-		{
-			System_Action_string_Event target = new System_Action_string_Event(func, self);
-			System.Action<string> d = target.CallWithSelf;
-			target.method = d.Method;
-			return d;
-		}
-	}
-
-	bool Check_System_Action_string(IntPtr L, int pos)
-	{
-		return TypeChecker.CheckDelegateType(typeof(System.Action<string>), L, pos);
-	}
-
-	void Push_System_Action_string(IntPtr L, System.Action<string> o)
 	{
 		ToLua.Push(L, o);
 	}

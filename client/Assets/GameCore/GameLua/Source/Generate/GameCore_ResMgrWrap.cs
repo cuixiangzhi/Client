@@ -8,6 +8,7 @@ public class GameCore_ResMgrWrap
 	{
 		L.BeginStaticLibs("ResMgr");
 		L.RegFunction("Init", Init);
+		L.RegFunction("Loop", Loop);
 		L.RegFunction("Exit", Exit);
 		L.RegFunction("LoadAsset", LoadAsset);
 		L.RegFunction("LoadAssetAsync", LoadAssetAsync);
@@ -16,6 +17,7 @@ public class GameCore_ResMgrWrap
 		L.RegFunction("LoadScene", LoadScene);
 		L.RegFunction("LoadSceneAsync", LoadSceneAsync);
 		L.RegFunction("UnloadAsset", UnloadAsset);
+		L.RegFunction("UnloadScene", UnloadScene);
 		L.RegFunction("UnloadUnusedAssets", UnloadUnusedAssets);
 		L.EndStaticLibs();
 	}
@@ -27,6 +29,21 @@ public class GameCore_ResMgrWrap
 		{
 			ToLua.CheckArgsCount(L, 0);
 			GameCore.ResMgr.Init();
+			return 0;
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int Loop(IntPtr L)
+	{
+		try
+		{
+			ToLua.CheckArgsCount(L, 0);
+			GameCore.ResMgr.Loop();
 			return 0;
 		}
 		catch (Exception e)
@@ -123,11 +140,25 @@ public class GameCore_ResMgrWrap
 	{
 		try
 		{
-			ToLua.CheckArgsCount(L, 2);
-			string arg0 = ToLua.CheckString(L, 1);
-			System.Action<string> arg1 = (System.Action<string>)ToLua.CheckDelegate<System.Action<string>>(L, 2);
-			GameCore.ResMgr.LoadScene(arg0, arg1);
-			return 0;
+			int count = LuaDLL.lua_gettop(L);
+
+			if (count == 1)
+			{
+				string arg0 = ToLua.CheckString(L, 1);
+				GameCore.ResMgr.LoadScene(arg0);
+				return 0;
+			}
+			else if (count == 2)
+			{
+				string arg0 = ToLua.CheckString(L, 1);
+				bool arg1 = LuaDLL.luaL_checkboolean(L, 2);
+				GameCore.ResMgr.LoadScene(arg0, arg1);
+				return 0;
+			}
+			else
+			{
+				return LuaDLL.luaL_throw(L, "invalid arguments to method: GameCore.ResMgr.LoadScene");
+			}
 		}
 		catch (Exception e)
 		{
@@ -140,11 +171,27 @@ public class GameCore_ResMgrWrap
 	{
 		try
 		{
-			ToLua.CheckArgsCount(L, 2);
-			string arg0 = ToLua.CheckString(L, 1);
-			System.Action<string> arg1 = (System.Action<string>)ToLua.CheckDelegate<System.Action<string>>(L, 2);
-			GameCore.ResMgr.LoadSceneAsync(arg0, arg1);
-			return 0;
+			int count = LuaDLL.lua_gettop(L);
+
+			if (count == 2)
+			{
+				string arg0 = ToLua.CheckString(L, 1);
+				System.Action<string,UnityEngine.Object> arg1 = (System.Action<string,UnityEngine.Object>)ToLua.CheckDelegate<System.Action<string,UnityEngine.Object>>(L, 2);
+				GameCore.ResMgr.LoadSceneAsync(arg0, arg1);
+				return 0;
+			}
+			else if (count == 3)
+			{
+				string arg0 = ToLua.CheckString(L, 1);
+				System.Action<string,UnityEngine.Object> arg1 = (System.Action<string,UnityEngine.Object>)ToLua.CheckDelegate<System.Action<string,UnityEngine.Object>>(L, 2);
+				bool arg2 = LuaDLL.luaL_checkboolean(L, 3);
+				GameCore.ResMgr.LoadSceneAsync(arg0, arg1, arg2);
+				return 0;
+			}
+			else
+			{
+				return LuaDLL.luaL_throw(L, "invalid arguments to method: GameCore.ResMgr.LoadSceneAsync");
+			}
 		}
 		catch (Exception e)
 		{
@@ -157,8 +204,27 @@ public class GameCore_ResMgrWrap
 	{
 		try
 		{
-			ToLua.CheckArgsCount(L, 0);
-			//GameCore.ResMgr.UnloadAsset();
+			ToLua.CheckArgsCount(L, 2);
+			UnityEngine.Object arg0 = (UnityEngine.Object)ToLua.CheckObject<UnityEngine.Object>(L, 1);
+			bool arg1 = LuaDLL.luaL_checkboolean(L, 2);
+			GameCore.ResMgr.UnloadAsset(arg0, arg1);
+			return 0;
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int UnloadScene(IntPtr L)
+	{
+		try
+		{
+			ToLua.CheckArgsCount(L, 2);
+			string arg0 = ToLua.CheckString(L, 1);
+			System.Action<string,UnityEngine.Object> arg1 = (System.Action<string,UnityEngine.Object>)ToLua.CheckDelegate<System.Action<string,UnityEngine.Object>>(L, 2);
+			GameCore.ResMgr.UnloadScene(arg0, arg1);
 			return 0;
 		}
 		catch (Exception e)
