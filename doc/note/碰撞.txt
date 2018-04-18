@@ -18,6 +18,7 @@
                           pnpoly算法判断点在多边形内
                           判断圆与线段是否相交
               线段和线段: AB与CD相交,那么AB两点在CD线段两侧并且CD两点在线段AB两侧,利用叉乘求法线方向
+                          3D的话,在计算三角形ACB和ACD的法线单位化后是否相同
               线段和凸多边形: pnpoly算法或者面积法判断点在多边形内
                               线段与线段是否相交
               点和凸多边形: 点和各个边顶点构成的三角形面积之和等于多边形的面积                                  
@@ -26,30 +27,23 @@
               pnpoly算法: (yj > yp != yi > yp) && (xp < (xj - xi) * (yp - yi) / (yj -yi) + xi)
 
               两个点是否在线段同侧: 三角形ABC和点P,(ABxAP)*(ABxAC) > 0 ? true : false; 法线同向则夹角为0
-              三角形内的点,使用向量加法可以写为  
-                    AP = u * AB + v * BC, 两边同时分别乘以AB和BC, 联立方程求解得出u和v                               
-                    // Compute vectors        
-                    v0 = C - A
-                    v1 = B - A
-                    v2 = P - A
-                    // Compute dot products
-                    dot00 = dot(v0, v0)
-                    dot01 = dot(v0, v1)
-                    dot02 = dot(v0, v2)
-                    dot11 = dot(v1, v1)
-                    dot12 = dot(v1, v2)
-                    // Compute barycentric coordinates
-                    invDenom = 1 / (dot00 * dot11 - dot01 * dot01)
-                    u = (dot11 * dot02 - dot01 * dot12) * invDenom
-                    v = (dot00 * dot12 - dot01 * dot02) * invDenom
-                    // Check if point is in triangle
-                    return (u >= 0) && (v >= 0) && (u + v < 1)
+              三角形内的点,使用向量加法可以写为,求出质心坐标(u,v),三角形内的点满足(u >= 0) && (v >= 0) && (u + v < 1)  
+                    AP = u * AB + v * BC
+                    两边同时分别乘以AB和BC, 联立方程求解得出u和v    
+                    根据向量乘法计算出u,v
+                    克莱姆法则
+              任意点是否在凸多边形内都可以采用pnpoly算法或者求解质心坐标的方式
               点到线段的距离
                     先通过计算AB*AP求出夹角是锐角还是钝角,然后判断APcos∠PAB大小,也就是P点在线段AB上的投影点clamp到0,1
                     然后根据向量加法PA + t*AB = P'P得出垂线段向量,t是0那么就是A点,t是1就是B点
+                    t = PA * AB / ab
 3D碰撞检测     需要针对大场景构建AABB树
               根据场景大小构建一个大的AABB,循环添加场景对象,
               从根节点开始查找能够完全包含当前AABB对象的盒子,如果当前结点能够包含,继续扩展八等分子节点,遍历子节点执行包含检测
               当动态物体运动时,先修改结点标记,然后重新执行一次插入操作
               八叉树和四叉树都可以用于快速查找目标对象(例如快速查找子弹碰到了谁)
-GJK算法  
+碰撞检测算法
+              精细的碰撞检测需要对物体建模,构建一个凸包围体,然后执行凸包围体之间的相交测试
+              最精细的检测是最所有的面检查碰撞
+              可以利用凸体的一些算法简化计算量
+              利用AABB、八叉树、四叉树简化计算范围

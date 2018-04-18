@@ -11,7 +11,7 @@ namespace GameCore
 {
     internal class LoadInfo
     {
-        internal string mPath;
+        internal string mFileName;
         internal AssetBundle mBundle = null;
         internal AsyncOperation mRequest = null;
         internal Action<string, UnityObj> mCallBack = null;
@@ -22,44 +22,44 @@ namespace GameCore
             mRequest.completed -= OnLoadFinish;
             if(mBundle == null)
             {
-                mCallBack(mPath, null);
+                mCallBack(mFileName, null);
             }
             else
             {
                 if (mBundle.isStreamedSceneAssetBundle)
                 {
-                    mCallBack(mPath, null);
+                    mCallBack(mFileName, null);
                     for (int i = 0; i < mCallBacks.Count; i++)
                     {
-                        mCallBacks[i](mPath, null);
+                        mCallBacks[i](mFileName, null);
                     }
                 }
                 else
                 {
                     AssetBundleRequest req = mRequest as AssetBundleRequest;
-                    PoolInfo pool = ResMgr.AllocPoolInfo(mPath);
+                    PoolInfo pool = ResMgr.AllocPoolInfo(mFileName);
                     pool.SetObj(req.asset);
-                    mCallBack(mPath, pool.GetObj());
+                    mCallBack(mFileName, pool.GetObj());
                     for (int i = 0; i < mCallBacks.Count; i++)
                     {
-                        mCallBacks[i](mPath, pool.GetObj());
+                        mCallBacks[i](mFileName, pool.GetObj());
                     }
                 }
                 //清理数据    
-                PkgMgr.UnloadBundle(mPath);
+                PkgMgr.UnloadBundle(mFileName);
             }
             mBundle = null;
             mRequest = null;
             mCallBack = null;
             mCallBacks.Clear();
-            ResMgr.mLoadDic.Remove(mPath);
+            ResMgr.mLoadDic.Remove(mFileName);
             ResMgr.mLoadFree.Push(this);
         }
     }
 
     internal class PoolInfo
     {
-        internal string mPath;
+        internal string mFileName;
         internal WeakReference mWeakLoadObj = null;
         internal GameObject mLoadObj = null;
         internal List<UnityObj> mSpawnObjs = new List<UnityObj>(16);
@@ -241,17 +241,17 @@ namespace GameCore
             mNullAssets.Clear();
         }
 
-        public static UnityObj LoadAsset(string path)
+        public static UnityObj LoadAsset(string fileName)
         {
             //空资源
             {
-                if (mNullAssets.Contains(path))
+                if (mNullAssets.Contains(fileName))
                     return null;
             }
             //旧资源
             {
                 PoolInfo pool = null;
-                if (mPoolDic.TryGetValue(path, out pool))
+                if (mPoolDic.TryGetValue(fileName, out pool))
                 {
                     UnityObj obj = pool.GetObj();
                     if (obj)
@@ -264,52 +264,51 @@ namespace GameCore
             {
                 AssetBundle bundle = null;
                 LoadInfo load = null;
-                if(mLoadDic.TryGetValue(path, out load))
+                if(mLoadDic.TryGetValue(fileName, out load))
                 {
                     bundle = load.mBundle;
                 }
                 else
                 {
-                    bundle = PkgMgr.LoadBundle(path);
+                    bundle = PkgMgr.LoadBundle(fileName);
                 }
-                string fileName = Path.GetFileNameWithoutExtension(path);
                 if (bundle == null || !bundle.Contains(fileName))
                 {
-                    PkgMgr.UnloadBundle(path);
-                    mNullAssets.Add(path);
-                    LogMgr.LogError("bundle asset is null {0}!!", path);
+                    PkgMgr.UnloadBundle(fileName);
+                    mNullAssets.Add(fileName);
+                    LogMgr.LogError("bundle asset is null {0} !!", fileName);
                     return null;
                 }
                 else
                 {
                     UnityObj obj = bundle.LoadAsset(fileName);
-                    PoolInfo pool = AllocPoolInfo(path);
+                    PoolInfo pool = AllocPoolInfo(fileName);
                     pool.SetObj(obj);
-                    PkgMgr.UnloadBundle(path);
+                    PkgMgr.UnloadBundle(fileName);
                     return pool.GetObj();
                 }
             }
         }
 
-        public static void LoadAssetAsync(string path, Action<string, UnityObj> callBack)
+        public static void LoadAssetAsync(string fileName, Action<string, UnityObj> callBack)
         {
             //空资源
             {
-                if (mNullAssets.Contains(path))
+                if (mNullAssets.Contains(fileName))
                 { 
-                    callBack(path, null);
+                    callBack(fileName, null);
                     return;
                 }
             }
             //旧资源
             {
                 PoolInfo pool = null;
-                if (mPoolDic.TryGetValue(path, out pool))
+                if (mPoolDic.TryGetValue(fileName, out pool))
                 {
                     UnityObj obj = pool.GetObj();
                     if (obj)
                     {
-                        callBack(path,obj);
+                        callBack(fileName, obj);
                         return;
                     }
                 }
@@ -317,25 +316,24 @@ namespace GameCore
             //新资源
             {
                 LoadInfo load = null;
-                if (mLoadDic.TryGetValue(path, out load))
+                if (mLoadDic.TryGetValue(fileName, out load))
                 {
                     load.mCallBacks.Add(callBack);
                 }
                 else
                 {
-                    AssetBundle bundle = PkgMgr.LoadBundle(path);
-                    string fileName = Path.GetFileNameWithoutExtension(path);
+                    AssetBundle bundle = PkgMgr.LoadBundle(fileName);
                     if (bundle == null || !bundle.Contains(fileName))
                     {
-                        PkgMgr.UnloadBundle(path);
-                        mNullAssets.Add(path);
-                        LogMgr.LogError("bundle asset is null {0}!!", path);
-                        callBack(path, null);
+                        PkgMgr.UnloadBundle(fileName);
+                        mNullAssets.Add(fileName);
+                        LogMgr.LogError("bundle asset is null {0} !!", fileName);
+                        callBack(fileName, null);
                         return;
                     }
                     else
                     {
-                        load = AllocLoadInfo(path);
+                        load = AllocLoadInfo(fileName);
                         load.mCallBack = callBack;
                         load.mBundle = bundle;
                         load.mRequest = bundle.LoadAssetAsync(fileName);
@@ -346,87 +344,119 @@ namespace GameCore
             }
         }
 
-        public static LuaByteBuffer LoadBytes(string path)
+        public static LuaByteBuffer LoadBytes(string fileName)
         {
             //空资源
             {
-                if (mNullAssets.Contains(path))
+                if (mNullAssets.Contains(fileName))
                     return mNullBuffer;
             }
             //大资源
-            int len = PkgMgr.LoadBytes(path,mBuffer);
+            int len = PkgMgr.LoadBytes(fileName, mBuffer);
             if (len >= mBuffer.Length)
             {
-                LogMgr.LogError("2M buffer too small to read file {0}!!", path);
+                LogMgr.LogError("2M buffer too small to read file {0} !!", fileName);
                 return mNullBuffer;
             }
             //空资源
             if(len <= 0)
             { 
-                LogMgr.LogError("bytes is null {0}!!", path);
+                LogMgr.LogError("bytes is null {0} !!", fileName);
                 return mNullBuffer;
             }
             return new LuaByteBuffer(mBuffer, len);
         }
 
-        public static void LoadBytesAsync(string path,Action<string, LuaByteBuffer> callBack)
+        public static void LoadBytesAsync(string fileName, Action<string, LuaByteBuffer> callBack)
         {
             //空资源
             {
-                if (mNullAssets.Contains(path))
+                if (mNullAssets.Contains(fileName))
                 { 
-                    callBack(path, null);
+                    callBack(fileName, mNullBuffer);
                     return;
                 }
             }
             //等待中
             {
-                mByteFiles.Enqueue(path);
+                mByteFiles.Enqueue(fileName);
                 mByteCalls.Enqueue(callBack);
             }
         }
 
-        public static void LoadScene(string path, bool additive = false)
+        public static bool LoadScene(string fileName, bool additive = false)
         {
+            Scene scene = SceneManager.GetSceneByName(fileName);
+            if (scene.isLoaded)
+            {
+                LogMgr.LogError("scene %s alreay loaded,can't load !!", fileName);
+                return true;
+            }
+
             LoadInfo load = null;
             
-            if (mLoadDic.TryGetValue(path, out load))
+            if (mLoadDic.TryGetValue(fileName, out load))
             {
                 //卸载中&加载中
                 if (load.mBundle != null)
-                    LogMgr.LogError("scene is loading %s,can't load!!", path);
+                    LogMgr.LogError("scene is loading %s,can't load !!", fileName);
                 else
-                    LogMgr.LogError("scene is unloading %s,can't load!!", path);
+                    LogMgr.LogError("scene is unloading %s,can't load !!", fileName);
+                return false;
             }
             else
             {
                 //新场景
-                string fileName = Path.GetFileNameWithoutExtension(path);
-                PkgMgr.LoadBundle(path);
-                SceneManager.LoadScene(fileName, additive ? LoadSceneMode.Additive : LoadSceneMode.Single);
+                AssetBundle bundle = PkgMgr.LoadBundle(fileName);
+                if(bundle != null || SceneUtility.GetBuildIndexByScenePath(fileName) >= 0)
+                {
+                    SceneManager.LoadScene(fileName, additive ? LoadSceneMode.Additive : LoadSceneMode.Single);
+                    return true;
+                }
+                else
+                {
+                    LogMgr.LogError("scene is null %s !!", fileName);
+                    return false;
+                }              
             }
         }
 
-        public static void LoadSceneAsync(string path, Action<string, UnityObj> callBack, bool additive = false)
+        public static bool LoadSceneAsync(string fileName, Action<string, UnityObj> callBack, bool additive = false)
         {
+            if(SceneManager.GetSceneByName(fileName).IsValid())
+            {
+                LogMgr.LogError("scene %s alreay loaded,can't load !!", fileName);
+                callBack(fileName,null);
+                return true;
+            }
             LoadInfo load = null;
-            if (mLoadDic.TryGetValue(path,out load))
+            if (mLoadDic.TryGetValue(fileName, out load))
             {
                 //卸载中&加载中
                 if (load.mBundle != null)
-                    LogMgr.LogError("scene is loading %s,can't load!!", path);
+                    LogMgr.LogError("scene is loading %s,can't load !!", fileName);
                 else
-                    LogMgr.LogError("scene is unloading %s,can't load!!", path);
+                    LogMgr.LogError("scene is unloading %s,can't load !!", fileName);
+                return false;
             }
             else
             {
                 //新场景
-                string fileName = Path.GetFileNameWithoutExtension(path);
-                load = AllocLoadInfo(path);
-                load.mBundle = PkgMgr.LoadBundle(path);
-                load.mRequest = SceneManager.LoadSceneAsync(fileName, additive ? LoadSceneMode.Additive : LoadSceneMode.Single);
-                load.mRequest.completed += load.OnLoadFinish;
-                load.mCallBack = callBack;
+                AssetBundle bundle = PkgMgr.LoadBundle(fileName);
+                if(bundle != null || SceneUtility.GetBuildIndexByScenePath(fileName) >= 0)
+                {
+                    load = AllocLoadInfo(fileName);
+                    load.mBundle = bundle;
+                    load.mRequest = SceneManager.LoadSceneAsync(fileName, additive ? LoadSceneMode.Additive : LoadSceneMode.Single);
+                    load.mRequest.completed += load.OnLoadFinish;
+                    load.mCallBack = callBack;
+                    return true;
+                }
+                else
+                {
+                    LogMgr.LogError("scene is null %s !!", fileName);
+                    return false;
+                }
             }
         }
 
@@ -448,7 +478,7 @@ namespace GameCore
                 {
                     pool.ClearObj();
                     mPoolFree.Push(pool);
-                    mPoolDic.Remove(pool.mPath);
+                    mPoolDic.Remove(pool.mFileName);
                 }                
                 else
                 {
@@ -463,24 +493,33 @@ namespace GameCore
             }
         }
 
-        public static void UnloadScene(string path, Action<string, UnityObj> callBack)
+        public static bool UnloadScene(string fileName, Action<string, UnityObj> callBack)
         {
             LoadInfo load = null;
-            if(mLoadDic.TryGetValue(path,out load))
+            if(mLoadDic.TryGetValue(fileName, out load))
             {
                 if (load.mBundle != null)
-                    LogMgr.LogError("scene is loading %s,can't unload!!", path);
+                    LogMgr.LogError("scene is loading %s,can't unload!!", fileName);
                 else
-                    LogMgr.LogError("scene is unloading %s,can't unload!!", path);
+                    LogMgr.LogError("scene is unloading %s,can't unload!!", fileName);
+                return false;
             }
             else
             {
-                string fileName = Path.GetFileNameWithoutExtension(path);
-                load = AllocLoadInfo(path);
-                load.mBundle = PkgMgr.LoadBundle(path);
-                load.mRequest = SceneManager.UnloadSceneAsync(fileName);
-                load.mRequest.completed += load.OnLoadFinish;
-                load.mCallBack = callBack;
+                if(SceneManager.GetSceneByName(fileName).IsValid())
+                {
+                    load = AllocLoadInfo(fileName);
+                    load.mCallBack = callBack;
+                    load.mBundle = null;
+                    load.mRequest = SceneManager.UnloadSceneAsync(fileName);
+                    load.mRequest.completed += load.OnLoadFinish;
+                    return true;
+                }
+                else
+                {
+                    LogMgr.LogError("scene %s not loaded,can't unload!!", fileName);
+                    return false;
+                }
             }
         }
 
@@ -505,24 +544,24 @@ namespace GameCore
             Resources.UnloadUnusedAssets();
         }
 
-        internal static LoadInfo AllocLoadInfo(string path)
+        internal static LoadInfo AllocLoadInfo(string fileName)
         {
-            LoadInfo load = mLoadFree.Pop();
+            LoadInfo load = mLoadFree.Count > 0 ? mLoadFree.Pop() : null;
             if (load == null)
             {
                 load = new LoadInfo();
             }
-            load.mPath = path;
-            mLoadDic[path] = load;
+            load.mFileName = fileName;
+            mLoadDic[fileName] = load;
             return load;
         }
 
-        internal static PoolInfo AllocPoolInfo(string path)
+        internal static PoolInfo AllocPoolInfo(string fileName)
         {
             PoolInfo pool = null;
-            if(!mPoolDic.TryGetValue(path,out pool))
+            if(!mPoolDic.TryGetValue(fileName, out pool))
             {
-                pool = mPoolFree.Pop();
+                pool = mPoolFree.Count > 0 ? mPoolFree.Pop() : null;
                 if (pool == null)
                 {
                     var emr = mPoolDic.GetEnumerator();
@@ -537,7 +576,7 @@ namespace GameCore
                     }
                     if (pool != null)
                     {
-                        mPoolDic.Remove(pool.mPath);
+                        mPoolDic.Remove(pool.mFileName);
                     }
                     else
                     {
@@ -545,8 +584,8 @@ namespace GameCore
                     }
                 }
             }
-            pool.mPath = path;
-            mPoolDic[path] = pool;
+            pool.mFileName = fileName;
+            mPoolDic[fileName] = pool;
             return pool;
         }
     }

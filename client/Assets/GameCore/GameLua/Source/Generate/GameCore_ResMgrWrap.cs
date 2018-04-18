@@ -145,15 +145,17 @@ public class GameCore_ResMgrWrap
 			if (count == 1)
 			{
 				string arg0 = ToLua.CheckString(L, 1);
-				GameCore.ResMgr.LoadScene(arg0);
-				return 0;
+				bool o = GameCore.ResMgr.LoadScene(arg0);
+				LuaDLL.lua_pushboolean(L, o);
+				return 1;
 			}
 			else if (count == 2)
 			{
 				string arg0 = ToLua.CheckString(L, 1);
 				bool arg1 = LuaDLL.luaL_checkboolean(L, 2);
-				GameCore.ResMgr.LoadScene(arg0, arg1);
-				return 0;
+				bool o = GameCore.ResMgr.LoadScene(arg0, arg1);
+				LuaDLL.lua_pushboolean(L, o);
+				return 1;
 			}
 			else
 			{
@@ -177,16 +179,18 @@ public class GameCore_ResMgrWrap
 			{
 				string arg0 = ToLua.CheckString(L, 1);
 				System.Action<string,UnityEngine.Object> arg1 = (System.Action<string,UnityEngine.Object>)ToLua.CheckDelegate<System.Action<string,UnityEngine.Object>>(L, 2);
-				GameCore.ResMgr.LoadSceneAsync(arg0, arg1);
-				return 0;
+				bool o = GameCore.ResMgr.LoadSceneAsync(arg0, arg1);
+				LuaDLL.lua_pushboolean(L, o);
+				return 1;
 			}
 			else if (count == 3)
 			{
 				string arg0 = ToLua.CheckString(L, 1);
 				System.Action<string,UnityEngine.Object> arg1 = (System.Action<string,UnityEngine.Object>)ToLua.CheckDelegate<System.Action<string,UnityEngine.Object>>(L, 2);
 				bool arg2 = LuaDLL.luaL_checkboolean(L, 3);
-				GameCore.ResMgr.LoadSceneAsync(arg0, arg1, arg2);
-				return 0;
+				bool o = GameCore.ResMgr.LoadSceneAsync(arg0, arg1, arg2);
+				LuaDLL.lua_pushboolean(L, o);
+				return 1;
 			}
 			else
 			{
@@ -224,8 +228,9 @@ public class GameCore_ResMgrWrap
 			ToLua.CheckArgsCount(L, 2);
 			string arg0 = ToLua.CheckString(L, 1);
 			System.Action<string,UnityEngine.Object> arg1 = (System.Action<string,UnityEngine.Object>)ToLua.CheckDelegate<System.Action<string,UnityEngine.Object>>(L, 2);
-			GameCore.ResMgr.UnloadScene(arg0, arg1);
-			return 0;
+			bool o = GameCore.ResMgr.UnloadScene(arg0, arg1);
+			LuaDLL.lua_pushboolean(L, o);
+			return 1;
 		}
 		catch (Exception e)
 		{
