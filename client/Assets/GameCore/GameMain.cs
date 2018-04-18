@@ -7,17 +7,28 @@ namespace GameCore
 {
     public sealed class GameMain : MonoBehaviour
     {
+        public static bool mInstance = false;
+
         private void Start()
         {
-            DontDestroyOnLoad(gameObject);
+            if (mInstance)
+            {
+                Destroy(gameObject);
+            }
+            else
+            {
+                mInstance = true;
 
-            UEP.BeginSample("ResMgr.Init();");
-            ResMgr.Init();
-            UEP.EndSample();
+                DontDestroyOnLoad(gameObject);
 
-            UEP.BeginSample("LuaMgr.Init();");
-			LuaMgr.Init();
-			UEP.EndSample();
+                UEP.BeginSample("ResMgr.Init();");
+                ResMgr.Init();
+                UEP.EndSample();
+
+                UEP.BeginSample("LuaMgr.Init();");
+                LuaMgr.Init();
+                UEP.EndSample();
+            }
         }
 
         private void Update()

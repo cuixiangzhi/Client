@@ -21,7 +21,10 @@ namespace GameCore
             {
                 string fullPath = string.Format("{0}{1}", mBundlePath, path);
                 bundle = AssetBundle.LoadFromFile(fullPath);
-                mBundleDic[path] = bundle;
+                if(bundle != null)
+                {
+                    mBundleDic[path] = bundle;
+                }               
             }
             return bundle;
         }

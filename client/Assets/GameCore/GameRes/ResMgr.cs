@@ -12,6 +12,7 @@ namespace GameCore
     internal class LoadInfo
     {
         internal string mFileName;
+        internal bool mSceneLoading;
         internal AssetBundle mBundle = null;
         internal AsyncOperation mRequest = null;
         internal Action<string, UnityObj> mCallBack = null;
@@ -386,22 +387,14 @@ namespace GameCore
 
         public static bool LoadScene(string fileName, bool additive = false)
         {
-            Scene scene = SceneManager.GetSceneByName(fileName);
-            if (scene.isLoaded)
-            {
-                LogMgr.LogError("scene %s alreay loaded,can't load !!", fileName);
-                return true;
-            }
-
-            LoadInfo load = null;
-            
+            LoadInfo load = null;           
             if (mLoadDic.TryGetValue(fileName, out load))
             {
                 //卸载中&加载中
-                if (load.mBundle != null)
-                    LogMgr.LogError("scene is loading %s,can't load !!", fileName);
+                if (load.mBundle != null || load.mSceneLoading)
+                    LogMgr.LogError("scene {0} is loading,can't load !!", fileName);
                 else
-                    LogMgr.LogError("scene is unloading %s,can't load !!", fileName);
+                    LogMgr.LogError("scene {0} is unloading,can't load !!", fileName);
                 return false;
             }
             else
@@ -411,11 +404,12 @@ namespace GameCore
                 if(bundle != null || SceneUtility.GetBuildIndexByScenePath(fileName) >= 0)
                 {
                     SceneManager.LoadScene(fileName, additive ? LoadSceneMode.Additive : LoadSceneMode.Single);
+                    PkgMgr.UnloadBundle(fileName);
                     return true;
                 }
                 else
                 {
-                    LogMgr.LogError("scene is null %s !!", fileName);
+                    LogMgr.LogError("scene is null {0} !!", fileName);
                     return false;
                 }              
             }
@@ -423,20 +417,14 @@ namespace GameCore
 
         public static bool LoadSceneAsync(string fileName, Action<string, UnityObj> callBack, bool additive = false)
         {
-            if(SceneManager.GetSceneByName(fileName).IsValid())
-            {
-                LogMgr.LogError("scene %s alreay loaded,can't load !!", fileName);
-                callBack(fileName,null);
-                return true;
-            }
             LoadInfo load = null;
             if (mLoadDic.TryGetValue(fileName, out load))
             {
                 //卸载中&加载中
                 if (load.mBundle != null)
-                    LogMgr.LogError("scene is loading %s,can't load !!", fileName);
+                    LogMgr.LogError("scene {0} is loading,can't load !!", fileName);
                 else
-                    LogMgr.LogError("scene is unloading %s,can't load !!", fileName);
+                    LogMgr.LogError("scene {0} is unloading ,can't load !!", fileName);
                 return false;
             }
             else
@@ -450,11 +438,12 @@ namespace GameCore
                     load.mRequest = SceneManager.LoadSceneAsync(fileName, additive ? LoadSceneMode.Additive : LoadSceneMode.Single);
                     load.mRequest.completed += load.OnLoadFinish;
                     load.mCallBack = callBack;
+                    load.mSceneLoading = true;
                     return true;
                 }
                 else
                 {
-                    LogMgr.LogError("scene is null %s !!", fileName);
+                    LogMgr.LogError("scene {0} is null !!", fileName);
                     return false;
                 }
             }
@@ -489,7 +478,7 @@ namespace GameCore
             {
                 if (obj != null)
                     UnityObj.Destroy(obj);
-                LogMgr.LogError("can't find pool for object %s!!", obj == null ? "NULL" : obj.name);
+                LogMgr.LogError("can't find pool for object {0}!!", obj == null ? "NULL" : obj.name);
             }
         }
 
@@ -498,26 +487,34 @@ namespace GameCore
             LoadInfo load = null;
             if(mLoadDic.TryGetValue(fileName, out load))
             {
-                if (load.mBundle != null)
-                    LogMgr.LogError("scene is loading %s,can't unload!!", fileName);
+                if (load.mBundle != null || load.mSceneLoading)
+                    LogMgr.LogError("scene {0} is loading,can't unload!!", fileName);
                 else
-                    LogMgr.LogError("scene is unloading %s,can't unload!!", fileName);
+                    LogMgr.LogError("scene {0} is unloading,can't unload!!", fileName);
                 return false;
             }
             else
             {
-                if(SceneManager.GetSceneByName(fileName).IsValid())
+                if(SceneManager.GetSceneByName(fileName).isLoaded)
                 {
-                    load = AllocLoadInfo(fileName);
-                    load.mCallBack = callBack;
-                    load.mBundle = null;
-                    load.mRequest = SceneManager.UnloadSceneAsync(fileName);
-                    load.mRequest.completed += load.OnLoadFinish;
+                    AsyncOperation op = SceneManager.UnloadSceneAsync(fileName);
+                    if(op == null)
+                    {
+                        callBack(fileName,null);
+                    }
+                    else
+                    {
+                        load = AllocLoadInfo(fileName);
+                        load.mCallBack = callBack;
+                        load.mBundle = null;
+                        load.mRequest = op;
+                        load.mRequest.completed += load.OnLoadFinish;
+                    }
                     return true;
                 }
                 else
                 {
-                    LogMgr.LogError("scene %s not loaded,can't unload!!", fileName);
+                    LogMgr.LogError("scene {0} not loaded,can't unload!!", fileName);
                     return false;
                 }
             }
