@@ -66,18 +66,21 @@ namespace GameCore
         internal List<UnityObj> mSpawnObjs = new List<UnityObj>(16);
         internal List<UnityObj> mDeSpawnObjs = new List<UnityObj>(16);
         internal float mLastUseTime = -1;
-        internal float MAX_CACHE_TIME = 5;
+        internal float MAX_CACHE_TIME = 300;
 
         internal bool IsActive()
         {
             if(mLoadObj != null)
             {
-                if(mSpawnObjs.Count <= 0)
+                for(int i = 0;i < mSpawnObjs.Count;i++)
                 {
-                    float passedTime = Time.time - mLastUseTime;
-                    return passedTime >= MAX_CACHE_TIME;
+                    if (mSpawnObjs[i] != null)
+                        return true;
+                    else
+                        mSpawnObjs.RemoveAt(i--);
                 }
-                return false;
+                float passedTime = Time.time - mLastUseTime;
+                return passedTime >= MAX_CACHE_TIME;
             }
             else
             {
@@ -89,7 +92,7 @@ namespace GameCore
         {
             if(mLoadObj != null)
             {
-                return mSpawnObjs.Contains(obj);
+                return mSpawnObjs.Contains(obj) || mDeSpawnObjs.Contains(obj);
             }
             else
             {
@@ -135,6 +138,7 @@ namespace GameCore
             {
                 mLoadObj = obj as GameObject;
                 mLoadObj.transform.parent = ResMgr.mPoolLoad;
+                mLoadObj.SetActive(false);
             }
             else
             {
@@ -155,10 +159,12 @@ namespace GameCore
                 }
                 if(mSpawnObjs.Count != 0)
                 {
-                    LogMgr.LogError("pool has spawned object when clear!!");
+                    LogMgr.LogError("pool has spawned object when clear !!");
                 }
                 mDeSpawnObjs.Clear();
                 mSpawnObjs.Clear();
+                Resources.UnloadAsset(mLoadObj);
+                mLoadObj = null;
             }
         }
 
@@ -166,8 +172,8 @@ namespace GameCore
         {
             if(mLoadObj != null)
             {
-                mSpawnObjs.Remove(obj);
-                mDeSpawnObjs.Add(obj);
+                if(mSpawnObjs.Remove(obj))
+                    mDeSpawnObjs.Add(obj);
             }
             mLastUseTime = Time.time;
         }

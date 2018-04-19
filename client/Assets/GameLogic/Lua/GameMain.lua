@@ -6,6 +6,7 @@ end
 
 function GameInit()
     require("GameDebug")
+    GameCore.ResMgr.LoadSceneAsync("start",OnLoad);
     --状态机
 end
 

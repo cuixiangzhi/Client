@@ -90,6 +90,9 @@
     		  		   		这个时候需要根据-1到1映射到屏幕的0到w 0到h上
     		  		   最终需要计算出NDC坐标,(Xn,Yn,Zn) = (Xp/Zcamera,Yp/Zcamera,Zp/Zcamera)
     		  正交投影 left right bottom top near far
+建模
+	三角网格构成
+	控制点定义的样条曲线、曲面
 窗口
 	去除CMD窗口 #pragma comment(linker,"/subsystem:\"windows\" /entry:\"mainCRTStartup\"")
 	获取屏幕   glutGet(GLUT_SCREEN_WIDTH) GLUT_SCREEN_HEIGHT
