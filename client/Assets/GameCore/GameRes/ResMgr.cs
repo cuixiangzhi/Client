@@ -163,7 +163,6 @@ namespace GameCore
                 }
                 mDeSpawnObjs.Clear();
                 mSpawnObjs.Clear();
-                Resources.UnloadAsset(mLoadObj);
                 mLoadObj = null;
             }
         }
