@@ -56,10 +56,10 @@
               A和B的最短距离等价于C和原点的最短距离
 粗略测试阶段
             粒子,相交测试,粒子可以简化为一个点,判断点在多边形内还是外部即可
-            AABB包围盒,相交测试,已知AABB最大和最小顶点,优化:优先比较xz平面 
+            包围盒AABB OBB,相交测试,已知AABB最大和最小顶点,优化:优先比较xz平面 
                     a.minx > b.maxx || a.maxx < b.minx 
                     a.miny > b.maxy || a.maxy < b.miny 
                     a.minz > b.maxz || a.maxz < b.minz
-            AABB包围球,相交测试,已知半径和中心点
+            包围球,相交测试,已知半径和中心点
                     (a-b)^2 > (ar + br)^2
 精确测试阶段
