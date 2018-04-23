@@ -15,23 +15,21 @@ namespace GameLogic
 
         private void Awake()
         {
-            DontDestroyOnLoad(gameObject);
+            
         }
 
         private void OnEnable()
         {
-            SceneManager.LoadScene("0",LoadSceneMode.Additive);
-            SceneManager.LoadScene("1", LoadSceneMode.Additive);
         }
 
         private void OnDisable()
         {
-            SceneManager.UnloadSceneAsync("0");
-            Scene scene = SceneManager.GetSceneByName("0");
-            if (scene.IsValid())
-            {
-                int x = 0;
-            }
+
+        }
+
+        private void Update()
+        {
+            transform.Rotate(Vector3.up, 10 * Time.deltaTime, Space.Self);
         }
     }
 }

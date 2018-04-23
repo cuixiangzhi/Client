@@ -14,28 +14,28 @@ namespace GameCore
         internal static string mBundlePath = Application.streamingAssetsPath + "/";
 #endif
 
-        public static AssetBundle LoadBundle(string path)
+        public static AssetBundle LoadBundle(string fileName)
         {
             AssetBundle bundle = null;
-            if (!mBundleDic.TryGetValue(path,out bundle))
+            if (!mBundleDic.TryGetValue(fileName, out bundle))
             {
-                string fullPath = string.Format("{0}{1}", mBundlePath, path);
+                string fullPath = string.Format("{0}{1}", mBundlePath, fileName);
                 bundle = AssetBundle.LoadFromFile(fullPath);
                 if(bundle != null)
                 {
-                    mBundleDic[path] = bundle;
+                    mBundleDic[fileName] = bundle;
                 }               
             }
             return bundle;
         }
 
-        public static int LoadBytes(string path,byte[] buffer)
+        public static int LoadBytes(string fileName, byte[] buffer)
         {
             bool androidApp = Application.platform == RuntimePlatform.Android;
-            string fullPath = string.Format("{0}{1}.bytes", androidApp ? string.Empty : mBundlePath, path);
+            string fullPath = string.Format("{0}{1}.bytes", androidApp ? string.Empty : mBundlePath, fileName);
             if (androidApp)
             {
-                IntPtr file = CommonDLL.common_android_open(path);
+                IntPtr file = CommonDLL.common_android_open(fileName);
                 if (file != IntPtr.Zero)
                 {
                     int len = CommonDLL.common_android_read(file, buffer, buffer.Length);
@@ -56,14 +56,19 @@ namespace GameCore
             return 0;
         }
 
-        public static void UnloadBundle(string path)
+        public static void UnloadBundle(string fileName)
         {
             AssetBundle bundle = null;
-            if(mBundleDic.TryGetValue(path, out bundle))
+            if(mBundleDic.TryGetValue(fileName, out bundle))
             {
                 bundle.Unload(false);
-                mBundleDic.Remove(path);
+                mBundleDic.Remove(fileName);
             }
+        }
+
+        public static void UnloadDependBundle(string fileName)
+        {
+
         }
     }
 }

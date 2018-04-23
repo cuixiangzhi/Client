@@ -65,8 +65,8 @@ namespace GameCore
         internal GameObject mLoadObj = null;
         internal List<UnityObj> mSpawnObjs = new List<UnityObj>(16);
         internal List<UnityObj> mDeSpawnObjs = new List<UnityObj>(16);
-        internal float mLastUseTime = -1;
-        internal float MAX_CACHE_TIME = 300;
+        internal float mLastUseTime = 0;
+        internal float MAX_CACHE_TIME = 60;
 
         internal bool IsActive()
         {
@@ -164,6 +164,7 @@ namespace GameCore
                 mDeSpawnObjs.Clear();
                 mSpawnObjs.Clear();
                 mLoadObj = null;
+                PkgMgr.UnloadDependBundle(mFileName);
             }
         }
 
@@ -390,53 +391,64 @@ namespace GameCore
             }
         }
 
-        public static bool LoadScene(string fileName, bool additive = false)
+        public static int LoadScene(string fileName, bool additive = false)
         {
             LoadInfo load = null;           
             if (mLoadDic.TryGetValue(fileName, out load))
             {
                 //卸载中&加载中
                 if (load.mBundle != null || load.mSceneLoading)
+                { 
                     LogMgr.LogError("scene {0} is loading,can't load !!", fileName);
+                    return -1;
+                }
                 else
+                { 
                     LogMgr.LogError("scene {0} is unloading,can't load !!", fileName);
-                return false;
+                    return -2;
+                }                
             }
             else
             {
                 //新场景
-                AssetBundle bundle = PkgMgr.LoadBundle(fileName);
-                if(bundle != null || SceneUtility.GetBuildIndexByScenePath(fileName) >= 0)
+                AssetBundle bundle = null;
+                if (SceneUtility.GetBuildIndexByScenePath(fileName) >= 0 || (bundle = PkgMgr.LoadBundle(fileName)) != null)
                 {
                     SceneManager.LoadScene(fileName, additive ? LoadSceneMode.Additive : LoadSceneMode.Single);
-                    PkgMgr.UnloadBundle(fileName);
-                    return true;
+                    if(bundle != null)
+                        PkgMgr.UnloadBundle(fileName);
+                    return 0;
                 }
                 else
                 {
                     LogMgr.LogError("scene is null {0} !!", fileName);
-                    return false;
+                    return -3;
                 }              
             }
         }
 
-        public static bool LoadSceneAsync(string fileName, Action<string, UnityObj> callBack, bool additive = false)
+        public static int LoadSceneAsync(string fileName, Action<string, UnityObj> callBack, bool additive = false)
         {
             LoadInfo load = null;
             if (mLoadDic.TryGetValue(fileName, out load))
             {
                 //卸载中&加载中
                 if (load.mBundle != null)
+                { 
                     LogMgr.LogError("scene {0} is loading,can't load !!", fileName);
+                    return -1;
+                }
                 else
+                { 
                     LogMgr.LogError("scene {0} is unloading ,can't load !!", fileName);
-                return false;
+                    return -2;
+                }
             }
             else
             {
                 //新场景
-                AssetBundle bundle = PkgMgr.LoadBundle(fileName);
-                if(bundle != null || SceneUtility.GetBuildIndexByScenePath(fileName) >= 0)
+                AssetBundle bundle = null;
+                if(SceneUtility.GetBuildIndexByScenePath(fileName) >= 0 || (bundle = PkgMgr.LoadBundle(fileName)) != null)
                 {
                     load = AllocLoadInfo(fileName);
                     load.mBundle = bundle;
@@ -444,12 +456,12 @@ namespace GameCore
                     load.mRequest.completed += load.OnLoadFinish;
                     load.mCallBack = callBack;
                     load.mSceneLoading = true;
-                    return true;
+                    return 0;
                 }
                 else
                 {
                     LogMgr.LogError("scene {0} is null !!", fileName);
-                    return false;
+                    return -3;
                 }
             }
         }
@@ -487,16 +499,21 @@ namespace GameCore
             }
         }
 
-        public static bool UnloadScene(string fileName, Action<string, UnityObj> callBack)
+        public static int UnloadScene(string fileName, Action<string, UnityObj> callBack)
         {
             LoadInfo load = null;
             if(mLoadDic.TryGetValue(fileName, out load))
             {
                 if (load.mBundle != null || load.mSceneLoading)
+                { 
                     LogMgr.LogError("scene {0} is loading,can't unload!!", fileName);
+                    return -1;
+                }
                 else
+                { 
                     LogMgr.LogError("scene {0} is unloading,can't unload!!", fileName);
-                return false;
+                    return -2;
+                }               
             }
             else
             {
@@ -513,14 +530,14 @@ namespace GameCore
                         load.mCallBack = callBack;
                         load.mBundle = null;
                         load.mRequest = op;
-                        load.mRequest.completed += load.OnLoadFinish;
+                        load.mRequest.completed += load.OnLoadFinish;                      
                     }
-                    return true;
+                    return 0;
                 }
                 else
                 {
                     LogMgr.LogError("scene {0} not loaded,can't unload!!", fileName);
-                    return false;
+                    return -4;
                 }
             }
         }
