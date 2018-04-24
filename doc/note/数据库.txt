@@ -1,6 +1,6 @@
 SQL  结构化查询语言
     数据类型: INT BIGINT TEXT FLOAT UNSIGNED CHAR定长 VARCHAR变长 TEXT 
-    创建数据库  CREATE DATABASE name
+    创建数据库  CREATE DATABASE name ENGINE=InooDB DEFAULT CHARSET=utf8
 	删除数据库	DROP DATABASE name
 	创建表      CREATE TABLE name (KEY TYPE,约束)
 			字段约束  primary key主键
@@ -9,12 +9,14 @@ SQL  结构化查询语言
 					  foreign key reference tableName(key) 外键引用
 					  check 条件判断
 					  default 设置默认值
+					  character set utf8
 	复制表     CREATE TABLE name SELECT * FROM name
 	           SELECT * INTO name in db from name
-	修改表     ALTER TABLE name
+	修改表     ALTER TABLE name 
 	         添加列  ADD COLUMN name type 约束
 			 删除列  DROP COLUMN name
 			 修改列  MODIFY COLUMN name type 约束
+			 编码 character set utf8
 			 
 	插入数据 INSERT INTO name (keys) VALUES(...)
 	修改数据 UPDATE name SET key=val WHERE key=val

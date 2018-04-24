@@ -5,9 +5,15 @@ using UnityEngine;
 
 namespace GameCore
 {
+    internal class PkgInfo
+    {
+        internal 
+    }
+
     public static class PkgMgr
     {
         internal static Dictionary<string, AssetBundle> mBundleDic = new Dictionary<string, AssetBundle>(64);
+        internal static Dictionary<string, int> mBundleDependDic = new Dictionary<string, int>(64);
 #if UNITY_EDITOR
         internal static string mBundlePath = Application.dataPath + "/../../../assets/";
 #else 

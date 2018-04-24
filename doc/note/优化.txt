@@ -1,7 +1,13 @@
 渲染模块
+        瓶颈在于 CPU提交数据
+                 DrawCall
+                 GPU裁剪、光栅、后处理等
+                 10万顶点 200DC
+        静态合批 一次性提交VBO给GPU,
         DrawCall数量,动态批处理、统一缩放、静态批处理,合并贴图、合并材质
         Triangle数量,减面、模型LOD、分块加载、FOV、远平面大小
         Shader效果,graphics.blit次数、lod、复杂度、rendertexture使用次数及大小
+        GPU INSTANCE
 UI模块
     内存
         UIGeometry OnFill,顶点、颜色、UV三个数组Vector3[]的动态增长
