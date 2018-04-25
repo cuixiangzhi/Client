@@ -762,13 +762,6 @@ public class UIInput : MonoBehaviour
 				// Windows has them, OSX may not. They get handled inside OnGUI() instead.
 				string s = Input.inputString;
 
-                //modify by cuixiangzhi 修改PC输入选中BUG
-                if (mLastIME != ime)
-                {
-                    mSelectionEnd = Mathf.Min(mSelectionStart, mSelectionEnd);
-                    mSelectionStart = mSelectionEnd;
-                }
-
                 for (int i = 0; i < s.Length; ++i)
 				{
 					char ch = s[i];
@@ -785,16 +778,9 @@ public class UIInput : MonoBehaviour
 			}
 
 			// Append IME composition
-			if (mLastIME != ime)
+			if (mLastIME != ime && !string.IsNullOrEmpty(Input.inputString))
 			{
-                //modify by cuixiangzhi 修改PC输入选中BUG
-                if (string.IsNullOrEmpty(mLastIME) && mSelectionStart != mSelectionEnd)
-                {
-                    int oldSelectStart = mSelectionStart > mSelectionEnd ? mSelectionEnd : mSelectionStart;
-                    Insert(string.Empty);
-                    mSelectionStart = oldSelectStart;
-                }
-                mSelectionEnd = string.IsNullOrEmpty(ime) ? mSelectionStart : mSelectionStart + ime.Length;
+                //mSelectionEnd = string.IsNullOrEmpty(ime) ? mSelectionStart : mSelectionStart + ime.Length;
                 mLastIME = ime;
 				UpdateLabel();
 				ExecuteOnChange();
@@ -1185,7 +1171,7 @@ public class UIInput : MonoBehaviour
 
 	protected string GetLeftText ()
 	{
-		int min = Mathf.Min(mSelectionStart, mSelectionEnd);
+		int min = Mathf.Min(mValue.Length,Mathf.Min(mSelectionStart, mSelectionEnd));
 		return (string.IsNullOrEmpty(mValue) || min < 0) ? "" : mValue.Substring(0, min);
 	}
 
@@ -1195,7 +1181,7 @@ public class UIInput : MonoBehaviour
 
 	protected string GetRightText ()
 	{
-		int max = Mathf.Max(mSelectionStart, mSelectionEnd);
+		int max = Mathf.Min(mValue.Length,Mathf.Max(mSelectionStart, mSelectionEnd));
 		return (string.IsNullOrEmpty(mValue) || max >= mValue.Length) ? "" : mValue.Substring(max);
 	}
 
@@ -1341,11 +1327,11 @@ public class UIInput : MonoBehaviour
 				else processed = fullText;
 
 				// Start with text leading up to the selection
-				int selPos = selected ? Mathf.Min(mSelectionStart, mSelectionEnd) : 0;
+				int selPos = selected ? Mathf.Min(processed.Length,Mathf.Min(mSelectionStart, mSelectionEnd)) : 0;
 				string left = processed.Substring(0, selPos);
 
 				// Append the composition string and the cursor character
-				if (selected) left += Input.compositionString;
+				if (selected) left += (string.IsNullOrEmpty(Input.inputString) || Input.inputString == Input.compositionString) ? string.Empty : Input.compositionString;
 
 				// Append the text from the selection onwards
 				processed = left + processed.Substring(selPos, processed.Length - selPos);
