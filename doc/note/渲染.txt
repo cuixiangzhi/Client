@@ -196,29 +196,43 @@
 			   glutMotionFunc(void (*func)(int x, int y));  按下移动
 			   glutPassiveMotionFunc(void (*func)(int x, int y)); 普通移动
 			   glutEntryFunc(void (*func) (int state)); 鼠标进出窗口
-传输
-	显示列表 预编译的指令集合,存放在GPU显示列表内存,不可修改,不是所有的命令都可以使用
+传输顶点
+	单个传输 glBegin glEnd之间通过glVertex*一个一个的设置
+			 效率贼低
+			 OpenGL3.0 已废弃
+	显示列表 提前设置好顶点信息,传给GPU之后无法修改
 			 应用: 矩阵操作 材质定义 纹理定义 光照定义
 			 创建显示列表 GLuint id = glGenLists(1);
 			 			  glNewList(id,GL_COMPILE);
 			 			  glEndList();
 			 绘制显示列表 glCallList(id);
 			 删除显示列表 glDeleteLists(id,1);
-	顶点数组 减少glVertex调用次数,通过指定数组、维数、类型、长度一次性传输多个顶点
-			 数组有6种,GL_VERTEX顶点 GL_COLOR颜色RGB GL_NORMAL法线 GL_INDEX颜色索引 GL_TEXCOORD纹理坐标
+	顶点数组 提前设置好顶点信息,传给GPU之后可以修改
+			 顶点数据在内存中,每次绘制时都需要传输给GPU
 			 启用/禁用数组 glEnableClientState() glDisableClientState()
 			 指定数组位置 glVertexPointer glNormalPointer glColorPointer glIndexPointer glTexCoordPointer 
-			 绘制顶点数组 glDrawArrays(GL_TRIANGLES, 0, 36)  有重复的顶点
+			 传输顶点数组 glDrawArrays(GL_TRIANGLES, 0, 36)  有重复的顶点
 			 			  glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_BYTE, ptr); 无重复顶点
-	VBO模式 网格信息存放在显存内,有两份内存
-			创建缓存数组 glGenBuffers(1,&id);
-			绑定数组类型 glBindBuffer(GL_ARRAY_BUFFER_ARB,id);
-			更新缓存数据 glBufferData(GL_ARRAY_BUFFER_ARB,size,ptr,GL_STREAM_DRAW); 静态读写 动态读写 帧读写
-
-			绘制缓存数据 glEnableClientState();
+	以上三种方式均已过时
+	VBO模式 顶点数组的升级版本,在显存内申请一块内存,存储顶点相关信息
+			可以通过一些API修改这个数据
+			创建显存对象 Gluint vboID;glGenBuffers(1,&vboID);
+			绑定对象类型 glBindBuffer(GL_ARRAY_BUFFER,vboID);
+						 数组可以是顶点数组 GL_ARRAY_BUFFER		
+						 下一次重新绑定可用于更新对象属性 	
+						 void* glMapBuffer(GL_ARRAY_BUFFER,GL_READ_WRITE);可以映射显存	  
+						 glUnmapBuffer(GL_ARRAY_BUFFER)取消映射 
+			设置对象属性 glBufferData(GL_ARRAY_BUFFER,数组内存大小,数组指针,存储方式); 
+						 glBufferSubData(GL_ARRAY_BUFFER,对象偏移,数组长度,数组指针);
+						 static  一次指定多次使用,适用于静态物体
+						 dynamic 反复指定反复使用,适用于动态物体
+						 stream  一次指定一次使用,每帧都会变化
+						 draw 表示对象被用来绘制使用
+						 read 表示对象被用来读取使用
+						 copy
+			绘制缓存数据 glEnableClientState(GL_VERTEX_ARRAY);
 						 glVertexPointer(3,GL_FLOAT,0,0);
-						 glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_BYTE, ptr);
+						 glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_BYTE, 0);
 						 glDisableClientState();
-			删除缓存数组 glDeleteBuffers(id);
-	位图字体
-			像素点构成的字体
+
+			删除缓存数组 glDeleteBuffers(vboID);

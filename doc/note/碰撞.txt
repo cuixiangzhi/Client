@@ -29,10 +29,7 @@
                         线段投影 计算顶点投影覆盖范围,有交点那么一定相交  rmin = rmax = dot(axis,v);  
             pnpoly算法: (yj > yp != yi > yp) && (xp < (xj - xi) * (yp - yi) / (yj -yi) + xi)
 
-            圆形和矩形: 计算V向量(矩形中心指向圆心P,并且x、y都取绝对值) U向量(V-H(矩形中心指向右上角顶点))(x、y取第一象限的值),计算U向量和圆半径大小
-                        vector2 v = abs(p-c);
-                        vector2 u = max(v-h,vector2.zero);
-                        return u * u <= r * r;
+            圆形和矩形: 
             圆形和圆形: 判断圆心距离和半径之和的大小
                         return vector2.distance(p1,p2) <= r1 + r2;
             圆形和扇形: 圆和圆相交
@@ -55,9 +52,20 @@
                   AP = u * AB + v * BC
                   两边同时分别乘以AB和BC, 联立方程求解得出u和v    
                   根据向量乘法计算出u,v质心坐标
+
             点到平面距离
                   根据两点求出法向量,根据法向量和点求出距离
-            点到线段的距离
+
+            点到线段的距离 圆和线段 圆和扇形
                   先通过计算AB*AP求出夹角是锐角还是钝角,然后判断APcos∠PAB大小,也就是P点在线段AB上的投影点clamp到0,1
                   然后根据向量加法PA + t*AB = P'P得出垂线段向量,t是0那么就是A点,t是1就是B点
-                  t = PA * AB / ab
+                  t = AP * AB / ab * ab
+                  t < 0,最近点是A,距离为PA
+                  t > 1,最近点为B,距离为PB
+                  d = len(PA + t*AB)
+
+            点到矩形的距离 可用于判断圆和矩形是否相交
+                  计算V向量(矩形中心指向圆心P,并且x、y都取绝对值) U向量(V-H(矩形中心指向右上角顶点))(x、y取第一象限的值),计算U向量和圆半径大小
+                  vector2 v = abs(p-c);
+                  vector2 u = max(v-h,vector2.zero);
+                  return u * u <= r * r;
