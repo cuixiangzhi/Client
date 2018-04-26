@@ -214,7 +214,7 @@
 			 传输顶点数组 glDrawArrays(GL_TRIANGLES, 0, 36)  有重复的顶点
 			 			  glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_BYTE, ptr); 无重复顶点
 	以上三种方式均已过时
-	VBO模式 顶点数组的升级版本,在显存内申请一块内存,存储顶点相关信息
+	VBO     顶点数组的升级版本,在显存内申请一块内存,存储顶点相关信息
 			可以通过一些API修改这个数据
 			创建显存对象 Gluint vboID;glGenBuffers(1,&vboID);
 			绑定对象类型 glBindBuffer(GL_ARRAY_BUFFER,vboID);
@@ -236,3 +236,14 @@
 						 glDisableClientState();
 
 			删除缓存数组 glDeleteBuffers(vboID);
+	IBO 	索引BUFFER,存储顶点数组下标
+	静态合批
+		创建一个大的VBO存储顶点,不同的IBO存储索引,每次绘制只绘制单个IBO(索引大的VBO上的一段)
+	动态合批
+		CPU动态检测相同材质的MESH,合并成一个VBO,合并有顶点数限制
+	vertex constant instancing
+		对于模型一致的物体,只提交原始模型给GPU,其他属性单独构成BUFFER提交给GPU
+	gpu instancing
+		将一个模型的vbo提交给一次给显卡
+		物体不同的位置，状态，颜色等等将他们整合成一个per instance attribute的buffer给gpu
+	合批和instancing技术都是用来减少DC和提交次数
