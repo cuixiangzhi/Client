@@ -172,15 +172,15 @@
 		RGB模型,通过RGB三基色来调节颜色
 		HSV模型,通过色调、亮度、饱和度来调节颜色
 		RGB和HSV可以通过公式进行转换
-光照
-		光源
+纹理贴图
+
+光照系统
+		光源类型
 		光照模型
 		光线跟踪
 		透明模型
-		雾气
-		阴影
-		纹理映射
-		凹凸映射
+		雾气阴影
+		光照贴图
 窗口
 	去除CMD窗口 #pragma comment(linker,"/subsystem:\"windows\" /entry:\"mainCRTStartup\"")
 	获取屏幕   glutGet(GLUT_SCREEN_WIDTH) GLUT_SCREEN_HEIGHT
@@ -246,4 +246,5 @@
 	gpu instancing
 		将一个模型的vbo提交给一次给显卡
 		物体不同的位置，状态，颜色等等将他们整合成一个per instance attribute的buffer给gpu
+	animation instancing
 	合批和instancing技术都是用来减少DC和提交次数
