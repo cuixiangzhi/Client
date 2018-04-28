@@ -28,3 +28,15 @@ UI模块
         使用资源缓存池,减少实例化次数
 粒子模块
     减少同屏粒子数目,控制在400以下
+资源导入
+    模型 
+        Model下 Read/Write Enabled 运行时修改MESH数据,会导致内存翻倍
+        AnimationType Generic会给模型添加Animator组件
+    纹理
+        Mipmap 2D不需要,3D关闭后会导致闪烁,开启会增加内存占用
+    音频
+        IOS平台mp3格式有解码支持
+        Android平台Voribs格式有解码支持
+        单声道 force to mono
+    动画
+        手机上每秒30帧就很流畅,60帧会增加内存占用,但是会使动画更平滑
