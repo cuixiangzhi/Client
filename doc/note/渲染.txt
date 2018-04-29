@@ -240,6 +240,7 @@
 		大量物体只提交一个原始模型给GPU,其他属性交给SHADER来处理
 		drawmesh(instanced) 代表被GPU INSTANCE
 		unity默认只对相同MESH相同材质 不同位置、缩放、旋转的物体进行GPU INSTANCE
+			受不同实时灯光或者处于不同光照贴图的也不会被合批
 		其他属性需要自己在shader内添加
 			C#  
 				创建实例变量
