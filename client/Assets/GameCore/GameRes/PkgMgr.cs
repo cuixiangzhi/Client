@@ -7,7 +7,7 @@ namespace GameCore
 {
     internal class PkgInfo
     {
-        internal 
+         
     }
 
     public static class PkgMgr
