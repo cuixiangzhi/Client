@@ -7,49 +7,49 @@ using System;
 
 namespace GameCore
 {
-    public static class LuaMgr
+    internal class LuaFileReader : LuaFileUtils
     {
-        private static LuaState mLuaState = null;
-
-        private static LuaFileReader mLuaReader = null;
-
-        private class LuaFileReader : LuaFileUtils
+        public LuaFileReader()
         {
-            public LuaFileReader()
-            {
-                instance = this;
-                beZip = false;
-            }
+            instance = this;
+            beZip = false;
+        }
 
-            public override LuaByteBuffer ReadFile(string fileName)
-            {
+        public override LuaByteBuffer ReadFile(string fileName)
+        {
 #if UNITY_EDITOR
-                return base.ReadFile(fileName);
+            return base.ReadFile(fileName);
 #else
                 //读取LUA字节码               
                 return ResMgr.LoadBytes(fileName);
 #endif
-            }
-
-            public override string FindFileError(string fileName)
-            {
-                return string.Empty;
-            }
         }
 
+        public override string FindFileError(string fileName)
+        {
+            return string.Empty;
+        }
+    }
+
+    public sealed class LuaMgr : BaseMgr<LuaMgr>
+    {
+        private LuaState mLuaState = null;
+
+        private LuaFileReader mLuaReader = null;
+
         [AOT.MonoPInvokeCallback(typeof(LuaCSFunction))]
-        private static int luaopen_socket_core(System.IntPtr L)
+        private int luaopen_socket_core(System.IntPtr L)
         {
             return LuaDLL.luaopen_socket_core(L);
         }
 
         [AOT.MonoPInvokeCallback(typeof(LuaCSFunction))]
-        private static int luaopen_mime_core(System.IntPtr L)
+        private int luaopen_mime_core(System.IntPtr L)
         {
             return LuaDLL.luaopen_mime_core(L);
         }
 
-        private static void OpenLuaSocket()
+        private void OpenLuaSocket()
         {
             mLuaState.BeginPreLoad();
             mLuaState.RegFunction("socket.core", luaopen_socket_core);
@@ -57,7 +57,7 @@ namespace GameCore
             mLuaState.EndPreLoad();
         }
 
-        private static void OpenCJson()
+        private void OpenCJson()
         {
             mLuaState.LuaGetField(LuaIndexes.LUA_REGISTRYINDEX, "_LOADED");
             mLuaState.OpenLibs(LuaDLL.luaopen_cjson);
@@ -67,7 +67,7 @@ namespace GameCore
             mLuaState.LuaSetField(-2, "cjson.safe");
         }
 
-        public static void Init()
+        public void Init()
         {
             //创建LUA文件读取器
             mLuaReader = new LuaFileReader();
@@ -96,7 +96,7 @@ namespace GameCore
             CallLuaFunc("GameMain.GameInit");
         }
 
-        public static void Loop()
+        public void Loop()
         {
             if (mLuaState.LuaUpdate(Time.deltaTime, Time.unscaledDeltaTime) != 0)
             {
@@ -107,7 +107,7 @@ namespace GameCore
             mLuaState.Collect();
         }
 
-        public static void LateLoop()
+        public void LateLoop()
         {
             if (mLuaState.LuaLateUpdate() != 0)
             {
@@ -117,7 +117,7 @@ namespace GameCore
             mLuaState.LuaPop(1);
         }
 
-        public static void FixedLoop()
+        public void FixedLoop()
         {
             if (mLuaState.LuaFixedUpdate(Time.fixedDeltaTime) != 0)
             {
@@ -127,7 +127,7 @@ namespace GameCore
             mLuaState.LuaPop(1);
         }
 
-        public static void Exit()
+        public void Exit()
         {
             CallLuaFunc("GameMain.GameQuit");
             mLuaState.Dispose();
@@ -136,24 +136,24 @@ namespace GameCore
             mLuaReader = null;
         }
 
-        private static void ThrowException()
+        private void ThrowException()
         {
             string error = mLuaState.LuaToString(-1);
             mLuaState.LuaPop(2);
             throw new LuaException(error, LuaException.GetLastError());
         }
 
-        public static LuaState GetLuaState()
+        public LuaState GetLuaState()
         {
             return mLuaState;
         }
 
-        public static void DoFile(string fileName)
+        public void DoFile(string fileName)
         {
             mLuaState.DoFile(fileName);
         }
 
-        public static void CallLuaFunc(string funcName)
+        public void CallLuaFunc(string funcName)
         {
             LuaFunction func = mLuaState.GetFunction(funcName);
             if (func != null)
