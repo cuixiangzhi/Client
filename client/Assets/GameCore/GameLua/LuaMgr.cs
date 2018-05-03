@@ -5,9 +5,9 @@ using LuaInterface;
 using System.IO;
 using System;
 
-namespace GameCore
+namespace LuaInterface
 {
-    internal class LuaFileReader : LuaFileUtils
+    public sealed class LuaFileReader : LuaFileUtils
     {
         public LuaFileReader()
         {
@@ -30,7 +30,10 @@ namespace GameCore
             return string.Empty;
         }
     }
+}
 
+namespace GameCore
+{
     public sealed class LuaMgr : BaseMgr<LuaMgr>
     {
         private LuaState mLuaState = null;

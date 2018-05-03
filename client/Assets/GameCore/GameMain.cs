@@ -26,7 +26,6 @@ namespace GameCore
                 UEP.EndSample();
 
                 UEP.BeginSample("LuaMgr.Init();");
-                LuaMgr.Init();
                 UEP.EndSample();
             }
         }
@@ -38,14 +37,12 @@ namespace GameCore
             UEP.EndSample();
 
             UEP.BeginSample("LuaMgr.Loop();");
-            LuaMgr.Loop();
             UEP.EndSample();
         }
 
         private void LateUpdate()
         {
             UEP.BeginSample("LuaMgr.LateLoop();");
-            LuaMgr.LateLoop();
             UEP.EndSample();
         }
 
@@ -56,7 +53,6 @@ namespace GameCore
             UEP.EndSample();
 
             UEP.BeginSample("LuaMgr.Exit();");
-			LuaMgr.Exit();
 			UEP.EndSample();
         }
     }

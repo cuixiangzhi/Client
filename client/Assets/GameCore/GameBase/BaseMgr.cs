@@ -7,7 +7,7 @@ namespace GameCore
 	{
 		private T mInstance = null;
 
-        private GameObject GAME_MAIN = null;
+        private static GameObject GAME_MAIN = null;
 
 		public T Instance
 		{
