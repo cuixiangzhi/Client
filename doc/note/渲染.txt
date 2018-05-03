@@ -258,8 +258,6 @@
 	        	UNITY_INSTANCING_BUFFER_END(Props)
 	        	获取实例变量
 	        	UNITY_ACCESS_INSTANCED_PROP(Props, _Color)
-	animation instancing
-	合批和instancing技术都是用来减少DC和提交次数
 纹理贴图
 	帧缓存 
 		设置接下来要读取的缓存类型
@@ -331,3 +329,10 @@
 	动画融合 连续播放的两个动画衔接的过程
 	动画混合 同时播放的两个动画衔接的过程
 	GPU蒙皮  MESH顶点计算转移到shader内
+	Animation Instancing
+		减少Animator.Update开销
+		减少MeshSkining.Update开销
+		减少CPU到GPU的数据传输
+		不支持BlendTree
+		不支持IK
+		动画精确性降低
