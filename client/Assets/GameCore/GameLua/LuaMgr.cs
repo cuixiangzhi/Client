@@ -21,7 +21,7 @@ namespace LuaInterface
             return base.ReadFile(fileName);
 #else
                 //读取LUA字节码               
-                return ResMgr.LoadBytes(fileName);
+                return GameCore.ResMgr.LoadBytes(fileName);
 #endif
         }
 
