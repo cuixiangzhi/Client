@@ -203,6 +203,12 @@ python
 				  cols = sheet.row_values(n)
 				  ctype = sheet.cell(row,col)
 				  value = sheet.cell_value(row,col);
+	   库  xml库xml.etree.ElementTree
+	   			  root = ET.parse(".xml")
+	   			  for child in root:
+	   			  	for field in child:
+	   			  		filed.tag 
+	   			  		field.text
 lua API
 模块实现相关 module local self 
              tostring tonumber type 
