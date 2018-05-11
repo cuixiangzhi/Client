@@ -191,6 +191,9 @@ python
 	           string.split() 
 			  字符串拼接 string.join(array)  "%s" % varname  a + b
 			  替换replace
+	   字节   b前缀后跟ASCII字符
+	   		  b前缀后跟转义16进制 b'xFF'
+	   		  bytesarray(b'')
 	   编码   python字符串是对象,有两种,
 	   		  一个是str类型,可能是gbk或utf-8编码或者ascii编码 通过decode("gbk|ascii|utf-8")操作转换为unicode对象
 	   		  一个是unicode类型,通过encode("gbk|utf-8|ascii")转换为str对象
