@@ -1,0 +1,15 @@
+message EquipStrengthenDatatable
+{
+	optional string tname = 1;
+	repeated EquipStrengthenData tlist = 2;
+}
+
+message EquipStrengthenData
+{
+	required int32 ID = 1;
+	optional int32 starLevel = 2;
+	optional int32 level = 3;
+	optional int32 consumeID = 4;
+	optional int32 rate = 5;
+	optional int32 isAddAttr = 6;
+}

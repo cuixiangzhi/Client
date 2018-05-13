@@ -1,0 +1,44 @@
+message LabDatatable
+{
+	optional string tname = 1;
+	repeated LabData tlist = 2;
+}
+
+message LabData
+{
+	required int32 ID = 1;
+	optional int32 Type = 2;
+	optional string TechName = 3;
+	optional int32 Genre = 4;
+	repeated int32 CombatGroup = 5;
+	optional int32 FightType = 6;
+	optional int32 Level = 7;
+	optional int32 SkyNetBattleID = 8;
+	optional int32 CharID = 9;
+	optional int32 CharLevel = 10;
+	optional int32 StarLevel = 11;
+	optional int32 Quality = 12;
+	optional int32 ActorType = 13;
+	optional int32 SoldierNum = 14;
+	optional int32 ExistSeconds = 15;
+	optional int32 SkillID = 16;
+	optional int32 NeedBuildType = 17;
+	optional int32 NeedBuildLevel = 18;
+	optional int32 UpgradeTime = 19;
+	optional int32 NeedConsumeID = 20;
+	optional int32 UnlockAmount = 21;
+	optional int32 Price = 22;
+	optional int32 ProduceTime = 23;
+	optional int32 ProduceConsumeID = 24;
+	optional int32 ProduceMax = 25;
+	optional int32 EnableTime = 26;
+	optional string TechIntro = 27;
+	optional string PurseIntro = 28;
+	optional string TechSubIntro = 29;
+	repeated string AddDesList = 30;
+	repeated string AddCountDesList = 31;
+	repeated float ModlePosition = 32;
+	optional int32 moduleValue = 33;
+	optional string PicName = 34;
+	optional string DragEffect = 35;
+}

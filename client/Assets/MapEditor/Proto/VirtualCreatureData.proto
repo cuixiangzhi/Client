@@ -1,0 +1,25 @@
+message VirtualCreatureDatatable
+{
+	optional string tname = 1;
+	repeated VirtualCreatureData tlist = 2;
+}
+
+message VirtualCreatureData
+{
+	required int32 ID = 1;
+	optional int32 Type = 2;
+	optional int32 TransformType = 3;
+	optional int32 SubEffectFilterId = 4;
+	optional int32 EligibleTestId = 5;
+	optional int32 ExistTime = 6;
+	optional float PreOffset = 7;
+	optional float RectWidth = 8;
+	optional float BeginAngle = 9;
+	optional float EndAngle = 10;
+	optional float InsideRadius = 11;
+	optional float OutsideRadius = 12;
+	optional float MoveSpeed = 13;
+	repeated int32 EffectList = 14;
+	optional int32 ParticalID = 15;
+	optional int32 FlySound = 16;
+}

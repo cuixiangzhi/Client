@@ -1,0 +1,12 @@
+message StoreyStepDatatable
+{
+	optional string tname = 1;
+	repeated StoreyStepData tlist = 2;
+}
+
+message StoreyStepData
+{
+	required int32 ID = 1;
+	optional int32 Score = 2;
+	optional string MatchStepName = 3;
+}

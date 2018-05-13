@@ -1,0 +1,14 @@
+message CardLevelLimitDatatable
+{
+	optional string tname = 1;
+	repeated CardLevelLimitData tlist = 2;
+}
+
+message CardLevelLimitData
+{
+	required int32 ID = 1;
+	optional int32 ActorType = 2;
+	optional int32 Star = 3;
+	optional int32 LevelMax = 4;
+	optional int32 StarMax = 5;
+}

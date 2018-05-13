@@ -1,0 +1,11 @@
+message MapUIHangPointtable
+{
+	optional string tname = 1;
+	repeated MapUIHangPoint tlist = 2;
+}
+
+message MapUIHangPoint
+{
+	required int32 ID = 1;
+	optional string modelName = 2;
+}

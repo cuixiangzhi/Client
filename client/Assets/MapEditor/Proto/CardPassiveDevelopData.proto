@@ -1,0 +1,16 @@
+message CardPassiveDevelopDatatable
+{
+	optional string tname = 1;
+	repeated CardPassiveDevelopData tlist = 2;
+}
+
+message CardPassiveDevelopData
+{
+	required int32 ID = 1;
+	optional string name = 2;
+	optional string des = 3;
+	optional int32 heroType = 4;
+	optional int32 passivityLevel = 5;
+	optional int32 heroNum = 6;
+	optional int32 passivityID = 7;
+}

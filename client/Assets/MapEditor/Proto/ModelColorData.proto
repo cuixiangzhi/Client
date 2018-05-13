@@ -1,0 +1,15 @@
+message ModelColorDatatable
+{
+	optional string tname = 1;
+	repeated ModelColorData tlist = 2;
+}
+
+message ModelColorData
+{
+	required int32 ID = 1;
+	optional int32 R = 2;
+	optional int32 G = 3;
+	optional int32 B = 4;
+	optional int32 A = 5;
+	optional float Shinness = 6;
+}

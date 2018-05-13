@@ -1,0 +1,13 @@
+message AvatarDatatable
+{
+	optional string tname = 1;
+	repeated AvatarData tlist = 2;
+}
+
+message AvatarData
+{
+	required int32 ID = 1;
+	optional float speed = 2;
+	optional string modelPath = 3;
+	optional string simpleModelPath = 4;
+}

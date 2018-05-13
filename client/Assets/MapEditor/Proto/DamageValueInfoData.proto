@@ -1,0 +1,22 @@
+message DamageValueInfoDatatable
+{
+	optional string tname = 1;
+	repeated DamageValueInfoData tlist = 2;
+}
+
+message DamageValueInfoData
+{
+	required int32 ID = 1;
+	optional int32 DamageType = 2;
+	optional int32 HPCalaExpression = 3;
+	optional int32 AttackType = 4;
+	optional int32 CalcExpression = 5;
+	optional int32 CoefficientExpression = 6;
+	optional float FloatCoefficient = 7;
+	optional int32 SkillBaseVal = 8;
+	optional float SkillPower = 9;
+	optional int32 TargetType = 10;
+	optional int32 TargetAttrID = 11;
+	optional float CalcPercent = 12;
+	optional float ManaBreak = 13;
+}

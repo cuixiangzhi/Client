@@ -1,0 +1,13 @@
+message EquipForgeDatatable
+{
+	optional string tname = 1;
+	repeated EquipForgeData tlist = 2;
+}
+
+message EquipForgeData
+{
+	required int32 ID = 1;
+	optional int32 consume = 2;
+	optional int32 factor = 3;
+	optional int32 splitDrop = 4;
+}

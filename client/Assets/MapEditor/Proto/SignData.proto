@@ -1,0 +1,13 @@
+message SignDatatable
+{
+	optional string tname = 1;
+	repeated SignData tlist = 2;
+}
+
+message SignData
+{
+	required int32 ID = 1;
+	optional int32 DropNo = 2;
+	optional int32 LuxuryDropNo = 3;
+	optional int32 VipLevel = 4;
+}

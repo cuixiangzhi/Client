@@ -1,0 +1,12 @@
+message LabProduceQueueLengthDatatable
+{
+	optional string tname = 1;
+	repeated LabProduceQueueLengthData tlist = 2;
+}
+
+message LabProduceQueueLengthData
+{
+	required int32 ID = 1;
+	optional int32 Count = 2;
+	optional int32 MaxRecruit = 3;
+}

@@ -1,0 +1,15 @@
+message BuildUpOpenFuncDatatable
+{
+	optional string tname = 1;
+	repeated BuildUpOpenFuncData tlist = 2;
+}
+
+message BuildUpOpenFuncData
+{
+	required int32 ID = 1;
+	optional string IconName = 2;
+	optional int32 IconType = 3;
+	optional int32 Level = 4;
+	optional string Name = 5;
+	optional string Des = 6;
+}

@@ -1,0 +1,23 @@
+message TermStageDatatable
+{
+	optional string tname = 1;
+	repeated TermStageData tlist = 2;
+}
+
+message TermStageData
+{
+	required int32 ID = 1;
+	optional int32 Terrain = 2;
+	optional int32 Map = 3;
+	optional int32 LevelMin = 4;
+	optional int32 LevelMax = 5;
+	optional string HangPoint = 6;
+	repeated int32 Weather = 7;
+	optional int32 Fulfil = 8;
+	optional float DegreeMin = 9;
+	optional float DegreeMax = 10;
+	optional int32 ProductKind = 11;
+	optional float ProductNum = 12;
+	optional int32 TecEffic = 13;
+	repeated float CameraPos = 14;
+}

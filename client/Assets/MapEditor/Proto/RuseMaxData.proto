@@ -1,0 +1,11 @@
+message RuseMaxDatatable
+{
+	optional string tname = 1;
+	repeated RuseMaxData tlist = 2;
+}
+
+message RuseMaxData
+{
+	required int32 ID = 1;
+	optional int32 RuseMax = 2;
+}

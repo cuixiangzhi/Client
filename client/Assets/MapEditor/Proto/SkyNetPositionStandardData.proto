@@ -1,0 +1,13 @@
+message SkyNetPositionStandardDatatable
+{
+	optional string tname = 1;
+	repeated SkyNetPositionStandardData tlist = 2;
+}
+
+message SkyNetPositionStandardData
+{
+	required int32 ID = 1;
+	optional int32 SkyNetLevel = 2;
+	optional int32 DefaultUnitType = 3;
+	optional int32 DefaultUnit = 4;
+}

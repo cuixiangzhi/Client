@@ -1,0 +1,23 @@
+message StuffDatatable
+{
+	optional string tname = 1;
+	repeated StuffData tlist = 2;
+}
+
+message StuffData
+{
+	required int32 ID = 1;
+	optional int32 Type = 2;
+	optional int32 Genre = 3;
+	optional int32 Quality = 4;
+	optional string Name = 5;
+	optional string PicName = 6;
+	optional string Intro = 7;
+	optional int32 ShowCardEffectID = 8;
+	optional int32 CardID = 9;
+	optional int32 GMEnable = 10;
+	optional bool Precious = 11;
+	repeated int32 dropRegain = 12;
+	repeated int32 dropID = 13;
+	optional string Des = 14;
+}

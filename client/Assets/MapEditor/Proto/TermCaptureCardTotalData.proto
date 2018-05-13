@@ -1,0 +1,12 @@
+message TermCaptureCardTotalDatatable
+{
+	optional string tname = 1;
+	repeated TermCaptureCardTotalData tlist = 2;
+}
+
+message TermCaptureCardTotalData
+{
+	required int32 ID = 1;
+	optional int32 BuildLevel = 2;
+	optional int32 CardTotal = 3;
+}

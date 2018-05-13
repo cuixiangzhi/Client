@@ -1,0 +1,13 @@
+message LotteryDropSetDatatable
+{
+	optional string tname = 1;
+	repeated LotteryDropSetData tlist = 2;
+}
+
+message LotteryDropSetData
+{
+	required int32 ID = 1;
+	repeated int32 RandDropSet = 2;
+	repeated int32 RandWeight = 3;
+	repeated int32 FixedDropSet = 4;
+}

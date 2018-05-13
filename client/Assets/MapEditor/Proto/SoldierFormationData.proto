@@ -1,0 +1,75 @@
+message SoldierFormationDatatable
+{
+	optional string tname = 1;
+	repeated SoldierFormationData tlist = 2;
+}
+
+message SoldierFormationData
+{
+	required int32 ID = 1;
+	optional int32 SoldierNumber = 2;
+	repeated int32 ColumnsCount = 3;
+	optional float RandomOffsetX = 4;
+	optional float RandomOffsetZ = 5;
+	repeated int32 FormatSort = 6;
+	optional float Soldier1Offset_x = 7;
+	optional float Soldier1Offset_z = 8;
+	optional float Soldier2Offset_x = 9;
+	optional float Soldier2Offset_z = 10;
+	optional float Soldier3Offset_x = 11;
+	optional float Soldier3Offset_z = 12;
+	optional float Soldier4Offset_x = 13;
+	optional float Soldier4Offset_z = 14;
+	optional float Soldier5Offset_x = 15;
+	optional float Soldier5Offset_z = 16;
+	optional float Soldier6Offset_x = 17;
+	optional float Soldier6Offset_z = 18;
+	optional float Soldier7Offset_x = 19;
+	optional float Soldier7Offset_z = 20;
+	optional float Soldier8Offset_x = 21;
+	optional float Soldier8Offset_z = 22;
+	optional float Soldier9Offset_x = 23;
+	optional float Soldier9Offset_z = 24;
+	optional float Soldier10Offset_x = 25;
+	optional float Soldier10Offset_z = 26;
+	optional float Soldier11Offset_x = 27;
+	optional float Soldier11Offset_z = 28;
+	optional float Soldier12Offset_x = 29;
+	optional float Soldier12Offset_z = 30;
+	optional float Soldier13Offset_x = 31;
+	optional float Soldier13Offset_z = 32;
+	optional float Soldier14Offset_x = 33;
+	optional float Soldier14Offset_z = 34;
+	optional float Soldier15Offset_x = 35;
+	optional float Soldier15Offset_z = 36;
+	optional float Soldier16Offset_x = 37;
+	optional float Soldier16Offset_z = 38;
+	optional float Soldier17Offset_x = 39;
+	optional float Soldier17Offset_z = 40;
+	optional float Soldier18Offset_x = 41;
+	optional float Soldier18Offset_z = 42;
+	optional float Soldier19Offset_x = 43;
+	optional float Soldier19Offset_z = 44;
+	optional float Soldier20Offset_x = 45;
+	optional float Soldier20Offset_z = 46;
+	optional float Soldier21Offset_x = 47;
+	optional float Soldier21Offset_z = 48;
+	optional float Soldier22Offset_x = 49;
+	optional float Soldier22Offset_z = 50;
+	optional float Soldier23Offset_x = 51;
+	optional float Soldier23Offset_z = 52;
+	optional float Soldier24Offset_x = 53;
+	optional float Soldier24Offset_z = 54;
+	optional float Soldier25Offset_x = 55;
+	optional float Soldier25Offset_z = 56;
+	optional float Soldier26Offset_x = 57;
+	optional float Soldier26Offset_z = 58;
+	optional float Soldier27Offset_x = 59;
+	optional float Soldier27Offset_z = 60;
+	optional float Soldier28Offset_x = 61;
+	optional float Soldier28Offset_z = 62;
+	optional float Soldier29Offset_x = 63;
+	optional float Soldier29Offset_z = 64;
+	optional float Soldier30Offset_x = 65;
+	optional float Soldier30Offset_z = 66;
+}

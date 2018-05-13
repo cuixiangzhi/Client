@@ -1,0 +1,12 @@
+message ArmyEtchedDatatable
+{
+	optional string tname = 1;
+	repeated ArmyEtchedData tlist = 2;
+}
+
+message ArmyEtchedData
+{
+	required int32 ID = 1;
+	optional int32 Amount = 2;
+	optional int32 width = 3;
+}

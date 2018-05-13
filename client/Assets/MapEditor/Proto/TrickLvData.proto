@@ -1,0 +1,13 @@
+message TrickLvDatatable
+{
+	optional string tname = 1;
+	repeated TrickLvData tlist = 2;
+}
+
+message TrickLvData
+{
+	required int32 ID = 1;
+	optional int32 LvUpNeedCollegeLv = 2;
+	optional int32 PurseID = 3;
+	optional int32 LvUpConsumeID = 4;
+}

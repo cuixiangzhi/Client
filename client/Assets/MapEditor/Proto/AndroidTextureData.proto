@@ -1,0 +1,13 @@
+message AndroidTextureDatatable
+{
+	optional string tname = 1;
+	repeated AndroidTextureData tlist = 2;
+}
+
+message AndroidTextureData
+{
+	required int32 ID = 1;
+	required string Name = 2;
+	required string TextureName = 3;
+	required int32 Channel = 4;
+}

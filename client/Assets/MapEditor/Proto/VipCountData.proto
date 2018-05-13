@@ -1,0 +1,16 @@
+message VipCountDatatable
+{
+	optional string tname = 1;
+	repeated VipCountData tlist = 2;
+}
+
+message VipCountData
+{
+	required int32 ID = 1;
+	optional int32 Count = 2;
+	optional int32 VIP = 3;
+	optional int32 Midas2Consume = 4;
+	optional int32 Midas2Drop = 5;
+	optional int32 Midas1Consume = 6;
+	optional int32 Midas1Drop = 7;
+}

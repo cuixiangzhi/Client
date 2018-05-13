@@ -1,0 +1,50 @@
+message AniamtorFlagDatatable
+{
+	optional string tname = 1;
+	repeated AniamtorFlagData tlist = 2;
+}
+
+message AniamtorFlagData
+{
+	required int32 ID = 1;
+	optional int32 AstayFlag = 2;
+	optional int32 IdleFlag = 3;
+	optional int32 HitFlag = 4;
+	optional int32 RunFlag = 5;
+	optional int32 Attack01Flag = 6;
+	optional int32 Attack02Flag = 7;
+	optional int32 Attack03Flag = 8;
+	optional int32 Attack04Flag = 9;
+	optional int32 Attack05Flag = 10;
+	optional int32 Attack06Flag = 11;
+	optional int32 Attack07Flag = 12;
+	optional int32 Attack08Flag = 13;
+	optional int32 Attack09Flag = 14;
+	optional int32 Attack10Flag = 15;
+	optional int32 Skill1Flag = 16;
+	optional int32 Skill2Flag = 17;
+	optional int32 Skill3Flag = 18;
+	optional int32 Skill4Flag = 19;
+	optional int32 Skill5FLag = 20;
+	optional int32 Skill6Flag = 21;
+	optional int32 Skill7Flag = 22;
+	optional int32 Skill8Flag = 23;
+	optional int32 Skill9Flag = 24;
+	optional int32 Skill10Flag = 25;
+	optional int32 DizzyFlag = 26;
+	optional int32 HitdownstandupFlag = 27;
+	optional int32 HitdowningFlag = 28;
+	optional int32 HitdownFlag = 29;
+	optional int32 ReliveFlag = 30;
+	optional int32 FlystandupFlag = 31;
+	optional int32 HitflyingFlag = 32;
+	optional int32 BeatbackedFlag = 33;
+	optional int32 VictoryFlag = 34;
+	optional int32 HitflyFlag = 35;
+	optional int32 BeatbackFlag = 36;
+	optional int32 BeatbackingFlag = 37;
+	optional int32 DeadFlag = 38;
+	optional int32 DyingFlag = 39;
+	optional int32 DieFlag = 40;
+	optional int32 AttstayFlag = 41;
+}

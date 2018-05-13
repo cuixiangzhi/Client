@@ -1,0 +1,13 @@
+message TowerClimbDatatable
+{
+	optional string tname = 1;
+	repeated TowerClimbData tlist = 2;
+}
+
+message TowerClimbData
+{
+	required int32 ID = 1;
+	optional int32 Type = 2;
+	repeated int32 Num = 3;
+	repeated int32 Para = 4;
+}

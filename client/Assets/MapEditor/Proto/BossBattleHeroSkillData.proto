@@ -1,0 +1,11 @@
+message BossBattleHeroSkillDatatable
+{
+	optional string tname = 1;
+	repeated BossBattleHeroSkillData tlist = 2;
+}
+
+message BossBattleHeroSkillData
+{
+	required int32 ID = 1;
+	repeated int32 Skills = 2;
+}

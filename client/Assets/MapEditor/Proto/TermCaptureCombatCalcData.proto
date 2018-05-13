@@ -1,0 +1,20 @@
+message TermCaptureCombatCalcDatatable
+{
+	optional string tname = 1;
+	repeated TermCaptureCombatCalcData tlist = 2;
+}
+
+message TermCaptureCombatCalcData
+{
+	required int32 ID = 1;
+	repeated int32 Param1 = 2;
+	repeated int32 Param2 = 3;
+	repeated int32 Param3 = 4;
+	repeated int32 Param4 = 5;
+	repeated int32 Param5 = 6;
+	repeated int32 Param6 = 7;
+	repeated int32 Param7 = 8;
+	repeated int32 Param8 = 9;
+	repeated int32 Param9 = 10;
+	repeated int32 Param10 = 11;
+}

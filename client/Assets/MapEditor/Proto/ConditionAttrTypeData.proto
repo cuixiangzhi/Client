@@ -1,0 +1,17 @@
+message ConditionAttrTypeDatatable
+{
+	optional string tname = 1;
+	repeated ConditionAttrTypeData tlist = 2;
+}
+
+message ConditionAttrTypeData
+{
+	required int32 ID = 1;
+	optional int32 Tag = 2;
+	optional string Name = 3;
+	optional int32 AttrID = 4;
+	optional string Des = 5;
+	optional int32 AttrType = 6;
+	optional int32 ParamSource = 7;
+	optional int32 ReadExcelFuncParam = 8;
+}

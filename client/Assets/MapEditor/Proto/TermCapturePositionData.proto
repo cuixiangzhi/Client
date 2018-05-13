@@ -1,0 +1,11 @@
+message TermCapturePositionDatatable
+{
+	optional string tname = 1;
+	repeated TermCapturePositionData tlist = 2;
+}
+
+message TermCapturePositionData
+{
+	required int32 ID = 1;
+	optional int32 CaptureLevel = 2;
+}

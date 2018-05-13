@@ -1,0 +1,34 @@
+message SoldierDatatable
+{
+	optional string tname = 1;
+	repeated SoldierData tlist = 2;
+}
+
+message SoldierData
+{
+	required int32 ID = 1;
+	optional int32 Type = 2;
+	optional string TechName = 3;
+	optional int32 CharID = 4;
+	optional int32 CharLevel = 5;
+	optional int32 StarLevel = 6;
+	optional int32 Quality = 7;
+	optional int32 SoldierArmyNum = 8;
+	optional int32 SoldierArmyNumLimit = 9;
+	optional int32 ExistSeconds = 10;
+	optional int32 ProduceTime = 11;
+	optional int32 ProduceConsumeID = 12;
+	optional string SoliderIntro = 13;
+	optional string PicName = 14;
+	optional string BigPicName = 15;
+	optional string HalfPicName = 16;
+	repeated int32 FormationCells = 17;
+	optional int32 FormationID = 18;
+	optional float ModelScale = 19;
+	optional int32 StandIndex = 20;
+	optional int32 BuildType = 21;
+	optional int32 BuildLevel = 22;
+	optional int32 ProduceBuildType = 23;
+	optional int32 soldierCombatPower = 24;
+	optional int32 QualityID = 25;
+}

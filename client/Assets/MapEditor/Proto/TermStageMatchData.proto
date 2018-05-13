@@ -1,0 +1,22 @@
+message TermStageMatchDatatable
+{
+	optional string tname = 1;
+	repeated TermStageMatchData tlist = 2;
+}
+
+message TermStageMatchData
+{
+	required int32 ID = 1;
+	optional int32 Stage = 2;
+	optional string Name = 3;
+	optional string Des = 4;
+	optional string Model = 5;
+	optional string Icon = 6;
+	optional int32 Terrain = 7;
+	optional int32 sectionType = 8;
+	optional int32 DegreeMin = 9;
+	optional int32 DegreeMax = 10;
+	optional int32 DegreeRaise = 11;
+	repeated int32 DropContrl = 12;
+	repeated int32 DropRandom = 13;
+}

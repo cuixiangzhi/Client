@@ -1,0 +1,29 @@
+message SkillMotionDatatable
+{
+	optional string tname = 1;
+	repeated SkillMotionData tlist = 2;
+}
+
+message SkillMotionData
+{
+	required int32 ID = 1;
+	required string skillName = 2;
+	required bool hasPos = 3;
+	required bool hasEul = 4;
+	repeated SkillMotionKeyFrame keyFrameData = 5;
+}
+
+message SkillMotionKeyFrame
+{
+	required int32 tick = 1;
+	
+	required bool hasPos= 2;
+	optional float posX = 3;
+	optional float posY = 4;
+	optional float posZ = 5;
+	
+	required bool hasEul= 6;
+	optional float eulX = 7;
+	optional float eulY = 8;
+	optional float eulZ = 9;
+}

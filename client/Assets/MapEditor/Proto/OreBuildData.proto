@@ -1,0 +1,15 @@
+message OreBuildDatatable
+{
+	optional string tname = 1;
+	repeated OreBuildData tlist = 2;
+}
+
+message OreBuildData
+{
+	required int32 ID = 1;
+	optional int32 Level = 2;
+	optional int32 Type = 3;
+	optional float Count = 4;
+	optional int32 Max = 5;
+	optional int32 MinCollectNum = 6;
+}

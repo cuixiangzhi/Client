@@ -1,0 +1,12 @@
+message TrickBattlePosDatatable
+{
+	optional string tname = 1;
+	repeated TrickBattlePosData tlist = 2;
+}
+
+message TrickBattlePosData
+{
+	required int32 ID = 1;
+	optional int32 OpenNeedLv = 2;
+	optional int32 OpenConsumeID = 3;
+}

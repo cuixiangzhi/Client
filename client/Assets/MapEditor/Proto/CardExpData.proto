@@ -1,0 +1,16 @@
+message CardExpDatatable
+{
+	optional string tname = 1;
+	repeated CardExpData tlist = 2;
+}
+
+message CardExpData
+{
+	required int32 ID = 1;
+	optional int32 Exp1 = 2;
+	optional int32 Exp2 = 3;
+	optional int32 Exp3 = 4;
+	optional int32 Exp4 = 5;
+	optional int32 Exp5 = 6;
+	optional int32 Exp6 = 7;
+}

@@ -1,0 +1,17 @@
+message EtchedExtDatatable
+{
+	optional string tname = 1;
+	repeated EtchedExtData tlist = 2;
+}
+
+message EtchedExtData
+{
+	required int32 ID = 1;
+	optional int32 ExtConsume = 2;
+	optional int32 ExtDrop = 3;
+	optional int32 ExtTime = 4;
+	optional string PicName = 5;
+	optional string bg1PicColor = 6;
+	optional string bg2PicName = 7;
+	optional int32 Type = 8;
+}

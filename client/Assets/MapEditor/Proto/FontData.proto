@@ -1,0 +1,12 @@
+message FontDatatable
+{
+	required string tname = 1;
+	repeated FontData tlist = 2;
+}
+message FontData
+{
+	required int32 ID = 1;
+	required string prefabName = 2;
+	required string labelName = 3;
+	required string fontName = 4;
+}

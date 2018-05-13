@@ -1,0 +1,22 @@
+message CardConsumeDatatable
+{
+	optional string tname = 1;
+	repeated CardConsumeData tlist = 2;
+}
+
+message CardConsumeData
+{
+	required int32 ID = 1;
+	optional int32 Star2 = 2;
+	optional int32 Star3 = 3;
+	optional int32 Star4 = 4;
+	optional int32 Star5 = 5;
+	optional int32 Star6 = 6;
+	optional int32 Skill = 7;
+	optional int32 Lv1 = 8;
+	optional int32 Lv2 = 9;
+	optional int32 Lv3 = 10;
+	optional int32 Lv4 = 11;
+	optional int32 Lv5 = 12;
+	optional int32 Lv6 = 13;
+}

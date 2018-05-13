@@ -1,0 +1,11 @@
+message InnerNPCRefreshDatatable
+{
+	optional string tname = 1;
+	repeated InnerNPCRefreshData tlist = 2;
+}
+
+message InnerNPCRefreshData
+{
+	required int32 ID = 1;
+	optional int32 num = 2;
+}

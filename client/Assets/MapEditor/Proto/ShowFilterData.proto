@@ -1,0 +1,13 @@
+message ShowFilterDatatable
+{
+	optional string tname = 1;
+	repeated ShowFilterData tlist = 2;
+}
+
+message ShowFilterData
+{
+	required int32 ID = 1;
+	optional string TypeName = 2;
+	repeated int32 FilterID = 3;
+	repeated string FilterName = 4;
+}

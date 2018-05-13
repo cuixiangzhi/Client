@@ -1,0 +1,12 @@
+message TermOreDatatable
+{
+	optional string tname = 1;
+	repeated TermOreData tlist = 2;
+}
+
+message TermOreData
+{
+	required int32 ID = 1;
+	optional int32 Kind1 = 2;
+	optional float Num1 = 3;
+}

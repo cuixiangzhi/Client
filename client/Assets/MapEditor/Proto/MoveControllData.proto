@@ -1,0 +1,16 @@
+message MoveControllDatatable
+{
+	optional string tname = 1;
+	repeated MoveControllData tlist = 2;
+}
+
+message MoveControllData
+{
+	required int32 ID = 1;
+	optional string Des = 2;
+	optional int32 ControllType = 3;
+	optional int32 IsStopAnimation = 4;
+	optional string EnterStateAnimation = 5;
+	optional string LeaveStateAnimation = 6;
+	optional float MoveDistance = 7;
+}

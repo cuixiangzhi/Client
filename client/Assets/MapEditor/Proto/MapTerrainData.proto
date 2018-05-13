@@ -1,0 +1,12 @@
+message MapTerrainDatatable
+{
+	optional string tname = 1;
+	repeated MapTerrainData tlist = 2;
+}
+
+message MapTerrainData
+{
+	required int32 ID = 1;
+	optional string describe = 2;
+	optional string textureName = 3;
+}

@@ -1,0 +1,9 @@
+message MapHanderData
+{
+	required int32 ID = 1;
+	optional string desc = 2;
+	repeated int32 childrent = 3;
+	repeated int32 parents = 4;
+	required int32 handlerType = 5;	//1条件  2指令
+	repeated float nodePos = 6;//UI显示位置
+}

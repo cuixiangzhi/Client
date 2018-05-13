@@ -1,0 +1,39 @@
+message BuildDatatable
+{
+	optional string tname = 1;
+	repeated BuildData tlist = 2;
+}
+
+message BuildData
+{
+	required int32 ID = 1;
+	optional string Name = 2;
+	optional int32 Type = 3;
+	optional int32 Kind = 4;
+	optional int32 Level = 5;
+	optional int32 NeedPalaceLevel = 6;
+	optional int32 NeedLord = 7;
+	optional int32 NeedSectionID = 8;
+	optional int32 UpTime = 9;
+	optional int32 UpConsume = 10;
+	optional string Des = 11;
+	optional string HangPointOne = 12;
+	optional string OpenEffect = 13;
+	optional string LevelUpEffect = 14;
+	optional int32 FunctionUINum = 15;
+	optional bool InfoUI = 16;
+	optional bool UpgradeUI = 17;
+	optional bool GatherUI = 18;
+	optional bool CreateUI = 19;
+	optional bool EnterUI = 20;
+	optional string nameImage = 21;
+	optional int32 attr = 22;
+	repeated float buildPos = 23;
+	repeated int32 openList = 24;
+	repeated int32 CityID = 25;
+	optional int32 PreLvId = 26;
+	optional int32 NextLvId = 27;
+	optional string buildTexName = 28;
+	optional string buildTypeIconName = 29;
+	repeated float buildTexPos = 30;
+}

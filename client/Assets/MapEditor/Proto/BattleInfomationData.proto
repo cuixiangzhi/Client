@@ -1,0 +1,64 @@
+message BattleInfomationDatatable
+{
+	optional string tname = 1;
+	repeated BattleInfomationData tlist = 2;
+}
+
+message BattleInfomationData
+{
+	required int32 ID = 1;
+	repeated int32 ActiveSkill = 2;
+	repeated int32 TimeToCD = 3;
+	repeated int32 AutoSkill2 = 4;
+	repeated int32 AutoSkill3 = 5;
+	repeated int32 AutoSkill4 = 6;
+	repeated int32 AutoSkill5 = 7;
+	repeated int32 AutoSkill6 = 8;
+	repeated int32 AutoSkill7 = 9;
+	repeated int32 AutoSkill8 = 10;
+	optional int32 CaptainSkill = 11;
+	repeated int32 DragAiID = 12;
+	repeated int32 ActiveSkill_AI = 13;
+	repeated int32 AutoSkill1_AI = 14;
+	repeated int32 AutoSkill2_AI = 15;
+	repeated int32 AutoSkill3_AI = 16;
+	repeated int32 AutoSkill4_AI = 17;
+	repeated int32 AutoSkill5_AI = 18;
+	repeated int32 AutoSkill6_AI = 19;
+	repeated int32 AutoSkill7_AI = 20;
+	repeated int32 AutoSkill8_AI = 21;
+	optional int32 SimpleAttackSkill1 = 22;
+	optional int32 SimpleAttackSkill2 = 23;
+	optional int32 SimpleAttackSkill3 = 24;
+	optional int32 SimpleAttackSkill4 = 25;
+	optional int32 SimpleAttackSkill5 = 26;
+	optional int32 SimpleAttackSkill6 = 27;
+	optional int32 ManualAttack_AI = 28;
+	optional int32 SimpleAttackSkill1_AI = 29;
+	optional int32 SimpleAttackSkill2_AI = 30;
+	optional int32 SimpleAttackSkill3_AI = 31;
+	optional int32 SimpleAttackSkill4_AI = 32;
+	optional int32 SimpleAttackSkill5_AI = 33;
+	optional int32 SimpleAttackSkill6_AI = 34;
+	optional string modelPath = 35;
+	optional string simpleModelPath = 36;
+	optional string cityModelPath = 37;
+	optional string picName = 38;
+	optional string BigPicName = 39;
+	optional float alertDistance = 40;
+	optional float attackDistance = 41;
+	optional float DestroyBodyTime = 42;
+	optional int32 DeathType_1_Behavior = 43;
+	optional int32 DeathType_2_Behavior = 44;
+	optional int32 DeathType_3_Behavior = 45;
+	optional int32 Quality = 46;
+	repeated float LeftPosition = 47;
+	repeated float RightPosition = 48;
+	optional int32 AnimatorFlagID = 49;
+	optional int32 PositionIndex = 50;
+	optional int32 modelColorID = 51;
+	optional int32 Flyability = 52;
+	optional int32 ClassType = 53;
+	optional int32 MaxAttacker = 54;
+	optional float PointModelScale = 55;
+}

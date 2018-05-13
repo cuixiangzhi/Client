@@ -1,0 +1,37 @@
+message CreatureDatatable
+{
+	optional string tname = 1;
+	repeated CreatureData tlist = 2;
+}
+
+message CreatureData
+{
+	required int32 ID = 1;
+	optional int32 Type = 2;
+	optional string Model = 3;
+	optional int32 TriggerTimes = 4;
+	optional int32 FirstFlyType = 5;
+	optional float FirstTrajectorySpeed = 6;
+	optional int32 FirstTrajectoryLifeTime = 7;
+	optional int32 FlyType = 8;
+	optional float Speed = 9;
+	optional int32 FlyTime = 10;
+	optional int32 LifeTime = 11;
+	optional int32 StaticEffectType = 12;
+	optional float CollisionDistance = 13;
+	optional int32 IntervalCoolDown = 14;
+	optional int32 DelayTime = 15;
+	optional int32 TargetFilter = 16;
+	repeated int32 EffectList = 17;
+	repeated int32 HaloID = 18;
+	repeated float StartPositionOffset = 19;
+	optional int32 TrajectoryType = 20;
+	optional float TrajectoryHPoint = 21;
+	optional float ModifyAcceleration = 22;
+	optional float TrajectoryAcceleration = 23;
+	optional int32 FireLinkEffect = 24;
+	optional int32 ResultLinkEffect = 25;
+	optional int32 FirstFireLinkEffect = 26;
+	optional int32 FirstResultLinkEffect = 27;
+	optional int32 FlySound = 28;
+}

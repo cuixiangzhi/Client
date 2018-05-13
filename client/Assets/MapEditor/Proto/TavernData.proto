@@ -1,0 +1,14 @@
+message TavernDatatable
+{
+	optional string tname = 1;
+	repeated TavernData tlist = 2;
+}
+
+message TavernData
+{
+	required int32 ID = 1;
+	optional int32 RegainLimit = 2;
+	optional int32 Consume = 3;
+	optional int32 Count = 4;
+	optional int32 Time = 5;
+}

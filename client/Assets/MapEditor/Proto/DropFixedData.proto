@@ -1,0 +1,22 @@
+message DropFixedDatatable
+{
+	optional string tname = 1;
+	repeated DropFixedData tlist = 2;
+}
+
+message DropFixedData
+{
+	required int32 ID = 1;
+	optional int32 Item1 = 2;
+	optional int32 Num1 = 3;
+	optional int32 Item2 = 4;
+	optional int32 Num2 = 5;
+	optional int32 Item3 = 6;
+	optional int32 Num3 = 7;
+	optional int32 Item4 = 8;
+	optional int32 Num4 = 9;
+	optional int32 Item5 = 10;
+	optional int32 Num5 = 11;
+	optional int32 Item6 = 12;
+	optional int32 Num6 = 13;
+}

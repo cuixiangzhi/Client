@@ -1,0 +1,14 @@
+message EquipRecastDatatable
+{
+	optional string tname = 1;
+	repeated EquipRecastData tlist = 2;
+}
+
+message EquipRecastData
+{
+	required int32 ID = 1;
+	optional int32 attrRandID = 2;
+	optional int32 consumeID = 3;
+	optional string Intro = 4;
+	optional string RecastAttrName = 5;
+}

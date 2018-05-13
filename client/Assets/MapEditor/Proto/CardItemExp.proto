@@ -1,0 +1,12 @@
+message CardItemExptable
+{
+	optional string tname = 1;
+	repeated CardItemExp tlist = 2;
+}
+
+message CardItemExp
+{
+	required int32 ID = 1;
+	optional int32 Exp = 2;
+	optional int32 ConsumeID = 3;
+}

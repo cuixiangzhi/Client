@@ -1,0 +1,20 @@
+message WorldPointDatatable
+{
+	optional string tname = 1;
+	repeated WorldPointData tlist = 2;
+}
+
+message WorldPointData
+{
+	required int32 ID = 1;
+	optional int32 Type = 2;
+	optional int32 FuncType = 3;
+	optional int32 Parent = 4;
+	repeated string HangPoint = 5;
+	optional string PointName = 6;
+	optional string PointDesc = 7;
+	optional string PointIcon = 8;
+	optional int32 InitProduce = 9;
+	repeated int32 TowerId = 10;
+	repeated int32 TowerPos = 11;
+}

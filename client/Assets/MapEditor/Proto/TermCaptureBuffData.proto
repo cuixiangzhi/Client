@@ -1,0 +1,19 @@
+message TermCaptureBuffDatatable
+{
+	optional string tname = 1;
+	repeated TermCaptureBuffData tlist = 2;
+}
+
+message TermCaptureBuffData
+{
+	optional int32 ID = 1;
+	optional int32 Type = 2;
+	optional string Icon = 3;
+	repeated int32 EquipSlot = 4;
+	repeated int32 EquipSuit = 5;
+	repeated int32 EquipStar = 6;
+	repeated int32 StuffType = 7;
+	repeated int32 StuffID = 8;
+	repeated int32 CardStuffCountry = 9;
+	repeated int32 CardStuffStar = 10;
+}

@@ -1,0 +1,17 @@
+message TermCaptureDefenseDatatable
+{
+	optional string tname = 1;
+	repeated TermCaptureDefenseData tlist = 2;
+}
+
+message TermCaptureDefenseData
+{
+	required int32 ID = 1;
+	optional int32 DefenseID = 2;
+	optional int32 RuleID = 3;
+	optional int32 CombatID = 4;
+	optional int32 StepInit = 5;
+	optional int32 StepMax = 6;
+	optional int32 InitPosition = 7;
+	optional int32 InitExist = 8;
+}

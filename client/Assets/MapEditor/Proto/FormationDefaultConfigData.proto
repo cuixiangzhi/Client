@@ -1,0 +1,16 @@
+message FormationDefaultConfigDatatable
+{
+	optional string tname = 1;
+	repeated FormationDefaultConfigData tlist = 2;
+}
+
+message FormationDefaultConfigData
+{
+	required int32 ID = 1;
+	repeated int32 Rules = 2;
+	repeated int32 Order = 3;
+	repeated int32 CardSeq = 4;
+	repeated int32 CardPosition = 5;
+	repeated int32 LabSeq = 6;
+	repeated int32 LabPosition = 7;
+}

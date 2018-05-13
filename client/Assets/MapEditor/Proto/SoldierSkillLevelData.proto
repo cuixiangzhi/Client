@@ -1,0 +1,17 @@
+message SoldierSkillLevelDatatable
+{
+	optional string tname = 1;
+	repeated SoldierSkillLevelData tlist = 2;
+}
+
+message SoldierSkillLevelData
+{
+	required int32 ID = 1;
+	optional int32 ConsumeID = 2;
+	optional int32 NextLevelID = 3;
+	optional int32 BuildType = 4;
+	optional int32 BuildLevel = 5;
+	repeated int32 PassiveEffectID = 6;
+	repeated int32 ModifyAttributeID = 7;
+	optional string Des = 8;
+}

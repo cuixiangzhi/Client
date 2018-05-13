@@ -1,0 +1,25 @@
+message PassiveEffectDatatable
+{
+	optional string tname = 1;
+	repeated PassiveEffectData tlist = 2;
+}
+
+message PassiveEffectData
+{
+	required int32 ID = 1;
+	optional int32 Type = 2;
+	repeated int32 TriggeredEffectId = 3;
+	optional int32 TriggerId = 4;
+	optional int32 TriggerRate = 5;
+	optional int32 TriggerCoolDown = 6;
+	repeated int32 DamageImmuneType = 7;
+	repeated int32 MotionImmuneType = 8;
+	repeated int32 BuffImmuneType = 9;
+	repeated int32 invalidSelectFlagKeys = 10;
+	repeated int32 invalidSelectFlagValues = 11;
+	repeated int32 EffectImmuneType = 12;
+	repeated int32 DisableBuffType = 13;
+	repeated int32 DisableBuffId = 14;
+	repeated int32 DisablePassiveEffectType = 15;
+	repeated int32 DisablePassiveEffectId = 16;
+}

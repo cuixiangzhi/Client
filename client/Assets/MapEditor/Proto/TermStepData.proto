@@ -1,0 +1,21 @@
+message TermStepDatatable
+{
+	optional string tname = 1;
+	repeated TermStepData tlist = 2;
+}
+
+message TermStepData
+{
+	required int32 ID = 1;
+	optional int32 LowerBound = 2;
+	optional int32 UpperBound = 3;
+	optional int32 Coefficient1 = 4;
+	optional int32 Coefficient2 = 5;
+	optional int32 Coefficient3 = 6;
+	optional int32 RegainConsumeID = 7;
+	optional int32 RegainConsumeBegin = 8;
+	optional int32 RegainConsumeEnd = 9;
+	optional float ProductEffic = 10;
+	repeated int32 Drop = 11;
+	repeated int32 FailDrop = 12;
+}

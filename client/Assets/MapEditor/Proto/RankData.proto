@@ -1,0 +1,18 @@
+message RankDatatable
+{
+	optional string tname = 1;
+	repeated RankData tlist = 2;
+}
+
+message RankData
+{
+	required int32 ID = 1;
+	optional int32 Refresh = 2;
+	optional int32 Type = 3;
+	repeated int32 Stratum = 4;
+	optional int32 Num = 5;
+	repeated int32 Rank = 6;
+	repeated int32 Drop = 7;
+	optional int32 FinishTime = 8;
+	optional int32 ShowNum = 9;
+}

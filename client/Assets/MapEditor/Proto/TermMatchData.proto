@@ -1,0 +1,25 @@
+message TermMatchDatatable
+{
+	optional string tname = 1;
+	repeated TermMatchData tlist = 2;
+}
+
+message TermMatchData
+{
+	required int32 ID = 1;
+	optional int32 Stage = 2;
+	optional string Name = 3;
+	optional string Des = 4;
+	optional string Model = 5;
+	optional string Icon = 6;
+	optional int32 Terrain = 7;
+	optional int32 sectionType = 8;
+	optional int32 DegreeMin = 9;
+	optional int32 DegreeMax = 10;
+	optional int32 DifficultyType = 11;
+	optional int32 DegreeRaise = 12;
+	repeated float CardExp = 13;
+	repeated float FailCardExp = 14;
+	repeated int32 MonsterID = 15;
+	optional int32 UIType = 16;
+}

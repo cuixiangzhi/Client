@@ -1,0 +1,16 @@
+message SkyNetPositionLimitDatatable
+{
+	optional string tname = 1;
+	repeated SkyNetPositionLimitData tlist = 2;
+}
+
+message SkyNetPositionLimitData
+{
+	required int32 ID = 1;
+	optional int32 Min = 2;
+	optional int32 Max = 3;
+	optional int32 TowerLimit = 4;
+	optional int32 HeroLimit = 5;
+	optional int32 SoldierLimit = 6;
+	optional int32 BarracksLimit = 7;
+}

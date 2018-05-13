@@ -1,0 +1,12 @@
+message ArmyDatatable
+{
+	optional string tname = 1;
+	repeated ArmyData tlist = 2;
+}
+
+message ArmyData
+{
+	required int32 ID = 1;
+	optional int32 Consume = 2;
+	optional int32 AutoUnlock = 3;
+}

@@ -1,0 +1,22 @@
+message GuideDatatable
+{
+	optional string tname = 1;
+	repeated GuideData tlist = 2;
+}
+
+message GuideData
+{
+	required int32 ID = 1;
+	optional int32 preStep = 2;
+	optional int32 order = 3;
+	optional int32 startDetailsStep = 4;
+	optional int32 errorStartStep = 5;
+	optional int32 pivotalStep = 6;
+	optional int32 overStep = 7;
+	optional int32 activeType = 8;
+	optional string condition = 9;
+	optional int32 activeCondition = 10;
+	optional int32 activeParam = 11;
+	optional int32 openCondition = 12;
+	optional string guideDefine = 13;
+}

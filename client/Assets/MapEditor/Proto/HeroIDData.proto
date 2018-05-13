@@ -1,0 +1,15 @@
+message HeroIDDatatable
+{
+	optional string tname = 1;
+	repeated HeroIDData tlist = 2;
+}
+
+message HeroIDData
+{
+	required int32 ID = 1;
+	optional int32 firstID = 2;
+	optional int32 secondID = 3;
+	optional int32 thirdID = 4;
+	optional int32 fourthID = 5;
+	optional int32 fifthID = 6;
+}

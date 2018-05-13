@@ -1,0 +1,20 @@
+message DailyDatatable
+{
+	optional string tname = 1;
+	repeated DailyData tlist = 2;
+}
+
+message DailyData
+{
+	required int32 ID = 1;
+	optional string Icon = 2;
+	optional string Name = 3;
+	optional string Description = 4;
+	optional int32 OpenLevel = 5;
+	optional int32 HideLevel = 6;
+	optional int32 Priority = 7;
+	optional int32 RefreshID = 8;
+	optional int32 TargetID = 9;
+	optional int32 RewardID = 10;
+	optional int32 RecieveBtnShow = 11;
+}

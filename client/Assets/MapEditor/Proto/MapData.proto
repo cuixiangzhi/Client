@@ -1,0 +1,20 @@
+message MapDatatable
+{
+	optional string tname = 1;
+	repeated MapData tlist = 2;
+}
+
+message MapData
+{
+	required int32 ID = 1;
+	optional int32 mapType = 2;
+	optional string sectionName = 3;
+	optional string sceneName = 4;
+	optional int32 level = 5;
+	optional int32 prevID = 6;
+	optional int32 medalGet = 7;
+	optional int32 BountyBoss = 8;
+	optional string BountyIntro = 9;
+	optional string modelName = 10;
+	optional string sectionIconName = 11;
+}

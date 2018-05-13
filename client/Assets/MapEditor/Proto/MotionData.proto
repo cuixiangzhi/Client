@@ -1,0 +1,23 @@
+message MotionDatatable
+{
+	optional string tname = 1;
+	repeated MotionData tlist = 2;
+}
+
+message MotionData
+{
+	required int32 ID = 1;
+	optional int32 MotionImmuneFlag = 2;
+	optional int32 MotionType = 3;
+	optional int32 SubType = 4;
+	optional int32 MotionTotalTime = 5;
+	optional float MoveDistance = 6;
+	optional int32 MotionTime = 7;
+	optional float MoveSpeed = 8;
+	optional string Action1 = 9;
+	optional string Action2 = 10;
+	optional string Action3 = 11;
+	optional int32 Action1Time = 12;
+	optional int32 Action2Time = 13;
+	optional int32 Action3Time = 14;
+}

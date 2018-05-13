@@ -1,0 +1,13 @@
+message ShowCardEffecttable
+{
+	optional string tname = 1;
+	repeated ShowCardEffect tlist = 2;
+}
+
+message ShowCardEffect
+{
+	required int32 ID = 1;
+	repeated int32 Sound = 2;
+	repeated string Effect = 3;
+	optional string Animator = 4;
+}

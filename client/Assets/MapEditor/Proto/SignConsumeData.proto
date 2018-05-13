@@ -1,0 +1,11 @@
+message SignConsumeDatatable
+{
+	optional string tname = 1;
+	repeated SignConsumeData tlist = 2;
+}
+
+message SignConsumeData
+{
+	required int32 ID = 1;
+	optional int32 ConsumeID = 2;
+}

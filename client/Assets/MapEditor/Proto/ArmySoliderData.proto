@@ -1,0 +1,12 @@
+message ArmySoliderDatatable
+{
+	optional string tname = 1;
+	repeated ArmySoliderData tlist = 2;
+}
+
+message ArmySoliderData
+{
+	required int32 ID = 1;
+	optional int32 Amount = 2;
+	optional int32 width = 3;
+}

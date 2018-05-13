@@ -1,0 +1,15 @@
+message SpecialKarmaDatatable
+{
+	optional string tname = 1;
+	repeated SpecialKarmaData tlist = 2;
+}
+
+message SpecialKarmaData
+{
+	required int32 ID = 1;
+	optional string Name = 2;
+	optional string Des = 3;
+	optional int32 HeroType = 4;
+	optional int32 KarmaCount = 5;
+	repeated int32 ModifyAttributeID = 6;
+}

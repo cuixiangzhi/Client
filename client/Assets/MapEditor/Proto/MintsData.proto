@@ -1,0 +1,13 @@
+message MintsDatatable
+{
+	optional string tname = 1;
+	repeated MintsData tlist = 2;
+}
+
+message MintsData
+{
+	required int32 ID = 1;
+	optional int32 Consume = 2;
+	optional int32 Drop = 3;
+	optional int32 Time = 4;
+}

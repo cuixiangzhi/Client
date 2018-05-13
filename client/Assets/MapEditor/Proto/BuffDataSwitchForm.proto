@@ -1,0 +1,13 @@
+message BuffDataSwitchFormtable
+{
+	optional string tname = 1;
+	repeated BuffDataSwitchForm tlist = 2;
+}
+
+message BuffDataSwitchForm
+{
+	required int32 ID = 1;
+	optional int32 Priority = 2;
+	optional int32 SwitchToBattleAttrId = 3;
+	optional int32 SwitchToBattleInfoId = 4;
+}

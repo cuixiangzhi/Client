@@ -1,0 +1,53 @@
+message VipDatatable
+{
+	optional string tname = 1;
+	repeated VipData tlist = 2;
+}
+
+message VipData
+{
+	required int32 ID = 1;
+	optional int32 GiftDropNo = 2;
+	repeated int32 GiftBuy = 3;
+	optional int32 Charge = 4;
+	optional int32 TowerResetLimit = 5;
+	optional int32 TowerJumpPercent = 6;
+	optional int32 TowerDiceLimit = 7;
+	optional int32 TowerBuyPointLimit = 8;
+	optional int32 Midas2Limit = 9;
+	optional int32 Midas1Limit = 10;
+	optional int32 PveBuyLimit = 11;
+	optional int32 PvpBuyLimit = 12;
+	optional int32 PveAddLimit = 13;
+	optional int32 PvpAddLimit = 14;
+	optional int32 BuyFund = 15;
+	optional int32 ProtectTime = 16;
+	optional int32 LabQueue = 17;
+	optional int32 LabCampQueue = 18;
+	optional int32 HighCampQueue = 19;
+	optional int32 EtchedQueue = 20;
+	optional int32 LabLimit = 21;
+	optional int32 LabCampLimit = 22;
+	optional int32 HighCamLimit = 23;
+	optional int32 OreSwapLimit = 24;
+	optional int32 OreSwapSubTimePercent = 25;
+	optional int32 TavernSwapLimit = 26;
+	optional int32 OreSubTimePercent = 27;
+	optional int32 PhysicalSubTimePercent = 28;
+	optional int32 EnergySubTimePercent = 29;
+	optional int32 OreGoldLimit = 30;
+	optional int32 OreGoldTime = 31;
+	optional int32 OreWoodLimit = 32;
+	optional int32 OreWoodTime = 33;
+	optional int32 OreStoneLimit = 34;
+	optional int32 OreStoneTime = 35;
+	optional int32 OreCrystalLimit = 36;
+	optional int32 OreCrystalTime = 37;
+	optional int32 BuildUpTime = 38;
+	optional int32 GarrisonTime = 39;
+	optional int32 TrialEasySweep = 40;
+	optional int32 TrialNormalSweep = 41;
+	optional int32 TrialHardSweep = 42;
+	optional int32 TrialHellSweep = 43;
+	optional string VipDesc = 44;
+}

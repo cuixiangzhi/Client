@@ -1,0 +1,13 @@
+message HitBaoziAwardDatatable
+{
+	optional string tname = 1;
+	repeated HitBaoziAwardData tlist = 2;
+}
+
+message HitBaoziAwardData
+{
+	required int32 ID = 1;
+	optional int32 AwardDropID = 2;
+	optional int32 AwardPysical = 3;
+	optional int32 AwardEnergy = 4;
+}

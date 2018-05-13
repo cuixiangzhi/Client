@@ -1,0 +1,18 @@
+message EtchedUpgradeLevelDatatable
+{
+	optional string tname = 1;
+	repeated EtchedUpgradeLevelData tlist = 2;
+}
+
+message EtchedUpgradeLevelData
+{
+	required int32 ID = 1;
+	optional int32 Level = 2;
+	optional int32 Quality = 3;
+	optional int32 TotalConsumeExp = 4;
+	optional int32 Exp = 5;
+	optional int32 ConsumeID = 6;
+	optional int32 ExpEtchedExp = 7;
+	optional int32 ExpEtchedConsumeID = 8;
+	optional int32 SellDropID = 9;
+}

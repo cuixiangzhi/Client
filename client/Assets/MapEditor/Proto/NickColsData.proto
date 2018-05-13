@@ -1,0 +1,21 @@
+message NickColsDatatable
+{
+	optional string tname = 1;
+	repeated NickColsData tlist = 2;
+}
+
+message NickColsData
+{
+	required int32 ID = 1;
+	optional string Str1 = 2;
+	optional string Str2 = 3;
+	optional string Str3 = 4;
+	optional string Str4 = 5;
+	optional string Str5 = 6;
+	optional string Str6 = 7;
+	optional string Str7 = 8;
+	optional string Str8 = 9;
+	optional string Str9 = 10;
+	optional string Str10 = 11;
+	optional string Str11 = 12;
+}

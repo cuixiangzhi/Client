@@ -1,0 +1,17 @@
+message GatherPassiveEffectDatatable
+{
+	optional string tname = 1;
+	repeated GatherPassiveEffectData tlist = 2;
+}
+
+message GatherPassiveEffectData
+{
+	required int32 ID = 1;
+	repeated int32 GroupAffectAttrID = 2;
+	repeated int32 GroupPassiveEffectID = 3;
+	repeated int32 AffectActorType = 4;
+	repeated int32 AffectCountryType = 5;
+	optional int32 ManaAddValue = 6;
+	optional float ManaAddPercent = 7;
+	optional int32 Level = 8;
+}

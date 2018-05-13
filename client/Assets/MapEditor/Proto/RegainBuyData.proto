@@ -1,0 +1,14 @@
+message RegainBuyDatatable
+{
+	optional string tname = 1;
+	repeated RegainBuyData tlist = 2;
+}
+
+message RegainBuyData
+{
+	required int32 ID = 1;
+	optional int32 RegainType = 2;
+	optional int32 Regain = 3;
+	optional int32 BuyCount = 4;
+	optional int32 ConsumeID = 5;
+}

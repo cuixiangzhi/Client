@@ -1,0 +1,13 @@
+message EtchedExtracatDatatable
+{
+	optional string tname = 1;
+	repeated EtchedExtracatData tlist = 2;
+}
+
+message EtchedExtracatData
+{
+	required int32 ID = 1;
+	optional int32 ExtracatConsume = 2;
+	optional int32 ExtracatResult = 3;
+	optional int32 ExtracatTime = 4;
+}

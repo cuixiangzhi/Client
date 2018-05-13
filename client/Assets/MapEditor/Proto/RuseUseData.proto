@@ -1,0 +1,11 @@
+message RuseUseDatatable
+{
+	optional string tname = 1;
+	repeated RuseUseData tlist = 2;
+}
+
+message RuseUseData
+{
+	required int32 ID = 1;
+	repeated int32 CombatGroup = 2;
+}

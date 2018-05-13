@@ -1,0 +1,28 @@
+message GuideDetailsDatatable
+{
+	optional string tname = 1;
+	repeated GuideDetailsData tlist = 2;
+}
+
+message GuideDetailsData
+{
+	required int32 ID = 1;
+	optional int32 nextdetails = 2;
+	optional string guideDetailsDefine = 3;
+	optional int32 isContinue = 4;
+	optional int32 style = 5;
+	optional float delayTime = 6;
+	optional int32 changeScene = 7;
+	optional string speakerName = 8;
+	optional int32 speakerID = 9;
+	optional string des = 10;
+	optional string uiName = 11;
+	repeated float handleOffset = 12;
+	optional int32 isHideMarkBg = 13;
+	optional int32 isPlayBgEffect = 14;
+	optional float bgAlpha = 15;
+	optional int32 isScale = 16;
+	optional string sound = 17;
+	optional int32 fingerAnim = 18;
+	optional string modelAnim = 19;
+}

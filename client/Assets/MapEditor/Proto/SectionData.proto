@@ -1,0 +1,45 @@
+message SectionDatatable
+{
+	optional string tname = 1;
+	repeated SectionData tlist = 2;
+}
+
+message SectionData
+{
+	required int32 ID = 1;
+	optional string SectionName = 2;
+	optional int32 SectionID = 3;
+	optional int32 Map = 4;
+	optional int32 StageID = 5;
+	optional string modelName = 6;
+	optional int32 minLevel = 7;
+	optional string WayName = 8;
+	optional string MountName = 9;
+	optional int32 terrainID = 10;
+	optional int32 weatherID = 11;
+	optional string sectionDescribe = 12;
+	optional string secIcon = 13;
+	optional int32 sectionType = 14;
+	optional string FirstStarIntro = 15;
+	optional string SecondStarIntro = 16;
+	optional string ThirdStarIntro = 17;
+	optional int32 periodLv = 18;
+	optional int32 difficulty = 19;
+	repeated int32 FirstDropAward = 20;
+	repeated int32 DropAward = 21;
+	optional int32 CardExp = 22;
+	repeated int32 FailDropAward = 23;
+	optional int32 FailCardExp = 24;
+	optional int32 RegainConsumeID = 25;
+	optional int32 RegainConsumeBegin = 26;
+	optional int32 RegainConsumeEnd = 27;
+	optional int32 QuickPassConsume = 28;
+	optional int32 QuickPassExpDrop = 29;
+	repeated int32 Bounty = 30;
+	repeated int32 OpenFunction = 31;
+	optional int32 BossID = 32;
+	repeated float CameraPosition = 33;
+	optional string SectionType = 34;
+	optional string SectionTypeName = 35;
+	optional string PassIntro = 36;
+}

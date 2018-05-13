@@ -1,0 +1,30 @@
+message QuickConsumeDatatable
+{
+	optional string tname = 1;
+	repeated QuickConsumeData tlist = 2;
+}
+
+message QuickConsumeData
+{
+	required int32 ID = 1;
+	optional int32 Range1 = 2;
+	optional int32 Diamond1 = 3;
+	optional int32 Range2 = 4;
+	optional int32 Diamond2 = 5;
+	optional int32 Range3 = 6;
+	optional int32 Diamond3 = 7;
+	optional int32 Range4 = 8;
+	optional int32 Diamond4 = 9;
+	optional int32 Range5 = 10;
+	optional int32 Diamond5 = 11;
+	optional int32 Range6 = 12;
+	optional int32 Diamond6 = 13;
+	optional int32 Range7 = 14;
+	optional int32 Diamond7 = 15;
+	optional int32 Range8 = 16;
+	optional int32 Diamond8 = 17;
+	optional int32 Range9 = 18;
+	optional int32 Diamond9 = 19;
+	optional int32 Range10 = 20;
+	optional int32 Diamond10 = 21;
+}

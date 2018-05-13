@@ -1,0 +1,12 @@
+message UiCameraDatastable
+{
+	optional string tname = 1;
+	repeated UiCameraDatas tlist = 2;
+}
+
+message UiCameraDatas
+{
+	required int32 ID = 1;
+	optional bool isShowUICamera = 2;
+	optional float time = 3;
+}

@@ -1,0 +1,14 @@
+message CardRebornConsumeDatatable
+{
+	optional string tname = 1;
+	repeated CardRebornConsumeData tlist = 2;
+}
+
+message CardRebornConsumeData
+{
+	required int32 ID = 1;
+	optional int32 Star = 2;
+	optional int32 QualityStep = 3;
+	optional int32 LevelStep = 4;
+	optional int32 ConsumeID = 5;
+}

@@ -1,0 +1,27 @@
+message ConditionsDatatable
+{
+	optional string tname = 1;
+	repeated ConditionsData tlist = 2;
+}
+
+message ConditionsData
+{
+	required int32 ID = 1;
+	repeated int32 combatTime = 2;
+	repeated float LimitedHp = 3;
+	optional int32 isDie = 4;
+	repeated int32 identityType = 5;
+	repeated int32 actorType = 6;
+	repeated int32 status = 7;
+	repeated int32 countryType = 8;
+	repeated int32 MustHaveBuffID = 9;
+	repeated int32 MustHaveBuffNumber = 10;
+	repeated int32 MustNotHaveBuffID = 11;
+	repeated int32 MustNotHaveBuffNumber = 12;
+	repeated int32 MustHaveBuffType = 13;
+	repeated int32 MustNotHaveBuffType = 14;
+	repeated int32 MustHaveMotionID = 15;
+	repeated int32 MustNotHaveMotionID = 16;
+	repeated int32 MustHaveMotionType = 17;
+	repeated int32 MustNotHaveMotionType = 18;
+}

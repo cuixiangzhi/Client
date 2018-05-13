@@ -1,0 +1,11 @@
+message BossStageDatatable
+{
+	optional string tname = 1;
+	repeated BossStageData tlist = 2;
+}
+
+message BossStageData
+{
+	required int32 ID = 1;
+	optional int32 BossStage = 2;
+}

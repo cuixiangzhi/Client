@@ -1,0 +1,12 @@
+message CameraFieldValueDatastable
+{
+	optional string tname = 1;
+	repeated CameraFieldValueDatas tlist = 2;
+}
+
+message CameraFieldValueDatas
+{
+	required int32 ID = 1;
+	optional float fieldValue = 2;
+	optional float time = 3;
+}

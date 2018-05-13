@@ -1,0 +1,13 @@
+message TermCaptureLevelLimitDatatable
+{
+	optional string tname = 1;
+	repeated TermCaptureLevelLimitData tlist = 2;
+}
+
+message TermCaptureLevelLimitData
+{
+	required int32 ID = 1;
+	optional int32 CaptureID = 2;
+	optional int32 CaptureLevel = 3;
+	optional int32 Diff = 4;
+}

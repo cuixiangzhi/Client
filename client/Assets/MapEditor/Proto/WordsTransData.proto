@@ -1,0 +1,13 @@
+message WordsTransDatatable
+{
+	optional string tname = 1;
+	repeated WordsTransData tlist = 2;
+}
+
+message WordsTransData
+{
+	required int32 ID = 1;
+	optional string Key = 2;
+	optional string Desc = 3;
+	optional int32 Style = 4;
+}

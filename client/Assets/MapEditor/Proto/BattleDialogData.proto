@@ -1,0 +1,12 @@
+message BattleDialogDatatable
+{
+	optional string tname = 1;
+	repeated BattleDialogData tlist = 2;
+}
+
+message BattleDialogData
+{
+	required int32 ID = 1;
+	optional string Des = 2;
+	optional float Duration = 3;
+}

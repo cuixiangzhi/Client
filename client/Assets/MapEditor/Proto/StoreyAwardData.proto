@@ -1,0 +1,18 @@
+message StoreyAwardDatatable
+{
+	optional string tname = 1;
+	repeated StoreyAwardData tlist = 2;
+}
+
+message StoreyAwardData
+{
+	required int32 ID = 1;
+	optional int32 Rank = 2;
+	optional int32 FightWinAward = 3;
+	optional int32 FightLoseAward = 4;
+	repeated int32 FightWinExpParams = 5;
+	repeated int32 FightLoseExpParams = 6;
+	optional int32 FinishAward = 7;
+	optional string Name = 8;
+	optional int32 Degree = 9;
+}

@@ -1,0 +1,13 @@
+message TermCaptureEfficLevelDatatable
+{
+	optional string tname = 1;
+	repeated TermCaptureEfficLevelData tlist = 2;
+}
+
+message TermCaptureEfficLevelData
+{
+	required int32 ID = 1;
+	optional int32 CaptureLevel = 2;
+	optional float Effic = 3;
+	optional float CardExp = 4;
+}

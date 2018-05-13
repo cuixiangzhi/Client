@@ -1,0 +1,30 @@
+message ActivityDatatable
+{
+	optional string tname = 1;
+	repeated ActivityData tlist = 2;
+}
+
+message ActivityData
+{
+	required int32 ID = 1;
+	optional int32 ActivityType = 2;
+	optional int32 ActivityPara = 3;
+	repeated int32 DropNo = 4;
+	optional int32 TargetType = 5;
+	optional string Title = 6;
+	optional string Icon = 7;
+	optional string Desc = 8;
+	optional int32 Target = 9;
+	optional int32 JudgeType = 10;
+	optional int32 TimeType = 11;
+	optional int32 StartTimeGap = 12;
+	optional int32 EndTimeGap = 13;
+	optional string StartTime = 14;
+	optional string EndTime = 15;
+	optional int32 RewardType = 16;
+	optional int32 RewardPara = 17;
+	optional int32 RewardStartTimeGap = 18;
+	optional int32 RewardEndTimeGap = 19;
+	optional string RewardStartTime = 20;
+	optional string RewardEndTime = 21;
+}

@@ -1,0 +1,14 @@
+message CardUpgradeSkillDatatable
+{
+	optional string tname = 1;
+	repeated CardUpgradeSkillData tlist = 2;
+}
+
+message CardUpgradeSkillData
+{
+	required int32 ID = 1;
+	repeated int32 SkillConsumeID1 = 2;
+	repeated int32 SkillConsumeID2 = 3;
+	repeated int32 SkillConsumeID3 = 4;
+	repeated int32 SkillConsumeID4 = 5;
+}

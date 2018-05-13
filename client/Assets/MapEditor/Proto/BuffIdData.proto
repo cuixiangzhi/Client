@@ -1,0 +1,38 @@
+message BuffIdDatatable
+{
+	optional string tname = 1;
+	repeated BuffIdData tlist = 2;
+}
+
+message BuffIdData
+{
+	required int32 ID = 1;
+	optional string Name = 2;
+	optional string Des = 3;
+	optional string Icon = 4;
+	optional int32 BuffType = 5;
+	optional int32 ControllID = 6;
+	optional int32 ShowType = 7;
+	repeated int32 ParticleID = 8;
+	optional int32 ContinuedSound = 9;
+	optional int32 EndSound = 10;
+	optional int32 Duration = 11;
+	optional int32 MaxAddNum = 12;
+	repeated int32 ModifyAttr = 13;
+	repeated int32 AdditivityModifyAttr = 14;
+	repeated int32 TriggeredSubEffects = 15;
+	repeated int32 TriggerID = 16;
+	repeated int32 TriggerRate = 17;
+	repeated int32 TriggerCoolDown = 18;
+	repeated int32 AfterTriggeredType = 19;
+	repeated int32 IntervalSubEffects = 20;
+	repeated int32 Interval = 21;
+	optional int32 SwitchFormId = 22;
+	repeated int32 HaloSerials = 23;
+	repeated int32 PassiveEffectSerials = 24;
+	optional bool IsForceAttackSource = 25;
+	optional int32 RemoveOnDead = 26;
+	optional float SourceDmgSharePercent = 27;
+	optional float DmgIgnoreThreshold = 28;
+	optional float DmgIgnorePercentExceedTheThreshold = 29;
+}

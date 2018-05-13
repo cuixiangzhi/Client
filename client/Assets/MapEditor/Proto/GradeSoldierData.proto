@@ -1,0 +1,16 @@
+message GradeSoldierDatatable
+{
+	optional string tname = 1;
+	repeated GradeSoldierData tlist = 2;
+}
+
+message GradeSoldierData
+{
+	required int32 ID = 1;
+	optional int32 SoldierNo = 2;
+	optional int32 LordLevel = 3;
+	optional int32 Step = 4;
+	optional int32 MonsterID = 5;
+	optional int32 ExitSeconds = 6;
+	optional int32 Count = 7;
+}

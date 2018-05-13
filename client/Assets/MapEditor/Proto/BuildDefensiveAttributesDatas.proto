@@ -1,0 +1,24 @@
+message BuildDefensiveAttributesDatastable
+{
+	optional string tname = 1;
+	repeated BuildDefensiveAttributesDatas tlist = 2;
+}
+
+message BuildDefensiveAttributesDatas
+{
+	required int32 ID = 1;
+	optional string name = 2;
+	optional int32 attributeID = 3;
+	optional int32 attackValue = 4;
+	optional float range = 5;
+	repeated int32 effectColors = 6;
+	optional int32 maxGlod = 7;
+	optional int32 maxWood = 8;
+	optional int32 maxEssence = 9;
+	optional int32 glodRate = 10;
+	optional int32 woodRate = 11;
+	optional int32 EssenceRate = 12;
+	optional int32 populationSize = 13;
+	repeated int32 lockArmsID = 14;
+	repeated int32 usedRes = 15;
+}

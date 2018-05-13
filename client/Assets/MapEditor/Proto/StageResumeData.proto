@@ -1,0 +1,14 @@
+message StageResumeDatatable
+{
+	optional string tname = 1;
+	repeated StageResumeData tlist = 2;
+}
+
+message StageResumeData
+{
+	required int32 ID = 1;
+	optional int32 ResumeType = 2;
+	optional float ResumePercent = 3;
+	optional float ResumeCoefficient = 4;
+	optional int32 ResumeBornEffect = 5;
+}

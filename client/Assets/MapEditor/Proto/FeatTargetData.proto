@@ -1,0 +1,17 @@
+message FeatTargetDatatable
+{
+	optional string tname = 1;
+	repeated FeatTargetData tlist = 2;
+}
+
+message FeatTargetData
+{
+	required int32 ID = 1;
+	repeated string Name = 2;
+	repeated string Description = 3;
+	optional int32 Type = 4;
+	optional int32 Parameter = 5;
+	optional int32 Count = 6;
+	optional int32 Points = 7;
+	repeated int32 Reward = 8;
+}

@@ -1,0 +1,26 @@
+message EquipDatatable
+{
+	optional string tname = 1;
+	repeated EquipData tlist = 2;
+}
+
+message EquipData
+{
+	required int32 ID = 1;
+	optional string name = 2;
+	optional string Des = 3;
+	optional int32 suitID = 4;
+	optional string icon = 5;
+	optional int32 slot = 6;
+	optional int32 startLevel = 7;
+	optional int32 strengthenLimit = 8;
+	optional int32 baseAttr1 = 9;
+	optional int32 baseAttr2 = 10;
+	optional int32 randomAttr = 11;
+	repeated int32 excludeTypes = 12;
+	optional int32 quality = 13;
+	optional int32 randAttrCount = 14;
+	optional int32 GMEnable = 15;
+	repeated string tipAttrDes = 16;
+	repeated string tipAttrValue = 17;
+}

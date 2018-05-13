@@ -1,0 +1,40 @@
+message DiffcultyStageInfoDatatable
+{
+	optional string tname = 1;
+	repeated DiffcultyStageInfoData tlist = 2;
+}
+
+message DiffcultyStageInfoData
+{
+	optional int32 ID = 1;
+	optional float _1_Coefficient = 2;
+	optional float _2_Coefficient = 3;
+	optional float _3_Coefficient = 4;
+	optional float _4_Coefficient = 5;
+	optional float _5_Coefficient = 6;
+	optional float _6_Coefficient = 7;
+	optional float _7_Coefficient = 8;
+	optional float _8_Coefficient = 9;
+	optional float _9_Coefficient = 10;
+	optional float _10_Coefficient = 11;
+	optional float _11_Coefficient = 12;
+	optional float _12_Coefficient = 13;
+	optional float _13_Coefficient = 14;
+	optional float _14_Coefficient = 15;
+	optional float _15_Coefficient = 16;
+	optional float _16_Coefficient = 17;
+	optional float _17_Coefficient = 18;
+	optional float _18_Coefficient = 19;
+	optional float _19_Coefficient = 20;
+	optional float _20_Coefficient = 21;
+	optional float _21_Coefficient = 22;
+	optional float _22_Coefficient = 23;
+	optional float _23_Coefficient = 24;
+	optional float _24_Coefficient = 25;
+	optional float _25_Coefficient = 26;
+	optional float _26_Coefficient = 27;
+	optional float _27_Coefficient = 28;
+	optional float _28_Coefficient = 29;
+	optional float _29_Coefficient = 30;
+	optional float _30_Coefficient = 31;
+}

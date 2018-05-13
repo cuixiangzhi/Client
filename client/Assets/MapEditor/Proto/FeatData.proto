@@ -1,0 +1,23 @@
+message FeatDatatable
+{
+	optional string tname = 1;
+	repeated FeatData tlist = 2;
+}
+
+message FeatData
+{
+	required int32 ID = 1;
+	optional int32 Class = 2;
+	optional int32 Type = 3;
+	repeated string Name = 4;
+	repeated string Description = 5;
+	repeated int32 SubFeats = 6;
+	optional int32 Priority = 7;
+	optional int32 MaxStage = 8;
+	optional int32 TargetType = 9;
+	optional int32 TargetID1 = 10;
+	optional int32 TargetID2 = 11;
+	optional int32 TargetID3 = 12;
+	optional int32 TargetID4 = 13;
+	optional int32 TargetID5 = 14;
+}

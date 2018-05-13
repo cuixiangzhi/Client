@@ -1,0 +1,15 @@
+message ShakeDatastable
+{
+	optional string tname = 1;
+	repeated ShakeDatas tlist = 2;
+}
+
+message ShakeDatas
+{
+	required int32 ID = 1;
+	optional int32 type = 2;
+	optional float shakeTime = 3;
+	optional int32 fps = 4;
+	optional float frameTime = 5;
+	optional float shakeDelta = 6;
+}

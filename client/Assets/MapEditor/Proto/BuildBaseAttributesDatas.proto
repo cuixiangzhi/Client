@@ -1,0 +1,41 @@
+message BuildBaseAttributesDatastable
+{
+	optional string tname = 1;
+	repeated BuildBaseAttributesDatas tlist = 2;
+}
+
+message BuildBaseAttributesDatas
+{
+	required int32 ID = 1;
+	optional int32 buildLevel = 2;
+	optional int32 hp = 3;
+	optional int32 hasNum = 4;
+	repeated int32 area = 5;
+	optional int32 usedGlodValue = 6;
+	optional int32 usedWoodValue = 7;
+	optional float usedTime = 8;
+	optional int32 experience = 9;
+	optional int32 homeLevel = 10;
+	optional int32 criticalRate = 11;
+	optional int32 dodgeRate = 12;
+	optional int32 criticalDamage = 13;
+	optional int32 phyDefense = 14;
+	optional int32 shiningDmgCoefficient = 15;
+	optional int32 darkDmgCoefficient = 16;
+	optional int32 waterDmgCoefficient = 17;
+	optional int32 fireDmgCoefficient = 18;
+	optional int32 natureDmgCoefficient = 19;
+	optional int32 cureCoefficient = 20;
+	optional int32 meleeDmgCoefficient = 21;
+	optional int32 rangedDmgCoefficient = 22;
+	optional int32 totalDmgCoefficient = 23;
+	optional int32 shiningDmgBearCoefficient = 24;
+	optional int32 darkDmgBearCoefficient = 25;
+	optional int32 waterDmgBearCoefficient = 26;
+	optional int32 fireDmgBearCoefficient = 27;
+	optional int32 natureDmgBearCoefficient = 28;
+	optional int32 cureBearCoefficient = 29;
+	optional int32 meleeDmgBearCoefficient = 30;
+	optional int32 rangedDmgBearCoefficient = 31;
+	optional int32 totalDmgBearCoefficient = 32;
+}

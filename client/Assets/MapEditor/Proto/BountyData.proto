@@ -1,0 +1,50 @@
+message BountyDatatable
+{
+	optional string tname = 1;
+	repeated BountyData tlist = 2;
+}
+
+message BountyData
+{
+	required int32 ID = 1;
+	optional int32 StageID1 = 2;
+	optional int32 BountyRegain1 = 3;
+	optional int32 BountyRegainBegin1 = 4;
+	optional int32 BountyRegainEnd1 = 5;
+	repeated int32 DropAward1 = 6;
+	optional int32 CardExp1 = 7;
+	optional int32 Boss1 = 8;
+	repeated int32 BossVolumeParam1 = 9;
+	optional string BattleSettingIntro1 = 10;
+	optional string BattleSettingTitle1 = 11;
+	optional string TaskIntro1 = 12;
+	optional int32 StageID2 = 13;
+	optional int32 BountyRegain2 = 14;
+	optional int32 BountyRegainBegin2 = 15;
+	optional int32 BountyRegainEnd2 = 16;
+	repeated int32 DropAward2 = 17;
+	optional int32 CardExp2 = 18;
+	optional int32 Boss2 = 19;
+	repeated int32 BossVolumeParam2 = 20;
+	optional string BattleSettingIntro2 = 21;
+	optional string BattleSettingTitle2 = 22;
+	optional string TaskIntro2 = 23;
+	optional int32 StageID3 = 24;
+	optional int32 BountyRegain3 = 25;
+	optional int32 BountyRegainBegin3 = 26;
+	optional int32 BountyRegainEnd3 = 27;
+	repeated int32 DropAward3 = 28;
+	optional int32 CardExp3 = 29;
+	optional int32 Boss3 = 30;
+	repeated int32 BossVolumeParam3 = 31;
+	optional string BattleSettingIntro3 = 32;
+	optional string BattleSettingTitle3 = 33;
+	optional string TaskIntro3 = 34;
+	optional int32 Section1 = 35;
+	optional int32 Difficulty1 = 36;
+	optional int32 Section2 = 37;
+	optional int32 Difficulty2 = 38;
+	optional int32 Section3 = 39;
+	optional int32 Difficulty3 = 40;
+	optional string TaskIntro4 = 41;
+}

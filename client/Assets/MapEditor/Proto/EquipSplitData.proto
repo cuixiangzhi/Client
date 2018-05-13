@@ -1,0 +1,14 @@
+message EquipSplitDatatable
+{
+	optional string tname = 1;
+	repeated EquipSplitData tlist = 2;
+}
+
+message EquipSplitData
+{
+	required int32 ID = 1;
+	optional int32 quality = 2;
+	optional int32 starLevel = 3;
+	optional int32 strengthenLevel = 4;
+	repeated int32 drop = 5;
+}

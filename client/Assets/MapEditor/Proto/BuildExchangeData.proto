@@ -1,0 +1,24 @@
+message BuildExchangeDatatable
+{
+	optional string tname = 1;
+	repeated BuildExchangeData tlist = 2;
+}
+
+message BuildExchangeData
+{
+	required int32 ID = 1;
+	optional int32 PhysicalConsume = 2;
+	optional int32 PhysicalCount = 3;
+	optional int32 PhysicalTime = 4;
+	optional int32 PhysicalOpen = 5;
+	optional int32 EnergyConsume = 6;
+	optional int32 EnergyCount = 7;
+	optional int32 EnergyTime = 8;
+	optional int32 EnergyOpen = 9;
+	optional int32 DiamondConsume = 10;
+	optional int32 DiamondDrop = 11;
+	optional int32 DiamondTime = 12;
+	optional int32 DiamondOpen = 13;
+	optional int32 Num = 14;
+	optional int32 RefreshID = 15;
+}

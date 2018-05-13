@@ -1,0 +1,11 @@
+message OreLabDatatable
+{
+	optional string tname = 1;
+	repeated OreLabData tlist = 2;
+}
+
+message OreLabData
+{
+	required int32 ID = 1;
+	optional int32 Genre = 2;
+}
