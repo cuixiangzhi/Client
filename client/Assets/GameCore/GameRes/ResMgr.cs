@@ -607,5 +607,10 @@ namespace GameCore
             mPoolDic[fileName] = pool;
             return pool;
         }
+		public static TextAsset LoadText(string assetPath)
+		{
+			TextAsset asset = UnityEditor.AssetDatabase.LoadAssetAtPath<TextAsset>(string.Format("Assets/Res/Resource/{0}.bytes", assetPath));
+			return asset;
+		}
     }
 }

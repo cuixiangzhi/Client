@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ActionNode : MonoBehaviour {
+namespace GameCore.AI
+{
+public class ConnectNode : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
@@ -13,4 +15,5 @@ public class ActionNode : MonoBehaviour {
 	void Update () {
 		
 	}
+}
 }

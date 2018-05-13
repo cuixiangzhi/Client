@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ConditionNode : MonoBehaviour {
+namespace GameCore.AI
+{
+	
+public class BaseNode : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
@@ -13,4 +16,5 @@ public class ConditionNode : MonoBehaviour {
 	void Update () {
 		
 	}
+}
 }
