@@ -5,15 +5,15 @@ public static class ZoomArea
 {
     private static float kEditorWindowTabHeight = 0;
     private static Matrix4x4 prevGuiMatrix;
-    public static Rect Begin(float zoomScale, Rect screenCoordsArea, Vector2 cameraPos)
+    public static Rect Begin(float zoomScale, Rect rect, Vector2 cameraPos)
     {
         GUI.EndGroup();
-        Rect rect = screenCoordsArea;
 		GUI.BeginGroup(new Rect (rect.x, rect.y + 22, rect.width / zoomScale, rect.height / zoomScale));
         prevGuiMatrix = GUI.matrix;
         Matrix4x4 matrix4x = Matrix4x4.TRS(rect.TopLeft(), Quaternion.identity, Vector3.one);
         Matrix4x4 matrix4x2 = Matrix4x4.Scale(new Vector3(zoomScale, zoomScale, 1f));
-        GUI.matrix = (matrix4x * matrix4x2 * matrix4x.inverse * GUI.matrix);
+        Matrix4x4 scale = matrix4x * matrix4x2 * matrix4x.inverse;
+        GUI.matrix = scale * GUI.matrix;
 
         Rect rect2 = rect;
         rect2.width = 1.07374182E+09f;

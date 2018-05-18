@@ -41,7 +41,7 @@ public class EventTriggerNodeExecFinish : EventBase<EventTriggerNodeExecFinish>
     }
 }
 
-public class EventManager : Singleton<EventManager>
+public class EventManager : GameCore.BaseMgr<EventManager>
 {
     public delegate void EventDelegate<T>(T e) where T : EventArgs;
 

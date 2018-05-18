@@ -4,7 +4,7 @@ using System.IO;
 using System.Reflection;
 using UnityEngine;
 
-public partial class DatasManager : Singleton<DatasManager>
+public partial class DatasManager : GameCore.BaseMgr<DatasManager>
 {
     Dictionary<Type, Dictionary<int, object>> datas = new Dictionary<Type, Dictionary<int, object>>();
     Dictionary<Type, Action> deserializeCallBacks = new Dictionary<Type, Action>();
