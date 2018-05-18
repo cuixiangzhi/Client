@@ -3,23 +3,17 @@ using UnityEngine;
 
 namespace GameCore
 {
-	public class BaseMgr<T> : MonoBehaviour where T:Component
+	public class BaseMgr<T> where T:class,new()
 	{
-		private T mInstance = null;
+		private static T mInstance = null;
 
-        private static GameObject GAME_MAIN = null;
-
-		public T Instance
+		public static T Instance
 		{
 			get
 			{
                 if(mInstance == null)
                 {
-                    if(GAME_MAIN == null)
-                    {
-                        GAME_MAIN = GameObject.Find("GAME_MAIN");
-                    }
-                    mInstance = GAME_MAIN.AddComponent(typeof(T)) as T;
+                    mInstance = new T();
                 }
                 return mInstance;
             }	

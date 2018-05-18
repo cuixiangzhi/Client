@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace GameCore.AI
 {
-    public abstract class BaseNode : ScriptableObject
+    public enum BTNodeType
     {
 
     }
