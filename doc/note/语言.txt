@@ -7,7 +7,7 @@
 				 字符数组和字符 
 				 char*最后是一个\0字符  
 				 C# char代表一个字符或者一个中文符号,长度不固定 
-				 lua和C++一样 字符编码分为ASCII和Unicode  UTF-8和GBK是一种UNICODE实现方式
+				 lua和C++一样 字符集分为ASCII和Unicode  UTF-8和GBK是一种UNICODE编号的编码方式
 								UTF-8不定字节编码以字节数开头,0xxxxxxx 表示一个字节  110xxxxx表示2个字节,后续字节以10开头  最多会有6个字节
 	 指针	它也是个变量,它的值是对象的地址,使用&运算符获取对象  p->等价于(&p).
 			指针和引用变量赋值时必须匹配类型
@@ -19,7 +19,7 @@
 			底层const：指针所指的对象是个常量
 	 static	静态全局常量(文件内有效)
 	 extern 外部变量
-	 #define 宏定义 ##宏拼接 #宏替换
+	 #define 宏定义 ##宏拼接 ##用于拼接变量 #宏替换 #代表后面的是个字符串
 	 typedef 类型组合定义		 
 类型转换 basic-type 隐式转换	
 		static_cast 基本类型之间相互转换,可替代隐式转换
@@ -29,8 +29,6 @@
 		dynamic_cast 用于指针和引用的类层次转换
 		reinterpret_cast 用于将二进制位解释为另一种类型
 		as type.IsAssignableFrom 
-宏：	    #代表后面的是个字符串
-	    ##用于拼接变量
 函数    引用&值参数传递 ...传递参数时只能传递基本类型
 	   数组作为参数无法拷贝,所以传递过来之后会退化为指针
 	   注意不要返回栈变量的指针,因为已经销毁了
@@ -41,13 +39,16 @@
 		每个带有虚函数的类都有一个静态的虚表,每个带有虚函数的类对象都有一个虚表指针,在构造函数内初始化
 		编译时多态性,模板,重载   运行时多态性,虚函数重写  
 		虚继承,保证基类只有一份实例virtual-base-class  如果有构造函数,那么必须在最底层派生类里实现虚基类的构造,否则会有编译错误 
-		构造初始化 拷贝赋值时指针 隐式转换
+		构造初始化 拷贝赋值时指针 
 		友元函数不受访问权限影响
 		C# internal修饰程序集内部变量或者类
-模板&泛型 template where限定 模板特例 template<> ret function<int>(){}
-		  lambda [捕捉列表](参数列表){函数体}
-		  bind 参数重新排列  bind(func,placeorders::_1,_2,var);
-		  function<void(int,int)>
+模板&泛型 
+		template where限定 
+		模板 template<class T> 函数定义
+		模板特例 template<> return function<int>(){}
+		lambda [捕捉列表](参数列表){函数体} =值捕捉 &引用
+		bind 参数重新排列  bind(func,placeorders::_1,_2,var);
+		function<void(int,int)>
 库&dll&依赖 __declspec(dllexport) __stdcall __cdecl
 			IO库 iostream 控制台读写 cin>> cout<<
 				 fstream 文件读写 成员函数 f("",ios::in|ios::out|ios:binary) 
