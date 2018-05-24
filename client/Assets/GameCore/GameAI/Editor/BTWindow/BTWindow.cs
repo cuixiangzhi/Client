@@ -36,9 +36,14 @@ namespace GameCore.AI.Editor
 
 			BeginWindows();
 			mUnitWindow.OnGUI (2, rectUnit, "UnitWindow");
-			mUnitWindow.OnGUI (3, rectNode, "NodeWindow");
-			mUnitWindow.OnGUI (0, rectZoom, "ZoomWindow");
+            mNodeWindow.OnGUI (3, rectNode, "NodeWindow");
+            mZoomWindow.OnGUI (0, rectZoom, "ZoomWindow");
 			EndWindows();
+
+            if(mUnitWindow.mIsDirty || mNodeWindow.mIsDirty || mZoomWindow.mIsDirty)
+            {
+                Repaint();
+            }            
 		}
 
 		void OnInit()

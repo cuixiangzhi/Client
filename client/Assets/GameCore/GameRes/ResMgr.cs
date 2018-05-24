@@ -1,11 +1,9 @@
 ﻿using LuaInterface;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System;
 using UnityObj = UnityEngine.Object;
-using System.IO;
 
 namespace GameCore
 {
@@ -38,7 +36,7 @@ namespace GameCore
                 else
                 {
                     AssetBundleRequest req = mRequest as AssetBundleRequest;
-                    PoolInfo pool = ResMgr.AllocPoolInfo(mFileName);
+                    PoolInfo pool = ResMgr.Instance.AllocPoolInfo(mFileName);
                     pool.SetObj(req.asset);
                     mCallBack(mFileName, pool.GetObj());
                     for (int i = 0; i < mCallBacks.Count; i++)
@@ -47,14 +45,14 @@ namespace GameCore
                     }
                 }
                 //清理数据    
-                PkgMgr.UnloadBundle(mFileName);
+                CpkMgr.Instance.UnloadBundle(mFileName);
             }
             mBundle = null;
             mRequest = null;
             mCallBack = null;
             mCallBacks.Clear();
-            ResMgr.mLoadDic.Remove(mFileName);
-            ResMgr.mLoadFree.Push(this);
+            ResMgr.Instance.mLoadDic.Remove(mFileName);
+            ResMgr.Instance.mLoadFree.Push(this);
         }
     }
 
@@ -66,7 +64,7 @@ namespace GameCore
         internal List<UnityObj> mSpawnObjs = new List<UnityObj>(16);
         internal List<UnityObj> mDeSpawnObjs = new List<UnityObj>(16);
         internal float mLastUseTime = 0;
-        internal float MAX_CACHE_TIME = 60;
+        internal float MAX_CACHE_TIME = 30;
 
         internal bool IsActive()
         {
@@ -122,7 +120,10 @@ namespace GameCore
                 {
                     obj = UnityObj.Instantiate<GameObject>(mLoadObj);
                 }
-                obj.transform.parent = ResMgr.mPoolInstance;
+                obj.transform.parent = ResMgr.Instance.mPoolInstance;
+                obj.transform.localPosition = Vector3.zero;
+                obj.transform.localScale = Vector3.one;
+                obj.transform.localEulerAngles = Vector3.zero;
                 mSpawnObjs.Add(obj);
                 return obj;
             }
@@ -137,7 +138,7 @@ namespace GameCore
             if(obj is GameObject)
             {
                 mLoadObj = obj as GameObject;
-                mLoadObj.transform.parent = ResMgr.mPoolLoad;
+                mLoadObj.transform.parent = ResMgr.Instance.mPoolLoad;
                 mLoadObj.SetActive(false);
             }
             else
@@ -164,7 +165,7 @@ namespace GameCore
                 mDeSpawnObjs.Clear();
                 mSpawnObjs.Clear();
                 mLoadObj = null;
-                PkgMgr.UnloadDependBundle(mFileName);
+                CpkMgr.Instance.UnloadDependBundle(mFileName);
             }
         }
 
@@ -179,41 +180,41 @@ namespace GameCore
         }
     }
 
-    public static class ResMgr
+    public sealed class ResMgr : BaseMgr<ResMgr>
     {
         internal static int DEFAULT_SIZE = 1024;
         internal static int DEFAULT_FILE = 10;
         //加载缓存
-        internal static Dictionary<string, LoadInfo> mLoadDic = new Dictionary<string, LoadInfo>(DEFAULT_SIZE);
-        internal static Dictionary<string, PoolInfo> mPoolDic = new Dictionary<string, PoolInfo>(DEFAULT_SIZE);
+        internal Dictionary<string, LoadInfo> mLoadDic = new Dictionary<string, LoadInfo>(DEFAULT_SIZE);
+        internal Dictionary<string, PoolInfo> mPoolDic = new Dictionary<string, PoolInfo>(DEFAULT_SIZE);
         //缓存备用
-        internal static Stack<LoadInfo> mLoadFree = new Stack<LoadInfo>();
-        internal static Stack<PoolInfo> mPoolFree = new Stack<PoolInfo>();
+        internal Stack<LoadInfo> mLoadFree = new Stack<LoadInfo>();
+        internal Stack<PoolInfo> mPoolFree = new Stack<PoolInfo>();
         //加载文件
-        internal static Queue<string> mByteFiles = new Queue<string>(DEFAULT_SIZE);
-        internal static Queue<Action<string, LuaByteBuffer>> mByteCalls = new Queue<Action<string, LuaByteBuffer>>(DEFAULT_SIZE);
+        internal Queue<string> mByteFiles = new Queue<string>(DEFAULT_SIZE);
+        internal Queue<Action<string, LuaByteBuffer>> mByteCalls = new Queue<Action<string, LuaByteBuffer>>(DEFAULT_SIZE);
         //空的资源
-        internal static HashSet<string> mNullAssets = new HashSet<string>();
+        internal HashSet<string> mNullAssets = new HashSet<string>();
         //临时数组
-        internal static List<string> mTmpList = new List<string>(DEFAULT_SIZE);
+        internal List<string> mTmpList = new List<string>(DEFAULT_SIZE);
         //数据BUFF
-        internal static byte[] mBuffer = new byte[1024 * 1024 * 2];
-        internal static LuaByteBuffer mNullBuffer = new LuaByteBuffer(null, 0);
+        internal byte[] mBuffer = new byte[1024 * 1024 * 2];
+        internal LuaByteBuffer mNullBuffer = new LuaByteBuffer(null, 0);
         //资源结点
-        internal static Transform mPoolLoad = null;
-        internal static Transform mPoolInstance = null;
+        internal Transform mPoolLoad = null;
+        internal Transform mPoolInstance = null;
 
-        public static void Init()
+        public void Init()
         {
-            GameObject ROOT = new GameObject("GAME_POOL");
-            mPoolLoad = new GameObject("LOAD").transform;
+            GameObject ROOT = new GameObject("__POOL");
+            mPoolLoad = new GameObject("_LOAD").transform;
             mPoolLoad.transform.parent = ROOT.transform;
-            mPoolInstance = new GameObject("INSTANCE").transform;
+            mPoolInstance = new GameObject("_INSTANCE").transform;
             mPoolInstance.transform.parent = ROOT.transform;
             UnityObj.DontDestroyOnLoad(ROOT);
         }
 
-        public static void Loop()
+        public void Loop()
         {
             //异步文件
             {
@@ -231,24 +232,12 @@ namespace GameCore
             }
         }
 
-        public static void Exit()
+        public void Exit()
         {
-            mPoolLoad = null;
-            mPoolInstance = null;
 
-            mLoadDic.Clear();
-            mPoolDic.Clear();
-
-            mLoadFree.Clear();
-            mPoolFree.Clear();
-
-            mByteFiles.Clear();
-            mByteCalls.Clear();
-
-            mNullAssets.Clear();
         }
 
-        public static UnityObj LoadAsset(string fileName)
+        public UnityObj LoadAsset(string fileName)
         {
             //空资源
             {
@@ -277,11 +266,11 @@ namespace GameCore
                 }
                 else
                 {
-                    bundle = PkgMgr.LoadBundle(fileName);
+                    bundle = CpkMgr.Instance.LoadBundle(fileName);
                 }
                 if (bundle == null || !bundle.Contains(fileName))
                 {
-                    PkgMgr.UnloadBundle(fileName);
+                    CpkMgr.Instance.UnloadBundle(fileName);
                     mNullAssets.Add(fileName);
                     LogMgr.LogError("bundle asset is null {0} !!", fileName);
                     return null;
@@ -291,13 +280,13 @@ namespace GameCore
                     UnityObj obj = bundle.LoadAsset(fileName);
                     PoolInfo pool = AllocPoolInfo(fileName);
                     pool.SetObj(obj);
-                    PkgMgr.UnloadBundle(fileName);
+                    CpkMgr.Instance.UnloadBundle(fileName);
                     return pool.GetObj();
                 }
             }
         }
 
-        public static void LoadAssetAsync(string fileName, Action<string, UnityObj> callBack)
+        public void LoadAssetAsync(string fileName, Action<string, UnityObj> callBack)
         {
             //空资源
             {
@@ -329,10 +318,10 @@ namespace GameCore
                 }
                 else
                 {
-                    AssetBundle bundle = PkgMgr.LoadBundle(fileName);
+                    AssetBundle bundle = CpkMgr.Instance.LoadBundle(fileName);
                     if (bundle == null || !bundle.Contains(fileName))
                     {
-                        PkgMgr.UnloadBundle(fileName);
+                        CpkMgr.Instance.UnloadBundle(fileName);
                         mNullAssets.Add(fileName);
                         LogMgr.LogError("bundle asset is null {0} !!", fileName);
                         callBack(fileName, null);
@@ -351,7 +340,7 @@ namespace GameCore
             }
         }
 
-        public static LuaByteBuffer LoadBytes(string fileName)
+        public LuaByteBuffer LoadBytes(string fileName)
         {
             //空资源
             {
@@ -359,7 +348,7 @@ namespace GameCore
                     return mNullBuffer;
             }
             //大资源
-            int len = PkgMgr.LoadBytes(fileName, mBuffer);
+            int len = CpkMgr.Instance.LoadBytes(fileName, mBuffer);
             if (len >= mBuffer.Length)
             {
                 LogMgr.LogError("2M buffer too small to read file {0} !!", fileName);
@@ -374,7 +363,7 @@ namespace GameCore
             return new LuaByteBuffer(mBuffer, len);
         }
 
-        public static void LoadBytesAsync(string fileName, Action<string, LuaByteBuffer> callBack)
+        public void LoadBytesAsync(string fileName, Action<string, LuaByteBuffer> callBack)
         {
             //空资源
             {
@@ -391,7 +380,7 @@ namespace GameCore
             }
         }
 
-        public static int LoadScene(string fileName, bool additive = false)
+        public int LoadScene(string fileName, bool additive = false)
         {
             LoadInfo load = null;           
             if (mLoadDic.TryGetValue(fileName, out load))
@@ -412,11 +401,11 @@ namespace GameCore
             {
                 //新场景
                 AssetBundle bundle = null;
-                if (SceneUtility.GetBuildIndexByScenePath(fileName) >= 0 || (bundle = PkgMgr.LoadBundle(fileName)) != null)
+                if (SceneUtility.GetBuildIndexByScenePath(fileName) >= 0 || (bundle = CpkMgr.Instance.LoadBundle(fileName)) != null)
                 {
                     SceneManager.LoadScene(fileName, additive ? LoadSceneMode.Additive : LoadSceneMode.Single);
                     if(bundle != null)
-                        PkgMgr.UnloadBundle(fileName);
+                        CpkMgr.Instance.UnloadBundle(fileName);
                     return 0;
                 }
                 else
@@ -427,7 +416,7 @@ namespace GameCore
             }
         }
 
-        public static int LoadSceneAsync(string fileName, Action<string, UnityObj> callBack, bool additive = false)
+        public int LoadSceneAsync(string fileName, Action<string, UnityObj> callBack, bool additive = false)
         {
             LoadInfo load = null;
             if (mLoadDic.TryGetValue(fileName, out load))
@@ -448,7 +437,7 @@ namespace GameCore
             {
                 //新场景
                 AssetBundle bundle = null;
-                if(SceneUtility.GetBuildIndexByScenePath(fileName) >= 0 || (bundle = PkgMgr.LoadBundle(fileName)) != null)
+                if(SceneUtility.GetBuildIndexByScenePath(fileName) >= 0 || (bundle = CpkMgr.Instance.LoadBundle(fileName)) != null)
                 {
                     load = AllocLoadInfo(fileName);
                     load.mBundle = bundle;
@@ -466,7 +455,7 @@ namespace GameCore
             }
         }
 
-        public static void UnloadAsset(UnityObj obj, bool unloadAll)
+        public void UnloadAsset(UnityObj obj, bool unloadAll)
         {
             PoolInfo pool = null;
             var emrPool = mPoolDic.GetEnumerator();
@@ -499,7 +488,7 @@ namespace GameCore
             }
         }
 
-        public static int UnloadScene(string fileName, Action<string, UnityObj> callBack)
+        public int UnloadScene(string fileName, Action<string, UnityObj> callBack)
         {
             LoadInfo load = null;
             if(mLoadDic.TryGetValue(fileName, out load))
@@ -542,7 +531,7 @@ namespace GameCore
             }
         }
 
-        public static void UnloadUnusedAssets()
+        public void UnloadUnusedAssets()
         {
             Resources.UnloadUnusedAssets();
             mTmpList.Clear();
@@ -561,9 +550,10 @@ namespace GameCore
                 mPoolDic.Remove(mTmpList[i]);
             }
             Resources.UnloadUnusedAssets();
+            GC.Collect();
         }
 
-        internal static LoadInfo AllocLoadInfo(string fileName)
+        internal LoadInfo AllocLoadInfo(string fileName)
         {
             LoadInfo load = mLoadFree.Count > 0 ? mLoadFree.Pop() : null;
             if (load == null)
@@ -575,7 +565,7 @@ namespace GameCore
             return load;
         }
 
-        internal static PoolInfo AllocPoolInfo(string fileName)
+        internal PoolInfo AllocPoolInfo(string fileName)
         {
             PoolInfo pool = null;
             if(!mPoolDic.TryGetValue(fileName, out pool))
@@ -607,10 +597,5 @@ namespace GameCore
             mPoolDic[fileName] = pool;
             return pool;
         }
-		public static TextAsset LoadText(string assetPath)
-		{
-			TextAsset asset = UnityEditor.AssetDatabase.LoadAssetAtPath<TextAsset>(string.Format("Assets/Res/Resource/{0}.bytes", assetPath));
-			return asset;
-		}
     }
 }
