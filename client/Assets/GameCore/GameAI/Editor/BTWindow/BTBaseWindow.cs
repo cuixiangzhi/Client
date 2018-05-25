@@ -18,6 +18,8 @@ namespace GameCore.AI.Editor
 			mName = windowName;
             mIsDirty = false;
 
+            OnPreDraw();
+
             if (id > 0)
 			{
 				GUI.Window (id, rect, (idw)=> { OnDraw(); }, windowName);
@@ -26,6 +28,8 @@ namespace GameCore.AI.Editor
             {
                 OnDraw();
             }
+
+            OnPostDraw();
 
             switch(Event.current.type)
             {
@@ -41,9 +45,6 @@ namespace GameCore.AI.Editor
                 case EventType.MouseUp:
                     OnMouseUp();
                     break;
-                case EventType.MouseMove:
-                    OnMouseMove();
-                    break;
                 case EventType.MouseDrag:
                     OnMouseDrag();
                     break;
@@ -56,20 +57,8 @@ namespace GameCore.AI.Editor
                 case EventType.KeyDown:
                     OnKeyDown();
                     break;
-                case EventType.DragUpdated:
-                    OnDragUpdated();
-                    break;
-                case EventType.DragPerform:
-                    OnDragPerform();
-                    break;
-                case EventType.DragExited:
-                    OnDragExited();
-                    break;
                 case EventType.ContextClick:
                     OnContextClick();
-                    break;
-                case EventType.ExecuteCommand:
-                    OnExecuteCommand();
                     break;
                 case EventType.ValidateCommand:
                     OnValidateCommand();
@@ -82,10 +71,20 @@ namespace GameCore.AI.Editor
 			
 		}
 
+        public virtual void OnPreDraw()
+        {
+
+        }
+
         public virtual void OnDraw()
 		{
 
 		}
+
+        public virtual void OnPostDraw()
+        {
+
+        }
 
         public virtual void OnDisable()
 		{
@@ -93,7 +92,7 @@ namespace GameCore.AI.Editor
 
         public virtual void OnScrollWheel()
         {
-            LogMgr.LogError("OnScrollWheel " + mName);
+            
         }
 
         public virtual void OnMouseEnterWindow()
@@ -108,62 +107,37 @@ namespace GameCore.AI.Editor
 
         public virtual void OnMouseUp()
         {
-            LogMgr.LogError("OnMouseUp " + mName);
-        }
-
-        public virtual void OnMouseMove()
-        {
-            LogMgr.LogError("OnMouseUp " + mName);
+            
         }
 
         public virtual void OnMouseDrag()
         {
-            LogMgr.LogError("OnMouseDrag " + mName);
+            
         }
 
         public virtual void OnMouseDown()
         {
-            LogMgr.LogError("OnMouseDown " + mName);
+            
         }
 
         public virtual void OnKeyUp()
         {
-            LogMgr.LogError("OnKeyUp " + mName);
+            
         }
 
         public virtual void OnKeyDown()
         {
-            LogMgr.LogError("OnKeyDown " + mName);
-        }
-
-        public virtual void OnDragUpdated()
-        {
-            LogMgr.LogError("OnDragUpdated " + mName);
-        }
-
-        public virtual void OnDragPerform()
-        {
-            LogMgr.LogError("OnDragPerform " + mName);
-        }
-
-        public virtual void OnDragExited()
-        {
-            LogMgr.LogError("OnDragExited " + mName);
+            
         }
 
         public virtual void OnContextClick()
         {
-            LogMgr.LogError("OnContextClick " + mName);
-        }
-
-        public virtual void OnExecuteCommand()
-        {
-            LogMgr.LogError("OnExecuteCommand " + mName);
+            
         }
 
         public virtual void OnValidateCommand()
         {
-            LogMgr.LogError("OnValidateCommand " + mName);
+            
         }
     }
 }
