@@ -18,29 +18,10 @@ namespace GameCore.AI.Editor
 			mName = windowName;
             mIsDirty = false;
 
-            OnPreDraw();
-
-            if (id > 0)
-			{
-				GUI.Window (id, rect, (idw)=> { OnDraw(); }, windowName);
-			}
-            else
-            {
-                OnDraw();
-            }
-
-            OnPostDraw();
-
-            switch(Event.current.type)
+            switch (Event.current.type)
             {
                 case EventType.ScrollWheel:
                     OnScrollWheel();
-                    break;
-                case EventType.MouseEnterWindow:
-                    OnMouseEnterWindow();
-                    break;
-                case EventType.MouseLeaveWindow:
-                    OnMouseLeaveWindow();
                     break;
                 case EventType.MouseUp:
                     OnMouseUp();
@@ -64,6 +45,19 @@ namespace GameCore.AI.Editor
                     OnValidateCommand();
                     break;
             }
+
+            OnPreDraw();
+
+            if (id > 0)
+			{
+				GUI.Window (id, rect, (idw)=> { OnDraw(); }, windowName);
+			}
+            else
+            {
+                OnDraw();
+            }
+
+            OnPostDraw();
 		}
 
         public virtual void OnEnable()
@@ -91,16 +85,6 @@ namespace GameCore.AI.Editor
         }
 
         public virtual void OnScrollWheel()
-        {
-            
-        }
-
-        public virtual void OnMouseEnterWindow()
-        {
-            
-        }
-
-        public virtual void OnMouseLeaveWindow()
         {
             
         }

@@ -669,7 +669,7 @@ public class TriggerNodeWindow : EditorWindow {
         this.zoomScale = this.ClampZoom(setZoom);
         Vector2 vector2 = new Vector2(this.windowMainViewRect.width, this.windowMainViewRect.height) / this.zoomScale;
         Vector2 vector3 = vector2 - vector;
-        Vector2 vector4 = Event.current.mousePosition - new Vector2(this.windowMainViewRect.xMin, TabOffset);
+        Vector2 vector4 = new Vector2(windowMainViewRect.width / 2.0f, windowMainViewRect.height / 2.0f); //Event.current.mousePosition - new Vector2(this.windowMainViewRect.xMin, TabOffset);
         vector4.x /= this.windowMainViewRect.width;
         vector4.y /= this.windowMainViewRect.height;
         this.cameraPos -= Vector2.Scale(vector3, vector4);

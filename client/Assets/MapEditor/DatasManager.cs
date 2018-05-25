@@ -39,7 +39,8 @@ public partial class DatasManager : GameCore.BaseMgr<DatasManager>
     private void LoadData(string path, LoadResourcesCallback<TextAsset> cb)
     {
         mLoadedFileCount++;
-        cb(GameCore.ResMgr.LoadText(path));
+        TextAsset asset = UnityEditor.AssetDatabase.LoadAssetAtPath<TextAsset>(string.Format("Assets/Res/Resource/{0}.bytes", path));
+        cb(asset);
     }
 	
     //清理所有数据
