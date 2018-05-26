@@ -33,7 +33,7 @@
 //  Sanjay Ghemawat, Jeff Dean, and others.
 //
 // Recursive descent FTW.
-
+#pragma warning(disable:4244)
 #include <float.h>
 #include <google/protobuf/stubs/hash.h>
 #include <limits>

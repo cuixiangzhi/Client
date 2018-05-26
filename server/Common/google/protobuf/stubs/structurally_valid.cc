@@ -1,6 +1,6 @@
 // Copyright 2005-2008 Google Inc. All Rights Reserved.
 // Author: jrm@google.com (Jim Meehan)
-
+#pragma warning(disable:4244)
 #include <google/protobuf/stubs/common.h>
 
 #include <google/protobuf/stubs/stringpiece.h>

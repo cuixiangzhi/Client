@@ -29,7 +29,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // from google3/base/stringprintf.cc
-
+#pragma warning(disable:4267)
 #include <google/protobuf/stubs/stringprintf.h>
 
 #include <errno.h>

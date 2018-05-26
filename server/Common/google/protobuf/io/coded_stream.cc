@@ -47,8 +47,8 @@
 #include <google/protobuf/stubs/logging.h>
 #include <google/protobuf/stubs/common.h>
 #include <google/protobuf/stubs/stl_util.h>
-
-
+#pragma warning(disable:4267)
+#pragma warning(disable:4244)
 namespace google {
 namespace protobuf {
 namespace io {

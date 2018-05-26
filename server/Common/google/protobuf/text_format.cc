@@ -31,7 +31,7 @@
 // Author: jschorr@google.com (Joseph Schorr)
 //  Based on original Protocol Buffers design by
 //  Sanjay Ghemawat, Jeff Dean, and others.
-
+#pragma warning(disable:4018)
 #include <algorithm>
 #include <float.h>
 #include <math.h>
@@ -39,9 +39,9 @@
 #include <stack>
 #include <limits>
 #include <vector>
-
+#pragma warning(disable:4800)
 #include <google/protobuf/text_format.h>
-
+#pragma warning(disable:4244)
 #include <google/protobuf/descriptor.h>
 #include <google/protobuf/dynamic_message.h>
 #include <google/protobuf/repeated_field.h>

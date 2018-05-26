@@ -29,7 +29,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef GOOGLE_PROTOBUF_STUBS_MATHUTIL_H_
 #define GOOGLE_PROTOBUF_STUBS_MATHUTIL_H_
-
+#pragma warning(disable:4800)
 #include <float.h>
 #include <math.h>
 

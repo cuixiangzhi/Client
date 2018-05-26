@@ -32,7 +32,7 @@
 //          kenton@google.com (Kenton Varda)
 //  Based on original Protocol Buffers design by
 //  Sanjay Ghemawat, Jeff Dean, and others.
-
+#pragma warning(disable:4244)
 #include <google/protobuf/message_lite.h>
 #include <google/protobuf/arena.h>
 #include <google/protobuf/repeated_field.h>

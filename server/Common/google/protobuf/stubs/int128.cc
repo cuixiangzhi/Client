@@ -27,9 +27,9 @@
 // THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
+#pragma warning(disable:4244)
 #include <google/protobuf/stubs/int128.h>
-
+#pragma warning(disable:4018)
 #include <iomanip>
 #include <ostream>  // NOLINT(readability/streams)
 #include <sstream>

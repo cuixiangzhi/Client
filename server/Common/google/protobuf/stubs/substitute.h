@@ -30,7 +30,7 @@
 
 // Author: kenton@google.com (Kenton Varda)
 // from google3/strings/substitute.h
-
+#pragma warning(disable:4267)
 #include <string>
 #include <google/protobuf/stubs/common.h>
 #include <google/protobuf/stubs/strutil.h>

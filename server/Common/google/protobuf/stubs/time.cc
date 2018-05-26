@@ -1,5 +1,5 @@
 #include <google/protobuf/stubs/time.h>
-
+#pragma warning(disable:4244)
 #include <ctime>
 
 #include <google/protobuf/stubs/stringprintf.h>

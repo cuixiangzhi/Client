@@ -27,12 +27,12 @@
 // THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
+#pragma warning(disable:4018)
 #include <google/protobuf/util/internal/field_mask_utility.h>
-
+#pragma warning(disable:4267)
 #include <google/protobuf/stubs/strutil.h>
 #include <google/protobuf/stubs/status_macros.h>
-
+#pragma warning(disable:4244)
 namespace google {
 namespace protobuf {
 namespace util {

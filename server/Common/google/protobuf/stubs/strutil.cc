@@ -29,10 +29,10 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // from google3/strings/strutil.cc
-
+#pragma warning(disable:4267)
 #include <google/protobuf/stubs/strutil.h>
 #include <google/protobuf/stubs/mathlimits.h>
-
+#pragma warning(disable:4244)
 #include <errno.h>
 #include <float.h>    // FLT_DIG and DBL_DIG
 #include <limits>

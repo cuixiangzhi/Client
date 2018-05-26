@@ -31,10 +31,10 @@
 // Author: kenton@google.com (Kenton Varda)
 //  Based on original Protocol Buffers design by
 //  Sanjay Ghemawat, Jeff Dean, and others.
-
+#pragma warning(disable:4506)
 #include <algorithm>
 #include <set>
-
+#pragma warning(disable:4065)
 #include <google/protobuf/stubs/logging.h>
 #include <google/protobuf/stubs/common.h>
 #include <google/protobuf/descriptor.pb.h>
@@ -44,7 +44,7 @@
 #include <google/protobuf/generated_message_util.h>
 #include <google/protobuf/map_field.h>
 #include <google/protobuf/repeated_field.h>
-
+#pragma warning(disable:4800)
 
 #define GOOGLE_PROTOBUF_HAS_ONEOF
 

@@ -32,7 +32,7 @@
 //
 // Author: Maxim Lifantsev
 //
-
+#pragma warning(disable:4305)
 #include <google/protobuf/stubs/mathlimits.h>
 
 #include <google/protobuf/stubs/common.h>

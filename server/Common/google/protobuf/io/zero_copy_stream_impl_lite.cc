@@ -31,7 +31,7 @@
 // Author: kenton@google.com (Kenton Varda)
 //  Based on original Protocol Buffers design by
 //  Sanjay Ghemawat, Jeff Dean, and others.
-
+#pragma warning(disable:4267)
 #include <google/protobuf/io/zero_copy_stream_impl_lite.h>
 
 #include <algorithm>

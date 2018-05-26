@@ -27,9 +27,9 @@
 // THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
+#pragma warning(disable:4267)
 #include <google/protobuf/util/internal/json_stream_parser.h>
-
+#pragma warning(disable:4244)
 #include <algorithm>
 #include <cctype>
 #include <cerrno>

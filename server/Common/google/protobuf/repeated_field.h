@@ -42,7 +42,7 @@
 // Typically, clients should not need to access RepeatedField objects directly,
 // but should instead use the accessor functions generated automatically by the
 // protocol compiler.
-
+#pragma warning(disable:4267)
 #ifndef GOOGLE_PROTOBUF_REPEATED_FIELD_H__
 #define GOOGLE_PROTOBUF_REPEATED_FIELD_H__
 
