@@ -15,7 +15,6 @@ namespace GameCore.AI.Editor
 
 		void OnEnable()
 		{
-			OnInit();
 			mUnitWindow.OnEnable();
 			mZoomWindow.OnEnable();
 			mNodeWindow.OnEnable();
@@ -44,12 +43,6 @@ namespace GameCore.AI.Editor
             {
                 Repaint();
             }            
-		}
-
-		void OnInit()
-		{
-			this.titleContent = new GUIContent("BTWindow");
-			this.minSize = new Vector2 (180,100);
 		}
 	}
 }

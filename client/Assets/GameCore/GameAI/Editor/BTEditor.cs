@@ -9,7 +9,7 @@ namespace GameCore.AI.Editor
 		[MenuItem("Tools/BTEditor/打开行为树编辑器")]
 		public static void OpenBTWindow()
 		{
-			EditorWindow.GetWindow<BTWindow> ().Show();
+			EditorWindow.GetWindow<BTWindow>("BTWindow").Show();
 		}
 		//控制结点 多个后继结点,根据打断方式不同每帧做不同子树或者兄弟树条件计算
 		//串行序列(and操作  顺序执行,遇到失败返回失败,全部成功返回成功) 
