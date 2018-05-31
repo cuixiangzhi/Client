@@ -209,26 +209,28 @@
 			可以通过一些API修改这个数据
 			创建显存对象 Gluint vboID;glGenBuffers(1,&vboID);
 			绑定对象类型 glBindBuffer(GL_ARRAY_BUFFER,vboID);
-						 数组可以是顶点数组 GL_ARRAY_BUFFER		
-						 下一次重新绑定可用于更新对象属性 	
+						GL_ELEMENT_ARRAY_BUFFER 索引缓冲VBO
+						GL_ARRAY_BUFFER 顶点缓冲VBO
+			设置对象属性  glBufferData(GL_ARRAY_BUFFER,数组内存大小,数组指针,存储方式); 
+					    glBufferSubData(GL_ARRAY_BUFFER,对象偏移,数组长度,数组指针);
+						static  一次指定多次使用,适用于静态物体
+						dynamic 反复指定反复使用,适用于动态物体
+						stream  一次指定一次使用,每帧都会变化
+						draw 表示对象被用来绘制使用
+						read 表示对象被用来读取使用
+						copy
+			绘制缓存数据  
+						开启attrib
+						gl*AttribPointer  定义VBO顶点、颜色、法线、UV格式
+						glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_BYTE, 0); 绘制索引VBO
+						关闭attrib
+			映射显存对象
 						 void* glMapBuffer(GL_ARRAY_BUFFER,GL_READ_WRITE);可以映射显存	  
 						 glUnmapBuffer(GL_ARRAY_BUFFER)取消映射 
-			设置对象属性 glBufferData(GL_ARRAY_BUFFER,数组内存大小,数组指针,存储方式); 
-						 glBufferSubData(GL_ARRAY_BUFFER,对象偏移,数组长度,数组指针);
-						 static  一次指定多次使用,适用于静态物体
-						 dynamic 反复指定反复使用,适用于动态物体
-						 stream  一次指定一次使用,每帧都会变化
-						 draw 表示对象被用来绘制使用
-						 read 表示对象被用来读取使用
-						 copy
-			绘制缓存数据 glEnableClientState(GL_VERTEX_ARRAY);
-						 glVertexPointer(3,GL_FLOAT,0,0);
-						 glVertexAttribPointer
-						 glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_BYTE, 0);
-						 glDisableClientState();
-
 			删除缓存数组 glDeleteBuffers(vboID);
-	IBO 	索引BUFFER,存储顶点数组下标
+	VAO
+			创建VAO glGenVertexArray()
+			绑定VAO glBindVertexArray()
 	静态合批
 		创建一个大的VBO存储顶点,不同的IBO存储索引,每次绘制只绘制单个IBO(索引大的VBO上的一段)
 		静态合批的对象是共享相同材质球的
