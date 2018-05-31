@@ -229,8 +229,11 @@
 						 glUnmapBuffer(GL_ARRAY_BUFFER)取消映射 
 			删除缓存数组 glDeleteBuffers(vboID);
 	VAO
+			存储了VBO的引用和顶点属性格式,VAO本身不存储顶点数据
+			绑定VAO之后 后续创建的VBO都属于当前VAO
 			创建VAO glGenVertexArray()
 			绑定VAO glBindVertexArray()
+			使用VAO之后,后续创建的VBO EBO只需要bindvao就可以绘制了
 	静态合批
 		创建一个大的VBO存储顶点,不同的IBO存储索引,每次绘制只绘制单个IBO(索引大的VBO上的一段)
 		静态合批的对象是共享相同材质球的
