@@ -89,13 +89,22 @@ SQL  结构化查询语言
 			forexcel  excel和mysql互操作
 			instance  对应IP PORT,一个数据库服务器,可以拥有N个数据库
 			connector 数据库操作API
-			数据库操作  show databases; 显示所有数据库
+			数据库操作  
+						mysql -u root -p root用户登录mysql
+						mysqladmin -u root -p shutdown关闭mysql服务器
+
+						unix下启动重启关闭 service mysql start/stop/restart
+						windows启动重启关闭 net start/stop mysql
+						删除账户及权限 drop user name@'%' name@localhost
+						刷新权限 flush privileges
+						授权  grant all privileges on db.* to name@localhost identified by 'password';
+						添加用户 create user name@localhost identified by 'password'
+
+						show databases; 显示所有数据库
 						use dbname;     选择某个库
 						show tables;    显示所有表
 						show columns from name 显示表列
 						show variables like "character_set_database" 显示数据库编码
-						mysql -u root -p 登录mysql
-						mysqladmin -u root -p shutdown关闭mysql服务器
 						use mysql; select update insert等修改mysql数据库添加用户更改配置
 	REDIS   内存数据库,RDB AOF 定时fork子进程写
 	MONGODB 内存数据库,利用mmap文件映射实现  

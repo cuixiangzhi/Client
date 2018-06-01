@@ -6,31 +6,47 @@ namespace GameCore.AI.Editor
 {
 	public class BTBaseWindow
 	{
-        public int mID = -1;
-        public Rect mRect = Rect.zero;
-        public string mName = string.Empty;
+        public static float WINDOW_MIN_FLOAT = 0.001f;
+
+        public static int NODE_WINDOW_WIDTH = 190;
+        public static int NODE_WINDOW_CLIP_END_OFF = 48;
+        public static int NODE_WINDOW_CLIP_START_OFF = 18;
+        public static int NODE_WINDOW_SCROLL_START_OFF_Y = 22;
+        public static int NODE_WINDOW_SCROLL_START_OFF_X = 180;
+        public static int NODE_WINDOW_SCROLL_WIDTH = 6;
+        public static int NODE_WINDOW_SCROLL_SPEED = 15;
+
+        public static int UNIT_WINDOW_WIDTH = 190;
+
+        public static int ZOOM_WINDOW_OFF_Y = 22;
+
+        public Rect mWindowRect = Rect.zero;
+        public string mWindowName = string.Empty;
         public bool mIsDirty = false;
 
-		public void OnGUI(int id,Rect rect,string windowName)
+        public void OnGUI()
 		{
-			mID = id;
-			mRect = rect;
-			mName = windowName;
             mIsDirty = false;
+            OnPreDraw();
+            OnDraw();
+            OnPostDraw();
+        }
 
+        public virtual void OnEvent()
+        {
             switch (Event.current.type)
             {
                 case EventType.ScrollWheel:
                     OnScrollWheel();
                     break;
                 case EventType.MouseUp:
-                    OnMouseUp();
+                    OnMouseUp(Event.current.mousePosition);
                     break;
                 case EventType.MouseDrag:
-                    OnMouseDrag();
+                    OnMouseDrag(Event.current.mousePosition);
                     break;
                 case EventType.MouseDown:
-                    OnMouseDown();
+                    OnMouseDown(Event.current.mousePosition);
                     break;
                 case EventType.KeyUp:
                     OnKeyUp();
@@ -38,27 +54,17 @@ namespace GameCore.AI.Editor
                 case EventType.KeyDown:
                     OnKeyDown();
                     break;
-                case EventType.ContextClick:
-                    OnContextClick();
-                    break;
                 case EventType.ValidateCommand:
                     OnValidateCommand();
                     break;
+                case EventType.Ignore:
+                    OnMouseIgnore();
+                    break;
+                case EventType.ContextClick:
+                    OnContextClick();
+                    break;
             }
-
-            OnPreDraw();
-
-            if (id > 0)
-			{
-				GUI.Window (id, rect, (idw)=> { OnDraw(); }, windowName);
-			}
-            else
-            {
-                OnDraw();
-            }
-
-            OnPostDraw();
-		}
+        }
 
         public virtual void OnEnable()
 		{
@@ -89,17 +95,17 @@ namespace GameCore.AI.Editor
             
         }
 
-        public virtual void OnMouseUp()
+        public virtual void OnMouseUp(Vector2 position)
         {
             
         }
 
-        public virtual void OnMouseDrag()
+        public virtual void OnMouseDrag(Vector2 position)
         {
             
         }
 
-        public virtual void OnMouseDown()
+        public virtual void OnMouseDown(Vector2 position)
         {
             
         }
@@ -122,6 +128,11 @@ namespace GameCore.AI.Editor
         public virtual void OnValidateCommand()
         {
             
+        }
+
+        public virtual void OnMouseIgnore()
+        {
+
         }
     }
 }

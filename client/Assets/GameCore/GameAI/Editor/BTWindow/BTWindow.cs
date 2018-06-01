@@ -12,6 +12,8 @@ namespace GameCore.AI.Editor
 		private BTBaseWindow mZoomWindow = new BTZoomWindow();
 		//结点窗口
 		private BTBaseWindow mNodeWindow = new BTNodeWindow();
+        //控制单击
+        private bool mIsMouseDown = false;
 
 		void OnEnable()
 		{
@@ -29,17 +31,55 @@ namespace GameCore.AI.Editor
 
 		void OnGUI()
 		{
-			Rect rectUnit = new Rect (0, 0, 180, Screen.height);
-			Rect rectNode = new Rect (Screen.width - 180, 0, 180, Screen.height);
-			Rect rectZoom = new Rect (180, 0, Screen.width - 360, Screen.height);
+            switch (Event.current.type)
+            {
+                case EventType.Layout:
+                case EventType.Used:
+                case EventType.MouseEnterWindow:
+                case EventType.MouseLeaveWindow:
+                case EventType.DragPerform:
+                case EventType.DragUpdated:
+                case EventType.DragExited:
+                    //忽略
+                    break;
+                case EventType.Repaint:
+                    //重绘
+                    BeginWindows();
+                    mUnitWindow.OnGUI();
+                    mNodeWindow.OnGUI();
+                    mZoomWindow.OnGUI();
+                    EndWindows();
+                    break;
+                default:
+                    //左键单击抬起之前忽略右键事件
+                    if(mIsMouseDown && Event.current.isMouse && Event.current.button == 1)
+                    {
+                        if(Event.current.type == EventType.MouseDrag)
+                        {
+                            Event.current.button = 0;
+                        }
+                    }
+                    if(Event.current.isMouse && Event.current.button == 0)
+                    {
+                        if(Event.current.type == EventType.MouseDown)
+                        {
+                            mIsMouseDown = true;
+                        }
+                        else if(Event.current.type == EventType.MouseUp)
+                        {
+                            mIsMouseDown = false;
+                        }
+                    }
+                    if (!Event.current.isMouse || Event.current.button == 0 || (!mIsMouseDown && Event.current.type == EventType.ContextClick))
+                    {
+                        mUnitWindow.OnEvent();
+                        mNodeWindow.OnEvent();
+                        mZoomWindow.OnEvent();
+                    }
+                    break;
+            }
 
-			BeginWindows();
-			mUnitWindow.OnGUI (2, rectUnit, "UnitWindow");
-            mNodeWindow.OnGUI (3, rectNode, "NodeWindow");
-            mZoomWindow.OnGUI (0, rectZoom, "ZoomWindow");
-			EndWindows();
-
-            if(mUnitWindow.mIsDirty || mNodeWindow.mIsDirty || mZoomWindow.mIsDirty)
+            if (mUnitWindow.mIsDirty || mNodeWindow.mIsDirty || mZoomWindow.mIsDirty)
             {
                 Repaint();
             }            

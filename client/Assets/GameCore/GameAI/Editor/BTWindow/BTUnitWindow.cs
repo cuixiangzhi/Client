@@ -5,13 +5,28 @@ using UnityEditor;
 namespace GameCore.AI.Editor
 {
 	public sealed class BTUnitWindow : BTBaseWindow
-	{
-        private Vector2 mScrollPosition = Vector2.zero;
+    {
+        public override void OnEnable()
+        {
+            mWindowName = "BTUnitWindow";
+        }
+
+        public override void OnPreDraw()
+        {
+            mWindowRect = new Rect(0, 0, 180, Screen.height);
+            GUI.BeginGroup(new Rect(mWindowRect.x, mWindowRect.y, mWindowRect.width, mWindowRect.height));
+            GUI.Box(new Rect(0,0,mWindowRect.width,mWindowRect.height),mWindowName,GUI.skin.window);
+        }
 
         public override void OnDraw()
         {
-            mScrollPosition = GUI.BeginScrollView(new Rect(0,20,mRect.width,mRect.height), mScrollPosition, mRect ,false,false);
-            GUI.EndScrollView();
+            
+        }
+
+        public override void OnPostDraw()
+        {
+            GUI.matrix = Matrix4x4.identity;
+            GUI.EndGroup();
         }
     }
 }

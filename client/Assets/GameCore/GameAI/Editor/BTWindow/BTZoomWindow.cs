@@ -9,39 +9,54 @@ namespace GameCore.AI.Editor
 		private float mZoomScaleCur = 1f;
         private float mZoomScaleMax = 1f;
 
+        private Rect mZoomRect = Rect.zero;
+        private Vector3 mZoomTransform = Vector3.zero;
+
+        public override void OnEnable()
+        {
+            mWindowName = "BTZoomWindow";
+        }
+
         public override void OnPreDraw()
         {
-            GUI.BeginGroup(new Rect(mRect.x, mRect.y, mRect.width / mZoomScaleCur, mRect.height / mZoomScaleMax));
+            //计算窗口大小及缩放后大小
+            mWindowRect = new Rect(NODE_WINDOW_WIDTH, 0, Screen.width - NODE_WINDOW_WIDTH * 2, Screen.height);
+            if (Mathf.Abs(mZoomScaleCur - mZoomScaleMax) > WINDOW_MIN_FLOAT)
+            {
+                mIsDirty = true;
+                mZoomScaleCur = Mathf.Lerp(mZoomScaleCur, mZoomScaleMax, 0.1f);
+            }
+            mZoomRect = new Rect(mWindowRect.x, mWindowRect.y, mWindowRect.width / mZoomScaleCur, mWindowRect.height / mZoomScaleCur);
+            mZoomTransform = new Vector3(NODE_WINDOW_WIDTH + mWindowRect.width / 2, mWindowRect.height / 2);
+            //计算TRS矩阵
+            Matrix4x4 transform = Matrix4x4.TRS(mZoomTransform, Quaternion.identity, Vector3.one);
+            Matrix4x4 scale = Matrix4x4.Scale(new Vector3(mZoomScaleCur, mZoomScaleCur, 1f));
+            Matrix4x4 trs = transform * scale * transform.inverse * GUI.matrix;
 
-            Matrix4x4 matrix4x = Matrix4x4.TRS(new Vector3(180, 22), Quaternion.identity, Vector3.one);
-            Matrix4x4 matrix4x2 = Matrix4x4.Scale(new Vector3(mZoomScaleCur, mZoomScaleCur, 1f));
-            GUI.matrix = (matrix4x * matrix4x2 * matrix4x.inverse * GUI.matrix);
+            //绘制窗口
+            GUI.BeginGroup(mZoomRect);
+            GUI.matrix = trs;
         }
 
         public override void OnDraw()
-		{
- 
-            GUI.Box(new Rect(100,100,200,200), "", GUI.skin.window);      
-
+		{          
+            GUI.Box(new Rect(0,0,200,200), "", GUI.skin.window);
         }
 
         public override void OnPostDraw()
         {
             GUI.matrix = Matrix4x4.identity;
-
             GUI.EndGroup();
-
-            if (Mathf.Abs(mZoomScaleCur - mZoomScaleMax) > 0.001)
-            {
-                mIsDirty = true;
-                mZoomScaleCur = Mathf.Lerp(mZoomScaleCur, mZoomScaleMax, 0.1f);
-            }
         }
 
         public override void OnScrollWheel()
         {
-            mIsDirty = true;
-            mZoomScaleMax = Mathf.Clamp(mZoomScaleMax * (1f - Event.current.delta.y * 0.05f), 0.1f, 1.5f);
+            //检查是否滚动了结点列表
+            if (mWindowRect.Contains(Event.current.mousePosition))
+            {
+                mZoomScaleMax = Mathf.Clamp(mZoomScaleMax * (1f - Event.current.delta.y * 0.05f), 0.1f, 1.5f);
+                mIsDirty = true;
+            }
         }
     }
 }
