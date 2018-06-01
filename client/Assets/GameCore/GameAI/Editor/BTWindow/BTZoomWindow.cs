@@ -26,27 +26,60 @@ namespace GameCore.AI.Editor
                 mIsDirty = true;
                 mZoomScaleCur = Mathf.Lerp(mZoomScaleCur, mZoomScaleMax, 0.1f);
             }
-            mZoomRect = new Rect(mWindowRect.x, mWindowRect.y, mWindowRect.width / mZoomScaleCur, mWindowRect.height / mZoomScaleCur);
+            mZoomRect = new Rect(mWindowRect.x, mWindowRect.y, 1.07374182E+09f, 1.07374182E+09f);
             mZoomTransform = new Vector3(NODE_WINDOW_WIDTH + mWindowRect.width / 2, mWindowRect.height / 2);
             //计算TRS矩阵
             Matrix4x4 transform = Matrix4x4.TRS(mZoomTransform, Quaternion.identity, Vector3.one);
             Matrix4x4 scale = Matrix4x4.Scale(new Vector3(mZoomScaleCur, mZoomScaleCur, 1f));
             Matrix4x4 trs = transform * scale * transform.inverse * GUI.matrix;
-
+            GUI.matrix = trs;
             //绘制窗口
             GUI.BeginGroup(mZoomRect);
-            GUI.matrix = trs;
         }
 
         public override void OnDraw()
 		{          
-            GUI.Box(new Rect(0,0,200,200), "", GUI.skin.window);
+            GUI.Box(new Rect(mCurPosition.x, mCurPosition.y, 200,200), "", GUI.skin.window);
         }
 
         public override void OnPostDraw()
-        {
-            GUI.matrix = Matrix4x4.identity;
+        {           
             GUI.EndGroup();
+
+            GUI.matrix = Matrix4x4.identity;
+        }
+
+        private Vector2 mCurPosition = Vector2.zero;
+        private bool mDraging = false;
+
+        public override void OnMouseDown(Vector2 position)
+        {
+            if(mWindowRect.Contains(position))
+            {
+                mDraging = true;
+                mIsDirty = true;
+            }
+        }
+
+        public override void OnMouseDrag(Vector2 position)
+        {
+            if(mDraging)
+            {
+                mCurPosition += Event.current.delta;
+                mIsDirty = true;
+            }
+        }
+
+        public override void OnMouseUp(Vector2 position)
+        {
+            mDraging = false;
+            mIsDirty = true;
+        }
+
+        public override void OnMouseIgnore()
+        {
+            mDraging = false;
+            mIsDirty = true;
         }
 
         public override void OnScrollWheel()
@@ -54,7 +87,7 @@ namespace GameCore.AI.Editor
             //检查是否滚动了结点列表
             if (mWindowRect.Contains(Event.current.mousePosition))
             {
-                mZoomScaleMax = Mathf.Clamp(mZoomScaleMax * (1f - Event.current.delta.y * 0.05f), 0.1f, 1.5f);
+                mZoomScaleMax = Mathf.Clamp(mZoomScaleMax * (1f - Event.current.delta.y * 0.05f), 0.4f, 1f);
                 mIsDirty = true;
             }
         }
