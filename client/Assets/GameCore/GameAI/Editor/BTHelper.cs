@@ -39,14 +39,11 @@ namespace GameCore.AI.Editor
 		{ 
 			get 
 			{ 
-				if (_NODE_GROUP_STYLE == null)
-				{
+				if(_NODE_GROUP_STYLE == null) 
+				{ 
 					_NODE_GROUP_STYLE = new GUIStyle(GUI.skin.box);
-					_NODE_GROUP_STYLE.alignment = TextAnchor.MiddleCenter;
 					_NODE_GROUP_STYLE.normal.textColor = Color.cyan;
-					_NODE_GROUP_STYLE.fontStyle = FontStyle.Normal;
 					_NODE_GROUP_STYLE.fontSize = 16;
-					_NODE_GROUP_STYLE.wordWrap = false;
 				}
 				return _NODE_GROUP_STYLE;
 			} 
@@ -60,11 +57,8 @@ namespace GameCore.AI.Editor
 				if (_NODE_CHILD_STYLE == null)
 				{
 					_NODE_CHILD_STYLE = new GUIStyle (GUI.skin.box);
-					_NODE_CHILD_STYLE.alignment = TextAnchor.MiddleCenter;
 					_NODE_CHILD_STYLE.normal.textColor = Color.white;
-					_NODE_CHILD_STYLE.fontStyle = FontStyle.Normal;
 					_NODE_CHILD_STYLE.fontSize = 13;
-					_NODE_CHILD_STYLE.wordWrap = false;
 				}
 				return _NODE_CHILD_STYLE;
 			}
@@ -78,11 +72,9 @@ namespace GameCore.AI.Editor
 				if (_NODE_DRAG_STYLE == null)
 				{
 					_NODE_DRAG_STYLE = new GUIStyle (GUI.skin.box);
-					_NODE_DRAG_STYLE.alignment = TextAnchor.MiddleCenter;
 					_NODE_DRAG_STYLE.normal.textColor = Color.green;
 					_NODE_DRAG_STYLE.fontStyle = FontStyle.BoldAndItalic;
 					_NODE_DRAG_STYLE.fontSize = 13;
-					_NODE_DRAG_STYLE.wordWrap = false;
 				}
 				return _NODE_DRAG_STYLE;
 			}

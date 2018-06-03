@@ -22,6 +22,7 @@ public static class ZoomArea
         rect2.y -= cameraPos.y;
 
         GUI.BeginGroup(rect2);
+		GUI.Box(new Rect(cameraPos.x, cameraPos.y, 200,200), "", GUI.skin.window);
 
         return rect;
     }

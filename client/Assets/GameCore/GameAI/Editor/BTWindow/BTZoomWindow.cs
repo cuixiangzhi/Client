@@ -26,7 +26,9 @@ namespace GameCore.AI.Editor
                 mIsDirty = true;
                 mZoomScaleCur = Mathf.Lerp(mZoomScaleCur, mZoomScaleMax, 0.1f);
             }
-            mZoomRect = new Rect(mWindowRect.x, mWindowRect.y, 1.07374182E+09f, 1.07374182E+09f);
+			mWindowRect = new Rect(mWindowRect.x, mWindowRect.y, mWindowRect.width / mZoomScaleCur, mWindowRect.height / mZoomScaleCur);
+
+			mZoomRect = new Rect(0, 0, 1000000, 1000000);
             mZoomTransform = new Vector3(190 + mWindowRect.width / 2, mWindowRect.height / 2);
             //计算TRS矩阵
             Matrix4x4 transform = Matrix4x4.TRS(mZoomTransform, Quaternion.identity, Vector3.one);
@@ -34,7 +36,9 @@ namespace GameCore.AI.Editor
             Matrix4x4 trs = transform * scale * transform.inverse * GUI.matrix;
             GUI.matrix = trs;
             //绘制窗口
-            GUI.BeginGroup(mZoomRect);
+			GUI.EndGroup();
+			GUI.BeginGroup(mWindowRect);
+			GUI.BeginGroup(mZoomRect);
         }
 
         public override void OnDraw()
@@ -45,8 +49,9 @@ namespace GameCore.AI.Editor
         public override void OnPostDraw()
         {           
             GUI.EndGroup();
-
             GUI.matrix = Matrix4x4.identity;
+			GUI.EndGroup ();
+			GUI.BeginGroup(new Rect(0,0,Screen.width,Screen.height));
         }
 
         private Vector2 mCurPosition = Vector2.zero;
