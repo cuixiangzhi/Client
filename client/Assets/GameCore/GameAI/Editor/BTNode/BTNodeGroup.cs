@@ -14,35 +14,35 @@ namespace GameCore.AI.Editor
         public float mNodeOffset = 0;
 
         public int mDragingIdx = -1;
-        public Rect mDragRect = new Rect(0,0,NODE_DRAG_WIDTH,NODE_DRAG_HEIGHT);
+		public Rect mDragRect = BTHelper.NODE_DRAG_RECT;
 
         public override void OnDraw(float x = 0,float y = 0)
         {
             //计算当前结点组偏移
-            mNodeRect = new Rect(x, y + NODE_GROUP_SPACE, NODE_GROUP_WIDTH, NODE_GROUP_HEIGHT);
+			mNodeRect = BTHelper.NODE_GROUP_RECT(x,y);
             mNodeOffset = mNodeRect.y;
 
             //绘制折叠按钮
             GUI.color = Color.cyan;
-            GUI.Box(mNodeRect, mNodeName, NODE_GROUP_STYLE);
+			GUI.Box(mNodeRect, mNodeName, BTHelper.NODE_GROUP_STYLE);
             EditorGUI.Foldout(mNodeRect, mFoldOut, "", true);
             GUI.color = Color.white;
-            mNodeRect.y += NODE_GROUP_HEIGHT;
-            mNodeHeight = NODE_GROUP_HEIGHT + NODE_GROUP_SPACE;
+			mNodeRect.y += BTHelper.NODE_GROUP_HEIGHT;
+			mNodeHeight = BTHelper.NODE_GROUP_HEIGHT_WITH_SPACE;
 
             //绘制子结点
             if (mFoldOut)
             {
-                mNodeRect.width = NODE_CHILD_WIDTH;
-                mNodeRect.height = NODE_CHILD_HEIGHT;
-                mNodeRect.x = NODE_CHILD_OFFSET;
+				mNodeRect.width = BTHelper.NODE_CHILD_WIDTH;
+				mNodeRect.height = BTHelper.NODE_CHILD_HEIGHT;
+				mNodeRect.x = BTHelper.NODE_CHILD_OFFSET;
                 for (int i = 0;i < mNodeDatas.Count;i++)
                 {                  
-                    mNodeRect.y += NODE_GROUP_SPACE;
+					mNodeRect.y += BTHelper.NODE_GROUP_SPACE;
                     GUI.Box(mNodeRect, new GUIContent(string.Empty, mNodeDatas[i].nodeTip));
-                    GUI.Label(mNodeRect, mNodeDatas[i].nodeName, i == mDragingIdx ? NODE_DRAG_STYLE : NODE_CHILD_STYLE);
-                    mNodeRect.y += NODE_CHILD_HEIGHT;
-                    mNodeHeight += NODE_GROUP_SPACE + NODE_CHILD_HEIGHT;
+					GUI.Label(mNodeRect, mNodeDatas[i].nodeName, i == mDragingIdx ? BTHelper.NODE_DRAG_STYLE : BTHelper.NODE_CHILD_STYLE);
+					mNodeRect.y += BTHelper.NODE_CHILD_HEIGHT;
+					mNodeHeight += BTHelper.NODE_GROUP_SPACE + BTHelper.NODE_CHILD_HEIGHT;
                 }
             }
         }
@@ -57,16 +57,16 @@ namespace GameCore.AI.Editor
 
         public override bool OnMouseDown(Vector2 position)
         {
-            float y = position.y - NODE_START_OFFSET;
-            if(y >= mNodeOffset && y <= mNodeOffset + NODE_GROUP_HEIGHT)
+			float y = position.y - BTHelper.NODE_HEIGHT_OFFSET;
+			if(y >= mNodeOffset && y <= mNodeOffset + BTHelper.NODE_GROUP_HEIGHT)
             {
                 mFoldOut = !mFoldOut;
                 return true;
             }
-            else if (y >= mNodeOffset + NODE_GROUP_HEIGHT + NODE_GROUP_SPACE && y <= mNodeOffset + mNodeHeight)
+			else if (y >= mNodeOffset + BTHelper.NODE_GROUP_HEIGHT_WITH_SPACE && y <= mNodeOffset + mNodeHeight)
             {
-                float offset = y - mNodeOffset - NODE_GROUP_HEIGHT - NODE_GROUP_SPACE;
-                int idx = Mathf.CeilToInt(offset / (NODE_CHILD_HEIGHT + NODE_GROUP_SPACE)) - 1;
+				float offset = y - mNodeOffset - BTHelper.NODE_GROUP_HEIGHT_WITH_SPACE;
+				int idx = Mathf.CeilToInt(offset / BTHelper.NODE_CHILD_HEIGHT_WITH_SPACE) - 1;
                 if (idx < mNodeDatas.Count)
                 {
                     mDragingIdx = idx;

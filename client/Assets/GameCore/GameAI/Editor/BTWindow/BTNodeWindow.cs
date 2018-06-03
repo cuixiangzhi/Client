@@ -41,10 +41,10 @@ namespace GameCore.AI.Editor
         public override void OnPreDraw()
         {
             //计算窗口、裁剪、滚动大小
-			mWindowRect = BTHelper.NodeWindowRect();
-			mWindowBoxRect = BTHelper.NodeWindowBoxRect();
-			mClipRect = BTHelper.NodeWindowClipRect();
-			mScrollRect = BTHelper.NodeWindowScrollRect(GetNodeHeight(),mClipOffset,mClipRect.height);
+			mWindowRect = BTHelper.NODE_WINDOW_RECT;
+			mWindowBoxRect = BTHelper.NODE_WINDOW_BOX_RECT;
+			mClipRect = BTHelper.NODE_WINDOW_CLIP_RECT;
+			mScrollRect = BTHelper.NODE_WINDOW_SCROLL_RECT(GetNodeHeight(),mClipOffset,mClipRect.height);
 
             //绘制背景窗口
             GUI.BeginGroup(mWindowRect);
@@ -145,7 +145,7 @@ namespace GameCore.AI.Editor
             if(mWindowRect.Contains(Event.current.mousePosition))
             {
                 float oldOffset = mClipOffset;
-				mClipOffset -= BTHelper.NodeWindowScrollDelta ();
+				mClipOffset -= BTHelper.NODE_WINDOW_SCROLL_DELTA;
 
                 float nodeHeight = GetNodeHeight();
 				float maxOffset = nodeHeight > mClipRect.height ? mClipRect.height - nodeHeight : 0;

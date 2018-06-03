@@ -8,21 +8,17 @@ namespace GameCore.AI.Editor
     public static class BTHelper
     {
 		
-		public static readonly float WINDOW_MIN_FLOAT = 0.001f;
+		public static float WINDOW_MIN_FLOAT { get { return 0.001f; } }
 
-		#region NODE窗口配置
+		public static Rect NODE_WINDOW_RECT { get { return new Rect (Screen.width - 190, 0, 190, Screen.height);  } }
 
-		public static Rect NodeWindowRect()
-		{
-			return new Rect(Screen.width - 190, 0, 190, Screen.height);
-		}
+		public static Rect NODE_WINDOW_CLIP_RECT { get { return new Rect(0, 18, 190, Screen.height - 48); } }
 
-		public static Rect NodeWindowClipRect()
-		{
-			return new Rect(0, 18, 190, Screen.height - 48);
-		}
+		public static Rect NODE_WINDOW_BOX_RECT { get { return new Rect(0,0,190,Screen.height); } }
 
-		public static Rect NodeWindowScrollRect(float nodeHeight,float clipOffset,float clipHeight)
+		public static float NODE_WINDOW_SCROLL_DELTA { get { return Event.current.delta.y * 15; } }
+
+		public static Rect NODE_WINDOW_SCROLL_RECT(float nodeHeight,float clipOffset,float clipHeight)
 		{
 			float scrollOffset = 22;
 			float scrollHeight = 0;
@@ -38,23 +34,82 @@ namespace GameCore.AI.Editor
 			return new Rect(180, scrollOffset, 6, scrollHeight);
 		}
 
-		public static Rect NodeWindowBoxRect()
-		{
-			return new Rect(0,0,190,Screen.height);
+		private static GUIStyle _NODE_GROUP_STYLE = null;
+		public static GUIStyle NODE_GROUP_STYLE 
+		{ 
+			get 
+			{ 
+				if (_NODE_GROUP_STYLE == null)
+				{
+					_NODE_GROUP_STYLE = new GUIStyle(GUI.skin.box);
+					_NODE_GROUP_STYLE.alignment = TextAnchor.MiddleCenter;
+					_NODE_GROUP_STYLE.normal.textColor = Color.cyan;
+					_NODE_GROUP_STYLE.fontStyle = FontStyle.Normal;
+					_NODE_GROUP_STYLE.fontSize = 16;
+					_NODE_GROUP_STYLE.wordWrap = false;
+				}
+				return _NODE_GROUP_STYLE;
+			} 
 		}
 
-		public static float NodeWindowScrollDelta()
+		private static GUIStyle _NODE_CHILD_STYLE = null;
+		public static GUIStyle NODE_CHILD_STYLE
 		{
-			return Event.current.delta.y * 15;
+			get
+			{
+				if (_NODE_CHILD_STYLE == null)
+				{
+					_NODE_CHILD_STYLE = new GUIStyle (GUI.skin.box);
+					_NODE_CHILD_STYLE.alignment = TextAnchor.MiddleCenter;
+					_NODE_CHILD_STYLE.normal.textColor = Color.white;
+					_NODE_CHILD_STYLE.fontStyle = FontStyle.Normal;
+					_NODE_CHILD_STYLE.fontSize = 13;
+					_NODE_CHILD_STYLE.wordWrap = false;
+				}
+				return _NODE_CHILD_STYLE;
+			}
 		}
 
-		#endregion
+		private static GUIStyle _NODE_DRAG_STYLE = null;
+		public static GUIStyle NODE_DRAG_STYLE
+		{
+			get
+			{
+				if (_NODE_DRAG_STYLE == null)
+				{
+					_NODE_DRAG_STYLE = new GUIStyle (GUI.skin.box);
+					_NODE_DRAG_STYLE.alignment = TextAnchor.MiddleCenter;
+					_NODE_DRAG_STYLE.normal.textColor = Color.green;
+					_NODE_DRAG_STYLE.fontStyle = FontStyle.BoldAndItalic;
+					_NODE_DRAG_STYLE.fontSize = 13;
+					_NODE_DRAG_STYLE.wordWrap = false;
+				}
+				return _NODE_DRAG_STYLE;
+			}
+		}
 
-		#region NODE结点配置
+		public static Rect NODE_GROUP_RECT(float x,float y)
+		{
+			return new Rect(x, y + 4, 178, 24);
+		}
 
+		public static float NODE_GROUP_HEIGHT { get { return 24; } } 
 
+		public static float NODE_GROUP_SPACE { get { return 4; } }
 
-		#endregion
+		public static float NODE_GROUP_HEIGHT_WITH_SPACE { get { return 28; } } 
+
+		public static float NODE_CHILD_HEIGHT_WITH_SPACE { get { return 24; } }
+
+		public static float NODE_CHILD_WIDTH { get { return 150; } } 
+
+		public static float NODE_CHILD_HEIGHT { get { return 20; } } 
+
+		public static float NODE_CHILD_OFFSET { get { return 15; } }
+
+		public static float NODE_HEIGHT_OFFSET { get { return 18; }}
+
+		public static Rect NODE_DRAG_RECT { get { return new Rect (0, 0, 130, 20); } }
 
 		public static void DrawRect(Rect rect,string content)
 		{
