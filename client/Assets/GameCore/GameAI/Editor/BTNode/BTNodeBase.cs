@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace GameCore.AI.Editor
 {
-    public class BTNodeBase : ScriptableObject
+    public class BTNodeBase
     {
         public static GUIStyle NODE_GROUP_STYLE = null;
         public static int NODE_START_OFFSET = 18;

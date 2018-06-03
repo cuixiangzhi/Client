@@ -7,9 +7,9 @@ namespace GameCore.AI.Editor
 {
 	public sealed class BTNodeWindow : BTBaseWindow
 	{
-        private Rect mClipPosition = Rect.zero;
+        private Rect mClipRect = Rect.zero;
         private Rect mScrollRect = Rect.zero;
-        private Rect mButtonRect = Rect.zero;
+        private Rect mWindowBoxRect = Rect.zero;
         private float mClipOffset = 0;
         private List<BTNodeGroup> mNodeList = new List<BTNodeGroup>();
 
@@ -41,32 +41,18 @@ namespace GameCore.AI.Editor
         public override void OnPreDraw()
         {
             //计算窗口、裁剪、滚动大小
-            mWindowRect = new Rect(Screen.width - NODE_WINDOW_WIDTH, 0, NODE_WINDOW_WIDTH, Screen.height);
-            mClipPosition = new Rect(0, NODE_WINDOW_CLIP_START_OFF, NODE_WINDOW_WIDTH, Screen.height - NODE_WINDOW_CLIP_END_OFF);
-            float nodeHeight = GetNodeHeight();
-            float scrollOffset = NODE_WINDOW_SCROLL_START_OFF_Y;
-            float scrollHeight = 0;
-            if(nodeHeight > mClipPosition.height)
-            {
-                scrollHeight = mClipPosition.height * mClipPosition.height / nodeHeight;
-                scrollOffset = (mClipPosition.height - scrollHeight) * (- mClipOffset / (nodeHeight - mClipPosition.height)) + NODE_WINDOW_SCROLL_START_OFF_Y;
-            }
-            else
-            {
-                scrollHeight = mClipPosition.height;
-            }
-            mScrollRect = new Rect(NODE_WINDOW_SCROLL_START_OFF_X, scrollOffset, NODE_WINDOW_SCROLL_WIDTH, scrollHeight);
+			mWindowRect = BTHelper.NodeWindowRect();
+			mWindowBoxRect = BTHelper.NodeWindowBoxRect();
+			mClipRect = BTHelper.NodeWindowClipRect();
+			mScrollRect = BTHelper.NodeWindowScrollRect(GetNodeHeight(),mClipOffset,mClipRect.height);
 
             //绘制背景窗口
             GUI.BeginGroup(mWindowRect);
-            GUI.Box(new Rect(0,0,mWindowRect.width,mWindowRect.height), mWindowName, GUI.skin.window);
-
+			GUI.Box(mWindowBoxRect, mWindowName, GUI.skin.window);
             //绘制滚动条            
             GUI.Box(mScrollRect, string.Empty);
-
             //绘制裁剪区域            
-            GUI.BeginClip(mClipPosition, Vector2.zero, Vector2.zero, false);
-
+			GUI.BeginClip(mClipRect, Vector2.zero, Vector2.zero, false);
             //绘制前处理
             for (int i = 0; i < mNodeList.Count; i++)
             {
@@ -87,7 +73,6 @@ namespace GameCore.AI.Editor
         {
             GUI.EndClip();
             GUI.EndGroup();
-
             //绘制后处理
             for (int i = 0; i < mNodeList.Count; i++)
             {
@@ -160,13 +145,13 @@ namespace GameCore.AI.Editor
             if(mWindowRect.Contains(Event.current.mousePosition))
             {
                 float oldOffset = mClipOffset;
-                mClipOffset -= Event.current.delta.y * NODE_WINDOW_SCROLL_SPEED;
+				mClipOffset -= BTHelper.NodeWindowScrollDelta ();
 
                 float nodeHeight = GetNodeHeight();
-                float maxOffset = nodeHeight > mClipPosition.height ? mClipPosition.height - nodeHeight : 0;
+				float maxOffset = nodeHeight > mClipRect.height ? mClipRect.height - nodeHeight : 0;
 
                 mClipOffset = Mathf.Clamp(mClipOffset, maxOffset, 0);
-                if(Mathf.Abs(oldOffset - mClipOffset) > WINDOW_MIN_FLOAT)
+                if(Mathf.Abs(oldOffset - mClipOffset) > BTHelper.WINDOW_MIN_FLOAT)
                 {
                     mIsDirty = true;
                 }

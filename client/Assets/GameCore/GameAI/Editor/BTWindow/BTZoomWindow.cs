@@ -20,14 +20,14 @@ namespace GameCore.AI.Editor
         public override void OnPreDraw()
         {
             //计算窗口大小及缩放后大小
-            mWindowRect = new Rect(NODE_WINDOW_WIDTH, 0, Screen.width - NODE_WINDOW_WIDTH * 2, Screen.height);
-            if (Mathf.Abs(mZoomScaleCur - mZoomScaleMax) > WINDOW_MIN_FLOAT)
+            mWindowRect = new Rect(190, 0, Screen.width - 190 * 2, Screen.height);
+            if (Mathf.Abs(mZoomScaleCur - mZoomScaleMax) > BTHelper.WINDOW_MIN_FLOAT)
             {
                 mIsDirty = true;
                 mZoomScaleCur = Mathf.Lerp(mZoomScaleCur, mZoomScaleMax, 0.1f);
             }
             mZoomRect = new Rect(mWindowRect.x, mWindowRect.y, 1.07374182E+09f, 1.07374182E+09f);
-            mZoomTransform = new Vector3(NODE_WINDOW_WIDTH + mWindowRect.width / 2, mWindowRect.height / 2);
+            mZoomTransform = new Vector3(190 + mWindowRect.width / 2, mWindowRect.height / 2);
             //计算TRS矩阵
             Matrix4x4 transform = Matrix4x4.TRS(mZoomTransform, Quaternion.identity, Vector3.one);
             Matrix4x4 scale = Matrix4x4.Scale(new Vector3(mZoomScaleCur, mZoomScaleCur, 1f));

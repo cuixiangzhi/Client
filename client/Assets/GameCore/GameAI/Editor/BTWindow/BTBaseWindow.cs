@@ -6,16 +6,6 @@ namespace GameCore.AI.Editor
 {
 	public class BTBaseWindow
 	{
-        public static float WINDOW_MIN_FLOAT = 0.001f;
-
-        public static int NODE_WINDOW_WIDTH = 190;
-        public static int NODE_WINDOW_CLIP_END_OFF = 48;
-        public static int NODE_WINDOW_CLIP_START_OFF = 18;
-        public static int NODE_WINDOW_SCROLL_START_OFF_Y = 22;
-        public static int NODE_WINDOW_SCROLL_START_OFF_X = 180;
-        public static int NODE_WINDOW_SCROLL_WIDTH = 6;
-        public static int NODE_WINDOW_SCROLL_SPEED = 15;
-
         public static int UNIT_WINDOW_WIDTH = 190;
 
         public static int ZOOM_WINDOW_OFF_Y = 22;
