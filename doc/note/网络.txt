@@ -40,19 +40,8 @@ TCP连接与断开
 	  	server收到fin请求,返回ack给client,表示我还有数据要发送,client进入FIN_WAIT2状态,server进入close_wait
 	  	server发送fin给client,告诉它我没有数据要发送了,server进入last_wait
 	  	client返回ack给server,进入TIME_WAIT,server收到ack进入closed,client等待Nms后进入closed
-数据收发
-	粘包
+数据粘包
 		是指接收数据时数据包是相连的,没多大意义,因为应用层自己实现协议一定会判断数据包长度和标记位
-	单播
-		点对点通信
-	多播
-		服务器把一个数据包发送给指定的多播组,加入该组的主机可以收到数据
-		IP_ADD_MEMBERSHIP IP_DROP_MEMBERSHIP,加入退出多播组
-		加入的多播组由主机IP和多播IP构成
-	汇播
-	群播
-	广播
-		服务器把一个数据包发送给局域网内所有主机
 同步
 	区域同步AOI:主要是为了避免场景内对象频繁移动导致推送数据量过大,只推送给AOI半径范围内的实体
 	         	具体实现可以采用八叉树(二叉树)场景划分管理,每个结点是一个立方体的格子
@@ -85,3 +74,12 @@ TCP连接与断开
 		  Scene  场景、战斗
 		  DBCache数据缓存,数据写库、读取 
 		  路由  中心服&单点服务&区组,消息转发 服务注册 
+io模型
+		阻塞IO      调用系统API后  wait_data--copy_data_to_user                 copy过程是阻塞的,wait_data会阻塞直到数据到来 
+		非阻塞IO    调用系统API后  would_block--would_block--copy_data_to_user  copy过程是阻塞的,wait_data过程会直接返回,轮询
+		IO多路复用  调用系统API后  wait_data * n                                wait_data过程会阻塞到超时或者有数据到达,轮询检测
+		IO信号驱动  调用系统API后  wait_data * n                                wait_data过程会阻塞直到事件发生,不需要轮询检测
+		IO异步      调用系统API后  wait_data--copy_data_to_user                 整个过程都是非阻塞的,copy完成之后会阻塞
+		libevent 封装了IO细节,自动选择最优的socket io模型
+		
+
