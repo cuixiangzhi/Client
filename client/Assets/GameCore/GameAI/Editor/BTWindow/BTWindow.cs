@@ -42,39 +42,36 @@ namespace GameCore.AI.Editor
                 case EventType.DragExited:
                     //忽略
                     break;
-                case EventType.Repaint:
-                    //重绘
-                    BeginWindows();
-                    mUnitWindow.OnGUI();
-                    mNodeWindow.OnGUI();
-                    mZoomWindow.OnGUI();
-                    EndWindows();
-                    break;
                 default:
-                    //左键单击抬起之前忽略右键事件
-                    if(mIsMouseDown && Event.current.isMouse && Event.current.button == 1)
                     {
-                        if(Event.current.type == EventType.MouseDrag)
+                        if (Event.current.type == EventType.Repaint)
                         {
-                            Event.current.button = 0;
+                            //重绘
+                            BeginWindows();
+                            mUnitWindow.OnGUI();
+                            mNodeWindow.OnGUI();
+                            mZoomWindow.OnGUI();
+                            EndWindows();
                         }
                     }
-                    if(Event.current.isMouse && Event.current.button == 0)
                     {
-                        if(Event.current.type == EventType.MouseDown)
+                        if (Event.current.type == EventType.Repaint)
                         {
-                            mIsMouseDown = true;
-                        }
-                        else if(Event.current.type == EventType.MouseUp)
-                        {
-                            mIsMouseDown = false;
+                            //重绘
+                            BeginWindows();
+                            mUnitWindow.OnGUI();
+                            mNodeWindow.OnGUI();
+                            mZoomWindow.OnGUI();
+                            EndWindows();
                         }
                     }
-                    if (!Event.current.isMouse || Event.current.button == 0 || (!mIsMouseDown && Event.current.type == EventType.ContextClick))
                     {
-                        mUnitWindow.OnEvent();
-                        mNodeWindow.OnEvent();
-                        mZoomWindow.OnEvent();
+                        if (!Event.current.isMouse || Event.current.button == 0 || (!mIsMouseDown && Event.current.type == EventType.ContextClick))
+                        {
+                            mUnitWindow.OnEvent();
+                            mNodeWindow.OnEvent();
+                            mZoomWindow.OnEvent();
+                        }
                     }
                     break;
             }

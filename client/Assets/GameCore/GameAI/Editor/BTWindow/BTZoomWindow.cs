@@ -10,7 +10,8 @@ namespace GameCore.AI.Editor
         private float mZoomScaleMax = 1f;
 
         private Rect mZoomRect = Rect.zero;
-        private Vector3 mZoomTransform = Vector3.zero;
+        private Vector2 mZoomCenterRaw = Vector2.zero;
+        private Vector2 mZoomCenterCur = Vector2.zero;
 
         public override void OnEnable()
         {
@@ -19,39 +20,26 @@ namespace GameCore.AI.Editor
 
         public override void OnPreDraw()
         {
-            //计算窗口大小及缩放后大小
-            mWindowRect = new Rect(190, 0, Screen.width - 190 * 2, Screen.height);
-            if (Mathf.Abs(mZoomScaleCur - mZoomScaleMax) > BTHelper.WINDOW_MIN_FLOAT)
-            {
-                mIsDirty = true;
-                mZoomScaleCur = Mathf.Lerp(mZoomScaleCur, mZoomScaleMax, 0.1f);
-            }
-			mWindowRect = new Rect(mWindowRect.x, mWindowRect.y, mWindowRect.width / mZoomScaleCur, mWindowRect.height / mZoomScaleCur);
-
-			mZoomRect = new Rect(0, 0, 1000000, 1000000);
-            mZoomTransform = new Vector3(190 + mWindowRect.width / 2, mWindowRect.height / 2);
-            //计算TRS矩阵
-            Matrix4x4 transform = Matrix4x4.TRS(mZoomTransform, Quaternion.identity, Vector3.one);
-            Matrix4x4 scale = Matrix4x4.Scale(new Vector3(mZoomScaleCur, mZoomScaleCur, 1f));
-            Matrix4x4 trs = transform * scale * transform.inverse * GUI.matrix;
-            GUI.matrix = trs;
-            //绘制窗口
-			GUI.EndGroup();
-			GUI.BeginGroup(mWindowRect);
-			GUI.BeginGroup(mZoomRect);
+            mWindowRect = BTHelper.ZOOM_WINDOW_RECT(mZoomScaleCur);
+            mZoomCenterRaw = BTHelper.ZOOM_WINDOW_CENTER_RAW;
+            mZoomCenterCur = BTHelper.ZOOM_WINDOW_CENTER_CUR(mZoomScaleCur);
+            GUI.EndGroup();
+            GUI.BeginGroup(mWindowRect);
+            GUI.matrix = BTHelper.ZOOM_WINDOW_TRS(mWindowRect,mZoomScaleCur);
         }
 
         public override void OnDraw()
-		{          
-            GUI.Box(new Rect(mCurPosition.x, mCurPosition.y, 200,200), "", GUI.skin.window);
+		{
+            Vector2 rawPos = new Vector2(mCurPosition.x, mCurPosition.y);
+            Vector2 finalPos = mZoomCenterCur - mZoomCenterRaw + rawPos;
+            GUI.Box(new Rect(finalPos.x, finalPos.y, 200, 200), "", GUI.skin.box);
         }
 
         public override void OnPostDraw()
-        {           
-            GUI.EndGroup();
+        {
             GUI.matrix = Matrix4x4.identity;
 			GUI.EndGroup ();
-			GUI.BeginGroup(new Rect(0,0,Screen.width,Screen.height));
+            GUI.BeginGroup(BTHelper.ZOOM_WINDOW_OLD_RECT);
         }
 
         private Vector2 mCurPosition = Vector2.zero;
@@ -89,10 +77,20 @@ namespace GameCore.AI.Editor
 
         public override void OnScrollWheel()
         {
-            //检查是否滚动了结点列表
+            //缩放变化
             if (mWindowRect.Contains(Event.current.mousePosition))
             {
                 mZoomScaleMax = Mathf.Clamp(mZoomScaleMax * (1f - Event.current.delta.y * 0.05f), 0.4f, 1f);
+                mIsDirty = true;
+            }
+        }
+
+        public override void OnRepaint()
+        {
+            //缩放插值
+            if (Mathf.Abs(mZoomScaleCur - mZoomScaleMax) > BTHelper.WINDOW_MIN_FLOAT)
+            {
+                mZoomScaleCur = Mathf.Lerp(mZoomScaleCur, mZoomScaleMax, 0.1f);
                 mIsDirty = true;
             }
         }

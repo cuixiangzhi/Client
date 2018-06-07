@@ -10,7 +10,9 @@ namespace GameCore.AI.Editor
 		
 		public static float WINDOW_MIN_FLOAT { get { return 0.001f; } }
 
-		public static Rect NODE_WINDOW_RECT { get { return new Rect (Screen.width - 190, 0, 190, Screen.height);  } }
+        #region NODE WINDOW
+
+        public static Rect NODE_WINDOW_RECT { get { return new Rect (Screen.width - 190, 0, 190, Screen.height);  } }
 
 		public static Rect NODE_WINDOW_CLIP_RECT { get { return new Rect(0, 18, 190, Screen.height - 48); } }
 
@@ -34,7 +36,11 @@ namespace GameCore.AI.Editor
 			return new Rect(180, scrollOffset, 6, scrollHeight);
 		}
 
-		private static GUIStyle _NODE_GROUP_STYLE = null;
+        #endregion
+
+        #region NODE LIST
+
+        private static GUIStyle _NODE_GROUP_STYLE = null;
 		public static GUIStyle NODE_GROUP_STYLE 
 		{ 
 			get 
@@ -103,7 +109,9 @@ namespace GameCore.AI.Editor
 
 		public static Rect NODE_DRAG_RECT { get { return new Rect (0, 0, 130, 20); } }
 
-		public static void DrawRect(Rect rect,string content)
+        #endregion
+
+        public static void DrawRect(Rect rect,string content)
 		{
 			Handles.BeginGUI();
 			Vector2 lt = new Vector2(rect.xMin, rect.yMax);
@@ -114,5 +122,24 @@ namespace GameCore.AI.Editor
 			GUI.Box(rect, content);
 			Handles.EndGUI();
 		}
+
+        #region ZOOM WINDOW
+
+        public static Rect ZOOM_WINDOW_RECT(float scale) { return new Rect(190, 22, (Screen.width - 380) / scale, (Screen.height - 22) / scale); }
+
+        public static Vector2 ZOOM_WINDOW_CENTER_CUR(float scale) { return new Vector2((Screen.width - 380) / scale, (Screen.height - 22) / scale); }
+
+        public static Vector2 ZOOM_WINDOW_CENTER_RAW { get { return new Vector2(Screen.width - 380, Screen.height - 22); } }
+
+        public static Matrix4x4 ZOOM_WINDOW_TRS(Rect rect, float scale)
+        {
+            Matrix4x4 tM = Matrix4x4.Translate(new Vector3(190, 22, 0));
+            Matrix4x4 sM = Matrix4x4.Scale(new Vector3(scale, scale, 1));
+            return tM * sM * tM.inverse;
+        }
+
+        public static Rect ZOOM_WINDOW_OLD_RECT { get { return new Rect(0, 22, Screen.width, Screen.height - 22); } }
+
+        #endregion
     }
 }

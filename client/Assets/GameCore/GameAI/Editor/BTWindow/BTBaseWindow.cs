@@ -6,10 +6,6 @@ namespace GameCore.AI.Editor
 {
 	public class BTBaseWindow
 	{
-        public static int UNIT_WINDOW_WIDTH = 190;
-
-        public static int ZOOM_WINDOW_OFF_Y = 22;
-
         public Rect mWindowRect = Rect.zero;
         public string mWindowName = string.Empty;
         public bool mIsDirty = false;
@@ -52,6 +48,9 @@ namespace GameCore.AI.Editor
                     break;
                 case EventType.ContextClick:
                     OnContextClick();
+                    break;
+                case EventType.Repaint:
+                    OnRepaint();
                     break;
             }
         }
@@ -121,6 +120,11 @@ namespace GameCore.AI.Editor
         }
 
         public virtual void OnMouseIgnore()
+        {
+
+        }
+
+        public virtual void OnRepaint()
         {
 
         }
