@@ -14,6 +14,18 @@ namespace GameCore.AI.Editor
         public string nodeTip;
     }
 
+    public sealed class UnitData
+    {
+        public int unitID;
+        public string unitName;
+        public float posX;
+        public float posY;
+        public int parentUnitID;
+        public List<int> childUnitID = new List<int>();
+        public List<int> childWeight = new List<int>();
+        public int unitType;
+    }
+
 	public sealed class BTEditor
 	{
 		[MenuItem("Tools/BTEditor/打开行为树编辑器")]
@@ -82,7 +94,7 @@ namespace GameCore.AI.Editor
 
         public static void AddNode(NodeData data,Vector2 position)
         {
-
+            EditorWindow.GetWindow<BTWindow>().SendEvent(EditorGUIUtility.CommandEvent("AddNode"));
         }
 		//控制结点 多个后继结点,根据打断方式不同每帧做不同子树或者兄弟树条件计算
 		//串行序列(and操作  顺序执行,遇到失败返回失败,全部成功返回成功) 

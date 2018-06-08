@@ -40,9 +40,6 @@ namespace GameCore.AI.Editor
                 case EventType.KeyDown:
                     OnKeyDown();
                     break;
-                case EventType.ValidateCommand:
-                    OnValidateCommand();
-                    break;
                 case EventType.Ignore:
                     OnMouseIgnore();
                     break;
@@ -114,17 +111,17 @@ namespace GameCore.AI.Editor
             
         }
 
-        public virtual void OnValidateCommand()
-        {
-            
-        }
-
         public virtual void OnMouseIgnore()
         {
 
         }
 
         public virtual void OnRepaint()
+        {
+
+        }
+
+        public virtual void OnAddNode()
         {
 
         }
