@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEditor;
 using UnityEngine;
+using System.Collections.Generic;
 
 namespace GameCore.AI.Editor
 {
@@ -12,6 +13,11 @@ namespace GameCore.AI.Editor
         private Rect mZoomRect = Rect.zero;
         private Vector2 mZoomCenterRaw = Vector2.zero;
         private Vector2 mZoomCenterCur = Vector2.zero;
+        private Vector2 mZoomRawOffset = Vector2.zero;
+        private Vector2 mZoomRealOffset = Vector2.zero;
+        private bool mZoomDraging = false;
+
+        private List<BTNodeBase> mUnitNodes = new List<BTNodeBase>();
 
         public override void OnEnable()
         {
@@ -23,6 +29,7 @@ namespace GameCore.AI.Editor
             mWindowRect = BTHelper.ZOOM_WINDOW_RECT(mZoomScaleCur);
             mZoomCenterRaw = BTHelper.ZOOM_WINDOW_CENTER_RAW;
             mZoomCenterCur = BTHelper.ZOOM_WINDOW_CENTER_CUR(mZoomScaleCur);
+            mZoomRealOffset = mZoomCenterCur - mZoomCenterRaw + mZoomRawOffset;
             GUI.EndGroup();
             GUI.BeginGroup(mWindowRect);
             GUI.matrix = BTHelper.ZOOM_WINDOW_TRS(mWindowRect,mZoomScaleCur);
@@ -30,9 +37,7 @@ namespace GameCore.AI.Editor
 
         public override void OnDraw()
 		{
-            Vector2 rawPos = new Vector2(mCurPosition.x, mCurPosition.y);
-            Vector2 finalPos = mZoomCenterCur - mZoomCenterRaw + rawPos;
-            GUI.Box(new Rect(finalPos.x, finalPos.y, 200, 200), "", GUI.skin.box);
+            
         }
 
         public override void OnPostDraw()
@@ -42,37 +47,73 @@ namespace GameCore.AI.Editor
             GUI.BeginGroup(BTHelper.ZOOM_WINDOW_OLD_RECT);
         }
 
-        private Vector2 mCurPosition = Vector2.zero;
-        private bool mDraging = false;
-
         public override void OnMouseDown(Vector2 position)
         {
             if(mWindowRect.Contains(position))
             {
-                mDraging = true;
-                mIsDirty = true;
+                mZoomDraging = true;
+                for (int i = 0;i < mUnitNodes.Count;i++)
+                {
+                    if(mUnitNodes[i].OnMouseDown(position))
+                    {
+                        mIsDirty = true;
+                        Event.current.Use();
+                        return;
+                    }
+                }
             }
         }
 
         public override void OnMouseDrag(Vector2 position)
         {
-            if(mDraging)
+            if(mZoomDraging)
             {
-                mCurPosition += Event.current.delta;
+                for (int i = 0; i < mUnitNodes.Count; i++)
+                {
+                    if (mUnitNodes[i].OnMouseDrag(position))
+                    {
+                        mIsDirty = true;
+                        Event.current.Use();
+                        return;
+                    }
+                }
+                mZoomRawOffset += Event.current.delta;
                 mIsDirty = true;
             }
         }
 
         public override void OnMouseUp(Vector2 position)
         {
-            mDraging = false;
-            mIsDirty = true;
+            if (mZoomDraging)
+            {
+                mZoomDraging = false;
+                for (int i = 0; i < mUnitNodes.Count; i++)
+                {
+                    if (mUnitNodes[i].OnMouseUp(position))
+                    {
+                        mIsDirty = true;
+                        Event.current.Use();
+                        return;
+                    }
+                }
+            }
         }
 
         public override void OnMouseIgnore()
         {
-            mDraging = false;
-            mIsDirty = true;
+            if (mZoomDraging)
+            {
+                mZoomDraging = false;
+                for (int i = 0; i < mUnitNodes.Count; i++)
+                {
+                    if (mUnitNodes[i].OnMouseIgnore())
+                    {
+                        mIsDirty = true;
+                        Event.current.Use();
+                        return;
+                    }
+                }
+            }
         }
 
         public override void OnScrollWheel()

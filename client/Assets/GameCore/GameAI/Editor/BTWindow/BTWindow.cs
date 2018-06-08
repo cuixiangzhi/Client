@@ -55,22 +55,11 @@ namespace GameCore.AI.Editor
                         }
                     }
                     {
-                        if (Event.current.type == EventType.Repaint)
-                        {
-                            //重绘
-                            BeginWindows();
-                            mUnitWindow.OnGUI();
-                            mNodeWindow.OnGUI();
-                            mZoomWindow.OnGUI();
-                            EndWindows();
-                        }
-                    }
-                    {
                         if (!Event.current.isMouse || Event.current.button == 0 || (!mIsMouseDown && Event.current.type == EventType.ContextClick))
                         {
                             mUnitWindow.OnEvent();
                             mNodeWindow.OnEvent();
-                            mZoomWindow.OnEvent();
+                            mZoomWindow.OnEvent();                           
                         }
                     }
                     break;

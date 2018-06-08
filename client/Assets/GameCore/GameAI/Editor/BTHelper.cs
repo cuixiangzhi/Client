@@ -127,9 +127,9 @@ namespace GameCore.AI.Editor
 
         public static Rect ZOOM_WINDOW_RECT(float scale) { return new Rect(190, 22, (Screen.width - 380) / scale, (Screen.height - 22) / scale); }
 
-        public static Vector2 ZOOM_WINDOW_CENTER_CUR(float scale) { return new Vector2((Screen.width - 380) / scale, (Screen.height - 22) / scale); }
+        public static Vector2 ZOOM_WINDOW_CENTER_CUR(float scale) { return new Vector2((Screen.width - 380) / scale / 2, (Screen.height - 22) / scale / 2); }
 
-        public static Vector2 ZOOM_WINDOW_CENTER_RAW { get { return new Vector2(Screen.width - 380, Screen.height - 22); } }
+        public static Vector2 ZOOM_WINDOW_CENTER_RAW { get { return new Vector2((Screen.width - 380) / 2, (Screen.height - 22) / 2); } }
 
         public static Matrix4x4 ZOOM_WINDOW_TRS(Rect rect, float scale)
         {
