@@ -43,5 +43,10 @@ namespace GameCore.AI.Editor
         {
             throw new Exception("can't process OnMouseIgnore event in base class");
         }
+
+        public virtual bool OnContextClick()
+        {
+            throw new Exception("can't process OnMouseIgnore event in base class");
+        }
     }
 }

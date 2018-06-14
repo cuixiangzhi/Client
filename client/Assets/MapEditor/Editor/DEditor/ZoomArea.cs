@@ -29,7 +29,7 @@ public static class ZoomArea
     public static void End(float zoomScale)
     {
         GUI.EndGroup();
-        GUI.matrix = prevGuiMatrix;
+        GUI.matrix = Matrix4x4.identity;
         GUI.EndGroup();
         GUI.BeginGroup(new Rect(0f, kEditorWindowTabHeight, Screen.width, Screen.height));
     }

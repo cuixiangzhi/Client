@@ -17,13 +17,13 @@ namespace GameCore.AI.Editor
     public sealed class UnitData
     {
         public int unitID;
+        public int unitType;
         public string unitName;
         public float posX;
         public float posY;
         public int parentUnitID;
         public List<int> childUnitID = new List<int>();
         public List<int> childWeight = new List<int>();
-        public int unitType;
     }
 
 	public sealed class BTEditor
@@ -31,7 +31,7 @@ namespace GameCore.AI.Editor
 		[MenuItem("Tools/BTEditor/打开行为树编辑器")]
 		public static void OpenBTWindow()
 		{
-			EditorWindow.GetWindow<BTWindow>("BTWindow").Show();
+            EditorWindow.GetWindow<BTWindow>("BTWindow").Show();
 		}
 
         public static List<NodeData> GetNode()

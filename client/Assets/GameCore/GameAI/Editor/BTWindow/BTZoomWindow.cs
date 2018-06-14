@@ -37,7 +37,7 @@ namespace GameCore.AI.Editor
 
         public override void OnDraw()
 		{
-            
+            GUI.Box(new Rect(mZoomRealOffset.x, mZoomRealOffset.y, 100,100),"",GUI.skin.window);
         }
 
         public override void OnPostDraw()
@@ -134,6 +134,37 @@ namespace GameCore.AI.Editor
                 mZoomScaleCur = Mathf.Lerp(mZoomScaleCur, mZoomScaleMax, 0.1f);
                 mIsDirty = true;
             }
+        }
+
+        public override void OnAddNode()
+        {
+            
+        }
+
+        public override void OnContextClick()
+        {
+            if(mWindowRect.Contains(Event.current.mousePosition))
+            {
+                for (int i = 0; i < mUnitNodes.Count; i++)
+                {
+                    if (mUnitNodes[i].OnContextClick())
+                    {
+                        mIsDirty = true;
+                        Event.current.Use();
+                        return;
+                    }
+                }
+                OnContextClickNull();
+            }
+        }
+
+        private void OnContextClickNull()
+        {
+            GenericMenu menu = new GenericMenu();
+            menu.AddItem(new GUIContent("帮助"), false, () => { EditorUtility.DisplayDialog("帮助", "开发期,暂无帮助信息", "确定"); });
+            menu.AddItem(new GUIContent("关于"), false, () => { EditorUtility.DisplayDialog("关于", "AI编辑器,可编辑角色、关卡AI\n制作人:崔祥志", "确定"); });
+            menu.ShowAsContext();
+            Event.current.Use();
         }
     }
 }

@@ -59,9 +59,10 @@ namespace GameCore.AI.Editor
 
         private void ProcessCommandEvent()
         {
-            if(string.IsNullOrEmpty(Event.current.commandName))
+            if(!string.IsNullOrEmpty(Event.current.commandName))
             {
-                int x = 0;
+                mUnitWindow.OnAddNode();
+                mZoomWindow.OnAddNode();
             }
         }
 
