@@ -211,8 +211,10 @@
     <ClCompile Include="google\protobuf\wire_format.cc" />
     <ClCompile Include="google\protobuf\wire_format_lite.cc" />
     <ClCompile Include="google\protobuf\wrappers.pb.cc" />
+    <ClCompile Include="thread\thread.cc" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="define\type.h" />
     <ClInclude Include="google\protobuf\any.h" />
     <ClInclude Include="google\protobuf\any.pb.h" />
     <ClInclude Include="google\protobuf\arena.h" />
@@ -338,6 +340,7 @@
     <ClInclude Include="google\protobuf\wire_format_lite.h" />
     <ClInclude Include="google\protobuf\wire_format_lite_inl.h" />
     <ClInclude Include="google\protobuf\wrappers.pb.h" />
+    <ClInclude Include="thread\thread.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -237,6 +237,9 @@
     <ClCompile Include="google\protobuf\wrappers.pb.cc">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="thread\thread.cc">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="google\protobuf\compiler\importer.h">
@@ -612,6 +615,12 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="google\protobuf\wrappers.pb.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="thread\thread.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="define\type.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
