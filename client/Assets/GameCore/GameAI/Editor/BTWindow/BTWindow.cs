@@ -15,6 +15,8 @@ namespace GameCore.AI.Editor
         //控制单击
         private bool mIsMouseDown = false;
 
+        UnityEngine.Object mObject;
+
         void OnEnable()
 		{
 			mUnitWindow.OnEnable();
@@ -31,6 +33,7 @@ namespace GameCore.AI.Editor
 
 		void OnGUI()
         {
+            mObject = EditorGUI.ObjectField(new Rect(200, 200, 180, 20), mObject, typeof(IEditEventSender), true);
             switch (Event.current.type)
             {
                 case EventType.Layout:
@@ -38,11 +41,15 @@ namespace GameCore.AI.Editor
                 case EventType.Used:
                 case EventType.MouseEnterWindow:
                 case EventType.MouseLeaveWindow:
-                case EventType.DragPerform:
-                case EventType.DragUpdated:
-                case EventType.DragExited:
                 case EventType.KeyUp:
                 case EventType.KeyDown:
+                    break;
+                case EventType.DragUpdated:
+                    mZoomWindow.mIsDirty = true;
+                    break;
+                case EventType.DragExited:
+                case EventType.DragPerform:
+                    mZoomWindow.mIsDirty = true;
                     break;
                 case EventType.MouseUp:
                     if (Event.current.button != 0)

@@ -40,7 +40,7 @@ namespace GameCore.AI.Editor
             for(int i = 0;i < mUnitList.Count;i++)
             {
                 mUnitList[i].OnDraw();
-            }
+            }           
 
             //结束裁剪区域
             GUI.EndClip();

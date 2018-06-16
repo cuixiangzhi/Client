@@ -99,7 +99,7 @@ public static class ToLuaMenu
     };
 
     private static bool beAutoGen = false;
-    private static bool beCheck = true;        
+    private static bool beCheck = false;        
     static List<BindType> allTypes = new List<BindType>();
 
     static ToLuaMenu()
