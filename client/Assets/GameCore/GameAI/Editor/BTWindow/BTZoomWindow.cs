@@ -24,26 +24,33 @@ namespace GameCore.AI.Editor
             mWindowName = "BTZoomWindow";
         }
 
-        public override void OnPreDraw()
+        public override void OnRepaint()
         {
+            //缩放插值
+            if (Mathf.Abs(mZoomScaleCur - mZoomScaleMax) > BTHelper.WINDOW_MIN_FLOAT)
+            {
+                mZoomScaleCur = Mathf.Lerp(mZoomScaleCur, mZoomScaleMax, 0.1f);
+                mIsDirty = true;
+            }
+            //窗口区域
             mWindowRect = BTHelper.ZOOM_WINDOW_RECT(mZoomScaleCur);
+            //计算结点偏移
             mZoomCenterRaw = BTHelper.ZOOM_WINDOW_CENTER_RAW;
             mZoomCenterCur = BTHelper.ZOOM_WINDOW_CENTER_CUR(mZoomScaleCur);
             mZoomRealOffset = mZoomCenterCur - mZoomCenterRaw + mZoomRawOffset;
+
+            //开启绘制区域分组
             GUI.EndGroup();
             GUI.BeginGroup(mWindowRect);
             GUI.matrix = BTHelper.ZOOM_WINDOW_TRS(mWindowRect,mZoomScaleCur);
-        }
 
-        public override void OnDraw()
-		{
-            GUI.Box(new Rect(mZoomRealOffset.x, mZoomRealOffset.y, 100,100),"",GUI.skin.window);
-        }
+            //TODO绘制
+            GUI.Box(new Rect(mZoomRealOffset.x, mZoomRealOffset.y, 100, 100), "", GUI.skin.box);
+            GUI.Label(new Rect(mZoomRealOffset.x, mZoomRealOffset.y, 100, 100), "", GUI.skin.box);
 
-        public override void OnPostDraw()
-        {
+            //结束绘制区域分组
             GUI.matrix = Matrix4x4.identity;
-			GUI.EndGroup ();
+            GUI.EndGroup();
             GUI.BeginGroup(BTHelper.ZOOM_WINDOW_OLD_RECT);
         }
 
@@ -124,21 +131,6 @@ namespace GameCore.AI.Editor
                 mZoomScaleMax = Mathf.Clamp(mZoomScaleMax * (1f - Event.current.delta.y * 0.05f), 0.4f, 1f);
                 mIsDirty = true;
             }
-        }
-
-        public override void OnRepaint()
-        {
-            //缩放插值
-            if (Mathf.Abs(mZoomScaleCur - mZoomScaleMax) > BTHelper.WINDOW_MIN_FLOAT)
-            {
-                mZoomScaleCur = Mathf.Lerp(mZoomScaleCur, mZoomScaleMax, 0.1f);
-                mIsDirty = true;
-            }
-        }
-
-        public override void OnAddNode()
-        {
-            
         }
 
         public override void OnContextClick()

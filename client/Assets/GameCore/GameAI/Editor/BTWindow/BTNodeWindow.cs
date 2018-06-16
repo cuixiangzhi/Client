@@ -38,7 +38,7 @@ namespace GameCore.AI.Editor
             }
         }
 
-        public override void OnPreDraw()
+        public override void OnRepaint()
         {
             //计算窗口、裁剪、滚动大小
 			mWindowRect = BTHelper.NODE_WINDOW_RECT;
@@ -58,22 +58,14 @@ namespace GameCore.AI.Editor
             {
                 mNodeList[i].OnPreDraw();
             }
-        }
-
-        public override void OnDraw()
-        {
             //绘制结点组
-            for(int i = 0;i < mNodeList.Count; i++)
+            for (int i = 0; i < mNodeList.Count; i++)
             {
                 mNodeList[i].OnDraw(0, i == 0 ? mClipOffset : mNodeList[i - 1].mNodeRect.y);
             }
-        }
-
-        public override void OnPostDraw()
-        {
             GUI.EndClip();
             GUI.EndGroup();
-            //绘制后处理
+            //绘制后处理,必须在clip外面绘制拖拽出去的结点
             for (int i = 0; i < mNodeList.Count; i++)
             {
                 mNodeList[i].OnPostDraw();

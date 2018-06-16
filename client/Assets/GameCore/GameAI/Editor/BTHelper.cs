@@ -141,5 +141,35 @@ namespace GameCore.AI.Editor
         public static Rect ZOOM_WINDOW_OLD_RECT { get { return new Rect(0, 22, Screen.width, Screen.height - 22); } }
 
         #endregion
+
+        #region UNIT WINDOW
+
+        public static float UNIT_WINDOW_OFFSET { get { return 240; } }
+
+        public static Rect UNIT_WINDOW_RECT { get { return new Rect(0, 0, 190, Screen.height); } }
+
+        public static Rect UNIT_WINDOW_CLIP_RECT { get { return new Rect(0, 18 + UNIT_WINDOW_OFFSET, 190, Screen.height - 48 - UNIT_WINDOW_OFFSET); } }
+
+        public static Rect UNIT_WINDOW_BOX_RECT { get { return new Rect(0, 0, 190, Screen.height); } }
+
+        public static float UNIT_WINDOW_SCROLL_DELTA { get { return Event.current.delta.y * 15; } }
+
+        public static Rect UNIT_WINDOW_SCROLL_RECT(float nodeHeight, float clipOffset, float clipHeight)
+        {
+            float scrollOffset = 22;
+            float scrollHeight = 0;
+            if (nodeHeight > clipHeight)
+            {
+                scrollHeight = clipHeight * clipHeight / nodeHeight;
+                scrollOffset = (clipHeight - scrollHeight) * (-clipOffset / (nodeHeight - clipHeight)) + 22;
+            }
+            else
+            {
+                scrollHeight = clipHeight;
+            }
+            return new Rect(180, scrollOffset + UNIT_WINDOW_OFFSET, 6, scrollHeight);
+        }
+
+        #endregion
     }
 }

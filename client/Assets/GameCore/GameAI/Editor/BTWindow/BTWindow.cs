@@ -15,7 +15,7 @@ namespace GameCore.AI.Editor
         //控制单击
         private bool mIsMouseDown = false;
 
-		void OnEnable()
+        void OnEnable()
 		{
 			mUnitWindow.OnEnable();
 			mZoomWindow.OnEnable();
@@ -30,11 +30,10 @@ namespace GameCore.AI.Editor
 		}
 
 		void OnGUI()
-		{
+        {
             switch (Event.current.type)
             {
                 case EventType.Layout:
-                    ProcessCommandEvent();
                     break;
                 case EventType.Used:
                 case EventType.MouseEnterWindow:
@@ -42,12 +41,51 @@ namespace GameCore.AI.Editor
                 case EventType.DragPerform:
                 case EventType.DragUpdated:
                 case EventType.DragExited:
-                    //忽略
+                case EventType.KeyUp:
+                case EventType.KeyDown:
                     break;
-                default:
-                    ProcessRepaintEvent();
-                    ProcessMouseEvent();
-                    ProcessCommonEvent();
+                case EventType.MouseUp:
+                    if (Event.current.button != 0)
+                        break;
+                    mIsMouseDown = false;
+                    mUnitWindow.OnMouseUp(Event.current.mousePosition);
+                    mNodeWindow.OnMouseUp(Event.current.mousePosition);
+                    mZoomWindow.OnMouseUp(Event.current.mousePosition);
+                    break;
+                case EventType.MouseDrag:
+                    if (!mIsMouseDown)
+                        break;
+                    mUnitWindow.OnMouseDrag(Event.current.mousePosition);
+                    mNodeWindow.OnMouseDrag(Event.current.mousePosition);
+                    mZoomWindow.OnMouseDrag(Event.current.mousePosition);
+                    break;
+                case EventType.MouseDown:
+                    if (Event.current.button != 0)
+                        break;
+                    mIsMouseDown = true;
+                    mUnitWindow.OnMouseDown(Event.current.mousePosition);
+                    mNodeWindow.OnMouseDown(Event.current.mousePosition);
+                    mZoomWindow.OnMouseDown(Event.current.mousePosition);
+                    break;
+                case EventType.Ignore:
+                    mUnitWindow.OnMouseIgnore();
+                    mNodeWindow.OnMouseIgnore();
+                    mZoomWindow.OnMouseIgnore();
+                    break;
+                case EventType.ContextClick:
+                    mUnitWindow.OnContextClick();
+                    mNodeWindow.OnContextClick();
+                    mZoomWindow.OnContextClick();
+                    break;
+                case EventType.ScrollWheel:
+                    mUnitWindow.OnScrollWheel();
+                    mNodeWindow.OnScrollWheel();
+                    mZoomWindow.OnScrollWheel();
+                    break;
+                case EventType.Repaint:
+                    mUnitWindow.OnRepaint();
+                    mNodeWindow.OnRepaint();
+                    mZoomWindow.OnRepaint();
                     break;
             }
 
@@ -56,64 +94,6 @@ namespace GameCore.AI.Editor
                 Repaint();
             }            
 		}
-
-        private void ProcessCommandEvent()
-        {
-            if(!string.IsNullOrEmpty(Event.current.commandName))
-            {
-                mUnitWindow.OnAddNode();
-                mZoomWindow.OnAddNode();
-            }
-        }
-
-        private void ProcessRepaintEvent()
-        {
-            if (Event.current.type == EventType.Repaint)
-            {
-                //重绘
-                BeginWindows();
-                mUnitWindow.OnGUI();
-                mNodeWindow.OnGUI();
-                mZoomWindow.OnGUI();
-                EndWindows();
-            }
-        }
-
-        private void ProcessMouseEvent()
-        {
-            //忽略滚轮点击
-            if (Event.current.isMouse && Event.current.button == 2)
-                return;
-            //左键单击抬起之前忽略右键事件
-            if (mIsMouseDown && Event.current.isMouse && Event.current.button == 1)
-            {
-                if (Event.current.type == EventType.MouseDrag)
-                {
-                    Event.current.button = 0;
-                }
-            }
-            if (Event.current.isMouse && Event.current.button == 0)
-            {
-                if (Event.current.type == EventType.MouseDown)
-                {
-                    mIsMouseDown = true;
-                }
-                else if (Event.current.type == EventType.MouseUp)
-                {
-                    mIsMouseDown = false;
-                }
-            }
-        }
-
-        private void ProcessCommonEvent()
-        {
-            if (!Event.current.isMouse || Event.current.button == 0 || (!mIsMouseDown && Event.current.type == EventType.ContextClick))
-            {
-                mUnitWindow.OnEvent();
-                mNodeWindow.OnEvent();
-                mZoomWindow.OnEvent();
-            }
-        }
 	}
 }
 

@@ -16,7 +16,7 @@ namespace GameCore.AI.Editor
 
         public virtual void OnDraw(float x = 0,float y = 0)
         {
-			throw new Exception("can't process OnDraw event in base class");
+			
         }
 
         public virtual void OnPostDraw()
