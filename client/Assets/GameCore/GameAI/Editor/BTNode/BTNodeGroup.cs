@@ -69,20 +69,8 @@ namespace GameCore.AI.Editor
 				int idx = Mathf.CeilToInt(offset / BTHelper.NODE_CHILD_HEIGHT_WITH_SPACE) - 1;
                 if (idx < mNodeDatas.Count)
                 {
-                    //mDragingIdx = idx;
-                    //mDragRect.center = position;
-
-                    DragAndDrop.PrepareStartDrag();
-                    DragAndDrop.activeControlID = idx;
-                    DragAndDrop.visualMode = DragAndDropVisualMode.Copy;
-                    GameObject GO = new GameObject(mNodeDatas[idx].nodeName);
-                    GO.hideFlags = HideFlags.DontSave;
-                    ServantEditData IG = GO.AddComponent<ServantEditData>();
-                    List<ServantEditData> ls = new List<ServantEditData>();
-                    ls.Add(IG);
-                    DragAndDrop.objectReferences = ls.ToArray();
-                    DragAndDrop.StartDrag(mNodeDatas[idx].nodeName);
-
+                    mDragingIdx = idx;
+                    mDragRect.center = position;
                     return true;
                 }
             }

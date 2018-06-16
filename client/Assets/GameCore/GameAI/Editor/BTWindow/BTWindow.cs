@@ -33,23 +33,28 @@ namespace GameCore.AI.Editor
 
 		void OnGUI()
         {
+            //DragAndDrop.PrepareStartDrag();
+            //DragAndDrop.activeControlID = idx;
+            //DragAndDrop.visualMode = DragAndDropVisualMode.Copy;
+            //GameObject GO = new GameObject(mNodeDatas[idx].nodeName);
+            //GO.hideFlags = HideFlags.DontSave;
+            //ServantEditData IG = GO.AddComponent<ServantEditData>();
+            //List<ServantEditData> ls = new List<ServantEditData>();
+            //ls.Add(IG);
+            //DragAndDrop.objectReferences = ls.ToArray();
+            //DragAndDrop.StartDrag(mNodeDatas[idx].nodeName);
             mObject = EditorGUI.ObjectField(new Rect(200, 200, 180, 20), mObject, typeof(IEditEventSender), true);
             switch (Event.current.type)
             {
                 case EventType.Layout:
-                    break;
                 case EventType.Used:
                 case EventType.MouseEnterWindow:
                 case EventType.MouseLeaveWindow:
                 case EventType.KeyUp:
                 case EventType.KeyDown:
-                    break;
                 case EventType.DragUpdated:
-                    mZoomWindow.mIsDirty = true;
-                    break;
                 case EventType.DragExited:
                 case EventType.DragPerform:
-                    mZoomWindow.mIsDirty = true;
                     break;
                 case EventType.MouseUp:
                     if (Event.current.button != 0)
