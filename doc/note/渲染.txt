@@ -90,26 +90,6 @@
     		  		   		这个时候需要根据-1到1映射到屏幕的0到w 0到h上
     		  		   最终需要计算出NDC坐标,(Xn,Yn,Zn) = (Xp/Zcamera,Yp/Zcamera,Zp/Zcamera)
     		  正交投影 left right bottom top near far
-建模
-	Mesh  由点、面、法线、切线、颜色等5个基本数组构成
-		  boneweight记录了每个顶点受不同骨骼位置变化的影响权值,最多4根骨骼
-		  bindpose记录了每根骨骼转换到世界坐标系的矩阵
-	SkinMeshRenderer
-		  bones骨骼列表
-		  sharedMesh当前蒙皮对象的MESH
-		  合并MESH,并不会减少MESH的数量,相反会增加一倍面数,主要为了减少DC
-		  		首先,创建BoneWeight、BindPoses、Bones、CombineMeshInatance数组
-		  		然后,获取要合并的所有的对象的SkinMeshRenderer
-		  		1.修改BoneWeight的绑定骨骼偏移(当前已处理的骨骼总数),修改后加入到BoneWeight数组
-		  		2.把当前对象的Bone加入到Bones数组
-		  		3.计算骨骼的转换矩阵,利用bone.worldToLocal * transform.localToWorld
-		  		4.新建CombineInstance,主要包含sharedMesh和localToWorld
-		  		5.新建SkinMesh对象,赋值combinemesh、sharedmaterial、bones、boneweights、bindposes
-	MeshRender
-		  灯光: 阴影、光照贴图
-		  材质: 根据submesh数量,每个submesh对应一个材质
-	AnimationClip
-		  记录了骨骼或者顶点的运动曲线(由关键帧组成),根据动画时间差值计算当前状态
 光栅
 	三角形顶点环绕逆时针为正向,和摄像机法线方向叉乘可以求出朝向摄像机还是背向摄像机 
 	线框图扫描转换,根据直线、曲线等等相关方程算法计算像素点
@@ -309,16 +289,37 @@
 		MipMap 
 			硬件支持生成MIPMAP
 			glGenerateMipmap(GL_TEXTURE_2D);
+建模
+	Mesh  由点、面、法线、切线、颜色等5个基本数组构成
+	MeshRender
+		  灯光: 阴影、光照贴图
+		  材质: 根据submesh数量,每个submesh对应一个材质
+	AnimationClip
+		  记录了骨骼或者顶点的运动曲线(由关键帧组成),根据动画时间差值计算当前状态
 着色器
-
+    分类
+    	一种是在Edit->ProjectSettings->GraphicsSetting内设置和放在Resources文件夹内的shader,使用shader.find查找
+    	一种是使用打包后Load出来的shader
 光照系统
+		光照基础			
+		    计算光照,需要光源强度、方向、颜色
+			光照信息可以使用实时计算或者静态光照贴图
 		光源类型
+			平行光 
+			点光源 
+			聚光灯 
+			面光源
+			发光体
+			环境光
 		光照模型
 		光线跟踪
 		渲染路径
 		透明模型
 		雾气阴影
 		光照贴图
+		光照设置
+			环境光 实时光 混合光 光照贴图 其它设置 调试设置
+粒子系统
 动画系统
 	所有的动画都是基于关键帧的,每帧采样,中间帧经过插值生成
 	UV动画 在SHADER内根据时间计算图片的UV坐标

@@ -264,15 +264,24 @@ Lua CAPI
 	 ldblib.c  debug库实现
 	 linit.c  库注册入口函数整合
 常用API:  
-	出栈: lua_pop lua_toboolean lua_tocfunction lua_tointeger lua_tolstring lua_tonumber lua_tostring
-	类型判断: lua_isnil lua_isnumber lua_istable lua_isstring
-	函数注册luaL_Reg注册函数结构体 luaL_Reg[] = { {"func_name",func},{"func_name1",func1} }
+	函数注册luaL_Reg注册函数结构体 luaL_Reg[] = { {"func_name",func},{"func_name1",func1} } luaL_register
 	函数调用lua_call(L,narg,nresult) lua_pcall(L,nargs,nresults,err_func)
-	table字段获取lua_getfield(L,stackid,k) lua_getmetatable lua_gettable lua_gettop 
-	table字段创建lua_newtable 
-	lua get和new push操作会在栈顶插入数据, pop set to会移除数据
-	pushvalue复制指定位置数据到栈顶
+	table字段获取lua_getfield(L,stackid,k) lua_getmetatable lua_gettable lua_gettop lua_getglobal
+	table字段创建lua_newtable lua_newuserdata
+	lua_get会在指定位置读取指定key的数据并压入栈顶
+	lua_set会移除指定位置数据,并存入指定table的key
+	lua_pop会移除栈顶指定个数的数据
+	lua_push复制并压入栈顶
+	lua_to系列不会移除栈数据 lua_toboolean lua_tocfunction lua_tointeger lua_tolstring lua_tonumber lua_tostring
+	lua_is系列也不会移除栈数据 lua_isnil lua_isnumber lua_istable lua_isstring
+	lua_ref lua_unref lua_getref 会通过一个int数据创建、解除、获取引用类型数据,可以是userdata(指定大小的指针,有元表)
 
+ShaderForUnity
+	Shader "" {} 定义shader名字,用于Shader.Find
+	Properties { _Name ("InspectorName",Type) = default } 定义shader变量,可以在Unity中赋值
+			2D 2D纹理贴图,默认值可以是"white"
+			Float 浮点类型
+			
 			  
 
 
