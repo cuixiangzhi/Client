@@ -277,11 +277,16 @@ Lua CAPI
 	lua_ref lua_unref lua_getref 会通过一个int数据创建、解除、获取引用类型数据,可以是userdata(指定大小的指针,有元表)
 
 ShaderForUnity
-	Shader "" {} 定义shader名字,用于Shader.Find
-	Properties { _Name ("InspectorName",Type) = default } 定义shader变量,可以在Unity中赋值
-			2D 2D纹理贴图,默认值可以是"white"
-			Float 浮点类型
-			
+	定义shader名字,用于Shader.Find
+	Shader "" 
+	{
+		定义shader变量,可以在Unity中赋值 2D Float Range Color CUBE
+		Properties { _Name ("InspectorName",Type) = default } 
+		定义适应不同平台、不同指令集、不同编译选项,只有一个会生效
+		SubShader {}  			
+	} 
+
+
 			  
 
 
