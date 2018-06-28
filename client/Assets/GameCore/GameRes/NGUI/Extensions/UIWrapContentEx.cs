@@ -341,7 +341,7 @@ public class UIWrapContentEx : MonoBehaviour
             mPanel = GetComponentInParent<UIPanel>();
             mScrollView = GetComponentInParent<UIScrollView>();
             mPanelTrans = mPanel.transform;
-            mTrans.localPosition = new Vector3(mTrans.localPosition.x, mPanel.baseClipRegion.w / 2.0f - 1, 0);
+            mTrans.localPosition = new Vector3(mTrans.localPosition.x, mPanel.baseClipRegion.w / 2.0f, 0);
             mOnClipMove = UpdateContent;
             mPanel.onClipMove = mOnClipMove;
             mSpringPanel = mPanel.gameObject.AddMissingComponent<SpringPanel>();
