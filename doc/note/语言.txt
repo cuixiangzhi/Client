@@ -280,10 +280,33 @@ ShaderForUnity
 	定义shader名字,用于Shader.Find
 	Shader "" 
 	{
-		定义shader变量,可以在Unity中赋值 2D Float Range Color CUBE
-		Properties { _Name ("InspectorName",Type) = default } 
-		定义适应不同平台、不同指令集、不同编译选项,只有一个会生效
-		SubShader {}  			
+		1.	定义shader变量,可以在Unity中赋值 2D Float Int Vector Range Color CUBE
+			Properties { _Name ("InspectorName",Type) = default } 
+		2.	SubShader 只选取一个执行
+			首先判断SubShader的标签和Pass的标签,检测渲染路径、渲染类型
+			然后在判断shader代码指令是否和当前GPU兼容
+			SubShader 
+			{
+				3.SubShader&Tags 
+					Queue包括BackGround背景天空盒1000 Geometry不透明2000 AlphaTest2450 2500以下属于不透明物体 Transparent半透明3000 Overlay4000
+					RenderType包括Opaque Transparent
+					ForceNoShadowCasting 计算阴影时不计算该物体,灯光空间计算深度纹理忽略该类型
+					IgnoreProjector 是否接受投影 
+				4.Pass&CommonState
+					Cull Back/Front On/Off 裁剪正、反面的开关
+					Zwrite On/Off 是否将当前物体的Z值写入深度缓冲
+					ZTest Less/LEqual/Equal/NotEqual/GEqual/Greater/Always 检测Z值与深度缓冲的值大小,不满足条件则不渲染
+					Blend One/One SrcAlpha/OneMinusSrcAlpha 颜色混合方式,src是指当前颜色,dst是指颜色缓冲区内的颜色
+					Offset 深度偏移结果为Factor * DZ + r * Units 用于控制两个多边形重叠时始终保持每帧渲染结果一致,计算后离摄像机更远则不渲染,负数离摄像机更近
+					Lighting On/Off 是否计算光照					
+				Pass
+				{
+					Tags { }
+					CGPROGRAM
+					ENDCG
+				}
+			}
+			Fallback ""
 	} 
 
 
