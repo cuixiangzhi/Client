@@ -293,21 +293,36 @@ ShaderForUnity
 					ForceNoShadowCasting 计算阴影时不计算该物体,灯光空间计算深度纹理忽略该类型
 					IgnoreProjector 是否接受投影 
 				4.Pass&CommonState
+					LOD n 设置距离摄像机多近才有效,例如设定不同的LOD级别来渲染物体
 					Cull Back/Front On/Off 裁剪正、反面的开关
-					Zwrite On/Off 是否将当前物体的Z值写入深度缓冲
-					ZTest Less/LEqual/Equal/NotEqual/GEqual/Greater/Always 检测Z值与深度缓冲的值大小,不满足条件则不渲染
-					Blend One/One SrcAlpha/OneMinusSrcAlpha 颜色混合方式,src是指当前颜色,dst是指颜色缓冲区内的颜色
+					AlphaTest Less CutOff 透明度测试,测试选项和深度测试一样		
 					Offset 深度偏移结果为Factor * DZ + r * Units 用于控制两个多边形重叠时始终保持每帧渲染结果一致,计算后离摄像机更远则不渲染,负数离摄像机更近
-					Lighting On/Off 是否计算光照					
+					ZTest Less/LEqual/Equal/NotEqual/GEqual/Greater/Always 检测Z值与深度缓冲的值大小,不满足条件则不渲染
+					Zwrite On/Off 是否将当前物体的Z值写入深度缓冲
+					Lighting On/Off 是否计算光照			
+					Fog On/Off 是否计算雾效果
+					Blend One/One SrcAlpha/OneMinusSrcAlpha 颜色混合方式,src是指当前颜色,dst是指颜色缓冲区内的颜色
 				Pass
-				{
-					Tags { }
+				{	
+					Name "PassName" 定义Pass名字
+					UsePass "Shader/PassName 插入在其他位置定义的Pass代码
+					5.Pass&Tag
+						LightMode 正向渲染,按照常规流程在顶点或者像素shader内计算光照,由于同一像素会被绘制很多次,因此实时光源很多时计算量就会很大
+										  根据QualitySetting设置的逐像素光源数量,从光源中选取最亮的前几个计算像素光照,其它光源以球谐函数计算
+								  延迟渲染,首先计算场景信息存储到G-Buffer内,,场景信息包括位置、法线、漫反射颜色、高光等等,占用显存带宽,需要MRT支持
+						Always 不计算光照
+					    ForwardBase模式的Pass用于计算主光源和所有的逐顶点、球谐函数光源
+					    ForwardAdd模式计算其他逐像素光源,并且不产生阴影
+					    Deferred延迟渲染
+					    ShadowCaster计算阴影时写入该物体的深度
 					CGPROGRAM
 					ENDCG
 				}
 			}
 			Fallback ""
 	} 
+Shader&Unity
+Shader&库
 
 
 			  
