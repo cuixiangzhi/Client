@@ -310,18 +310,18 @@ ShaderForUnity
 						LightMode 正向渲染,按照常规流程在顶点或者像素shader内计算光照,由于同一像素会被绘制很多次,因此实时光源很多时计算量就会很大
 										  根据QualitySetting设置的逐像素光源数量,从光源中选取最亮的前几个计算像素光照,其它光源以球谐函数计算
 								  延迟渲染,首先计算场景信息存储到G-Buffer内,,场景信息包括位置、法线、漫反射颜色、高光等等,占用显存带宽,需要MRT支持
-						Always 不计算光照
-					    ForwardBase模式的Pass用于计算主光源和所有的逐顶点、球谐函数光源
-					    ForwardAdd模式计算其他逐像素光源,并且不产生阴影
-					    Deferred延迟渲染
-					    ShadowCaster计算阴影时写入该物体的深度
+								Always 不计算光照
+							    ForwardBase模式的Pass用于计算主光源和所有的逐顶点、球谐函数光源
+							    ForwardAdd模式计算其他逐像素光源,并且不产生阴影
+							    Deferred延迟渲染
+							    ShadowCaster计算阴影时写入该物体的深度
 					CGPROGRAM
+					
 					ENDCG
 				}
 			}
 			Fallback ""
 	} 
-Shader&Unity
 Shader&库
 
 
