@@ -7,23 +7,9 @@ import os
 import shutil
 import platform
 
-try:
-    #路径配置
-    unity_path = "D:/Unity/Editor/Unity.exe";
-    project_path = "E:/mmo/src/client/trunk/Client-Demo";
-    common_path = "E:/mmo/src/client/common";
-    medata_path = "E:/mmo/src/client/trunk/Client-Demo/MeData";
-    export_path = "E:/res/xcode";
-    log_path = sys.path[0] + "/build_ios.log";
-    #应用配置
-    app_name = "鹿鼎记";
-    app_bundle_id = "com.cyou.ldj";
-    app_bundle_ver = "1.0";
-    app_teamid = "57JGBTX2EM";
-    
+def export(unity_path,project_path,common_path,medata_path,export_path,log_path,app_name,app_bundle_id,app_bundle_ver,app_teamid,app_debug):
     app_ipa_name = app_bundle_id.split('.')[2];
     mode = "Release"
-    
     shutil.copy(common_path + "/dll/NGUI-No-Editor/NGUI.dll",project_path + "/Assets/Plugins/NGUI.dll");
     shutil.copy(common_path + "/gbdll/ios/GameBase.dll",project_path + "/Assets/Plugins/GameBase.dll");
     if(os.path.exists(project_path + "/Assets/Code/External/NGUI/Scripts/Editor")):
@@ -39,7 +25,7 @@ try:
     command.append(" -projectPath " + project_path)
     command.append(" -logFile " + log_path)
     command.append(" -nographics") 
-    command.append(" -executeMethod Export.ExportXcode.Export")
+    command.append(" -executeMethod GameCore.ExportXcode.Export")
     command.append(" " + app_name)
     command.append(" " + app_bundle_id)
     command.append(" " + app_bundle_ver)
@@ -47,11 +33,12 @@ try:
     command.append(" " + export_path)
     command.append(" ICONPATH")
     command.append(" SPLASHPATH")
-    print(u"正在导出XCODE工程,请稍候...")
+    command.append(" " + app_debug)
+    print(u"starting unity,export xcode project...")
     command = ''.join(command)
     if(platform.system().lower() == "darwin"):
         os.system(command);
-        print(u"正在编译XCODE工程,请稍候...");
+        print(u"build archive...");
         os.chdir(export_path)
         os.system("chmod +x ./MapFileParser.sh")
         command = []
@@ -63,7 +50,7 @@ try:
         command.append(" -quiet>>" + log_path)
         command = ''.join(command)
         os.system(command);
-        print(u"正在生成IPA,请稍候...");
+        print(u"export ipa...");
         command = []
         command.append("xcodebuild")
         command.append(" -exportArchive")
@@ -75,8 +62,27 @@ try:
         command = ''.join(command)
         os.system(command);
     else:
-        os.system(command.encode("gb2312"));
-except:
-    print(u"语法错误")
-    traceback.print_exc()
-    os.system("pause")
+        os.system(command);
+
+if __name__ == "__main__":
+    try:
+        if(len(sys.argv) >= 12):
+            #路径配置
+            unity_path =  sys.argv[1]
+            project_path = sys.argv[2]
+            common_path = sys.argv[3]
+            medata_path = sys.argv[4]
+            export_path = sys.argv[5]
+            log_path = sys.argv[6]
+            #应用配置
+            app_name = sys.argv[7]
+            app_bundle_id = sys.argv[8]
+            app_bundle_ver = sys.argv[9]
+            app_teamid = sys.argv[10]
+            app_debug = sys.argv[11]
+            export(unity_path,project_path,common_path,medata_path,export_path,log_path,app_name,app_bundle_id,app_bundle_ver,app_teamid,app_debug)
+        else:
+            print(u"arg error")
+    except:
+        traceback.print_exc()
+        os.system("pause")
