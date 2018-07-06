@@ -42,7 +42,7 @@ DWORD WINAPI loop_func(VOID* param)
 
 }
 #else
-VOID *loop_func(VOID* param)
+VOID* loop_func(VOID* param)
 {
 
 }
