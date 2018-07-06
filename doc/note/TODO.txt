@@ -17,7 +17,7 @@
     导表工具 ×
     寻路系统 ×
     游戏引擎 ×
-    AI编辑器 √
+    AI编辑器 ×
 服务器
     线程管理 ×
     内存管理 ×
@@ -63,6 +63,7 @@
     界面层级 ×
     启动流程 ×  GameInit GameStart GameConfig Login
     数据加载 ×
+    加载界面
     事件注册 ×  MessageSub
     事件定义 ×  GameConfig
     CODEREVIEW

@@ -1,8 +1,15 @@
 变量类型
+	 计算机只有加法运算器, 负数是以补码形式存在,符号位不变,其余位取反加1  正数补码与原码一致 (+0原码与-0补码一致)
+	 计算机存储补码,运算器补码运算   -128没有反码,补码与原码一致
+	 有符号数没有-0的表示方式,-0表示-(2^最高位次方-1),例如1位则表示-1,2位则表示-2
 	int uint 32位
 	short ushort 16位
-	float double 单精度32位 有效6位  双精度64位 lua采用双精度浮点数
-				 IEEE754编码方式 符号位(1) + 指数位(8) + 尾数(23)
+	float double 
+				单精度32位 有效6位  双精度64位 有效15位 lua采用双精度浮点数
+				IEEE754编码方式 符号位(1) + 指数位(8) + 尾数(23)
+				整数.小数 换算成二进制 xx.xxx,指数是指小数点移到最左边(一定是1)需要几次
+	 			定点数小数点在十进制数值中的位置固定,小数个数确定了精度,精度为 1/2^n,n为小数个数,(M-n-1)为整数位数
+	 			Qx(x为小数位数) Sx.y(为整数个数,y为小数个数)
 	string char uchar 
 				 字符数组和字符 
 				 char*最后是一个\0字符  
@@ -22,8 +29,6 @@
 	 #define 宏定义 ##宏拼接 ##用于拼接变量 #宏替换 #代表后面的是个字符串
 	 typedef 类型组合定义		 
 	 lua里number统一为double类型,转为int会丢失精度并且会被限制在int范围内
-	 计算机只有加法运算器, 负数是以补码形式存在,符号位不变,其余位取反加1  正数补码与原码一致 (+0原码与-0补码一致)
-	 计算机存储补码,运算器补码运算   -128没有反码,补码与原码一致
 类型转换 basic-type 隐式转换	
 		static_cast 基本类型之间相互转换,可替代隐式转换
 					 类层次转换,父类到子类没有类型检查
@@ -178,7 +183,7 @@ python
 		   sys.argv数组
 	   数组  append   
 	   循环  for var in 数组或者range(1,n):
-	   文件操作  file = open(path,"wb")  file.write() file.close()
+	   文件操作  file = open(path,"wb")  file.write() file.close() file.readline file.readlines file.seek(cur,off) file.tell
 	   目录操作 是否为目录 os.path.isdir() 
 				目录列表 os.listdir()
 				删除空目录 os.rmdir()
@@ -316,7 +321,19 @@ ShaderForUnity
 							    Deferred延迟渲染
 							    ShadowCaster计算阴影时写入该物体的深度
 					CGPROGRAM
-					
+					6.Pass&Uniform
+						一个uniform是针对一个shader的常量,由应用程序设定
+						可以再shader内定义uniform变量,在C#内使用Shader.PropertyToID()获取变量ID,通过mat.Set来设置变量
+						常用的常量包括UNITY_MATRIX_MVP UNITY_PI
+					6.Pass&DataType
+						float32为 half16位[-60000,60000],精确到小数点3.3位 fixed12位定点数[-2,2],精确度1/256
+							颜色和单位向量使用fixed足够
+							其他信息尽量使用half,除非三位小数点不够用,或者数值超过+-60000
+						sampler2D 图片类型,变量名和Properties一致
+					7.Pass&#pragma
+
+					8.Pass&#include "xx.cginc"
+
 					ENDCG
 				}
 			}

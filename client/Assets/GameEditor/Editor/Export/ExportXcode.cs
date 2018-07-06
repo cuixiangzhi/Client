@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.Callbacks;
+using UnityEngine.Rendering;
+using UnityEditor.Rendering;
 #if UNITY_IOS
 using UnityEditor.iOS.Xcode;
 #endif
@@ -23,10 +25,10 @@ namespace GameCore
             EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTargetGroup.iOS,BuildTarget.iOS);
 #endif
             string[] commands = System.Environment.GetCommandLineArgs();
-            Debug.LogError(commands.Length);
+            Debug.Log(commands.Length);
             for(int i = 0;i < commands.Length;i++)
             {
-                Debug.LogError(commands[i]);
+                Debug.Log(commands[i]);
             }
             string signTeamID = commands[13].Replace("_"," ");
             string appName = commands[10];
@@ -37,6 +39,7 @@ namespace GameCore
             string splashImagePath = commands[15];
             string appIconPath = commands[16];
             bool debug = commands[17].ToLower() == "true" || commands[17].ToLower() == "1";
+            string errorFlagPath = exportPath + "/ERROR.flag";
 
             //旋转方向
             PlayerSettings.defaultInterfaceOrientation = UIOrientation.AutoRotation;
@@ -67,43 +70,95 @@ namespace GameCore
                 PlayerSettings.SetStackTraceLogType(LogType.Log, StackTraceLogType.Full);
             }
             //渲染设置
-            PlayerSettings.colorSpace = ColorSpace.Gamma;
-            PlayerSettings.SetMobileMTRendering(BuildTargetGroup.iOS,true);
-            PlayerSettings.MTRendering = true;
-            PlayerSettings.use32BitDisplayBuffer = true;
-            //应用设置   
-            PlayerSettings.companyName = companyName;
-            PlayerSettings.productName = appName;
-            PlayerSettings.applicationIdentifier = bundleIdentifier;
-            PlayerSettings.bundleVersion = bundleVersion;
+            {
+                PlayerSettings.colorSpace = ColorSpace.Linear;
+                PlayerSettings.MTRendering = true;
+                PlayerSettings.use32BitDisplayBuffer = true;
 
-            PlayerSettings.iOS.appleDeveloperTeamID = signTeamID;
-            PlayerSettings.iOS.scriptCallOptimization = ScriptCallOptimizationLevel.FastButNoExceptions;
-            PlayerSettings.iOS.requiresPersistentWiFi = true;
-            PlayerSettings.iOS.allowHTTPDownload = false;
-            
-            PlayerSettings.iOS.appleEnableAutomaticSigning = true;
-            PlayerSettings.iOS.applicationDisplayName = appName;
-            PlayerSettings.iOS.buildNumber = bundleVersion;
-            PlayerSettings.iOS.requiresFullScreen = true;
-            PlayerSettings.iOS.sdkVersion = iOSSdkVersion.DeviceSDK;
-            PlayerSettings.iOS.targetDevice = iOSTargetDevice.iPhoneAndiPad;
-            PlayerSettings.iOS.targetOSVersionString = "7.0";
-            PlayerSettings.iOS.showActivityIndicatorOnLoading = iOSShowActivityIndicatorOnLoading.DontShow;
-            PlayerSettings.iOS.appInBackgroundBehavior = iOSAppInBackgroundBehavior.Suspend;
-            //PlayerSettings.iOS.backgroundModes = iOSBackgroundMode.
-            PlayerSettings.iOS.forceHardShadowsOnMetal = false;
-            PlayerSettings.iOS.prerenderedIcon = true;
+                var t1 = EditorGraphicsSettings.GetTierSettings(BuildTargetGroup.iOS, GraphicsTier.Tier1);
+                t1.hdr = true;
+                EditorGraphicsSettings.SetTierSettings(BuildTargetGroup.iOS, GraphicsTier.Tier1, t1);
+
+                var t2 = EditorGraphicsSettings.GetTierSettings(BuildTargetGroup.iOS, GraphicsTier.Tier2);
+                t2.hdr = true;
+                EditorGraphicsSettings.SetTierSettings(BuildTargetGroup.iOS, GraphicsTier.Tier2, t2);
+
+                var t3 = EditorGraphicsSettings.GetTierSettings(BuildTargetGroup.iOS, GraphicsTier.Tier3);
+                t3.hdr = true;
+                EditorGraphicsSettings.SetTierSettings(BuildTargetGroup.iOS, GraphicsTier.Tier3, t3);
+
+                var editorGraphicsSettings = System.Type.GetType("GraphicsSettings,UnityEditor.dll");
+                if(editorGraphicsSettings != null)
+                {
+                    var includeShaders = editorGraphicsSettings.GetField("m_AlwaysIncludedShaders");
+                    if (includeShaders != null)
+                    {
+                        Debug.Log("UnityEditor.GraphicsSettings.m_AlwaysIncludedShaders" + includeShaders.ToString());
+                    }
+                }
+            }
+
+            //质量设置
+            {
+                QualitySettings.SetQualityLevel(6);
+                QualitySettings.pixelLightCount = 4;
+                QualitySettings.anisotropicFiltering = AnisotropicFiltering.ForceEnable;
+                QualitySettings.antiAliasing = 0;
+                QualitySettings.softParticles = false;
+                QualitySettings.realtimeReflectionProbes = false;
+                QualitySettings.billboardsFaceCameraPosition = true;
+                QualitySettings.resolutionScalingFixedDPIFactor = 1;
+                QualitySettings.shadows = ShadowQuality.All;
+                QualitySettings.shadowResolution = ShadowResolution.High;
+                QualitySettings.shadowProjection = ShadowProjection.CloseFit;
+                QualitySettings.shadowDistance = 150;
+                QualitySettings.shadowmaskMode = ShadowmaskMode.Shadowmask;
+                QualitySettings.shadowNearPlaneOffset = 3;
+                QualitySettings.shadowCascades = 0;
+                QualitySettings.blendWeights = BlendWeights.FourBones;
+                QualitySettings.vSyncCount = 1;
+                QualitySettings.lodBias = 2;
+                QualitySettings.maximumLODLevel = 0;
+                QualitySettings.particleRaycastBudget = 4096;
+                QualitySettings.asyncUploadTimeSlice = 2;
+                QualitySettings.asyncUploadBufferSize = 4;
+            }
+            //应用设置   
+            {
+                PlayerSettings.companyName = companyName;
+                PlayerSettings.productName = appName;
+                PlayerSettings.applicationIdentifier = bundleIdentifier;
+                PlayerSettings.bundleVersion = bundleVersion;
+
+                PlayerSettings.iOS.appleDeveloperTeamID = signTeamID;
+                PlayerSettings.iOS.scriptCallOptimization = ScriptCallOptimizationLevel.FastButNoExceptions;
+                PlayerSettings.iOS.requiresPersistentWiFi = true;
+                PlayerSettings.iOS.allowHTTPDownload = false;
+
+                PlayerSettings.iOS.appleEnableAutomaticSigning = true;
+                PlayerSettings.iOS.applicationDisplayName = appName;
+                PlayerSettings.iOS.buildNumber = bundleVersion;
+                PlayerSettings.iOS.requiresFullScreen = true;
+                PlayerSettings.iOS.sdkVersion = iOSSdkVersion.DeviceSDK;
+                PlayerSettings.iOS.targetDevice = iOSTargetDevice.iPhoneAndiPad;
+                PlayerSettings.iOS.targetOSVersionString = "8.0";
+                PlayerSettings.iOS.showActivityIndicatorOnLoading = iOSShowActivityIndicatorOnLoading.DontShow;
+                PlayerSettings.iOS.appInBackgroundBehavior = iOSAppInBackgroundBehavior.Suspend;
+                PlayerSettings.iOS.forceHardShadowsOnMetal = false;
+                PlayerSettings.iOS.prerenderedIcon = true;
+            }
             //代码配置           
-            PlayerSettings.accelerometerFrequency = 0;
-            PlayerSettings.bakeCollisionMeshes = false;
-            PlayerSettings.stripEngineCode = true;
-            PlayerSettings.SetScriptingBackend(BuildTargetGroup.iOS, ScriptingImplementation.IL2CPP);
-            PlayerSettings.SetApiCompatibilityLevel(BuildTargetGroup.iOS, ApiCompatibilityLevel.NET_2_0_Subset);
-            PlayerSettings.SetIncrementalIl2CppBuild(BuildTargetGroup.iOS, true);
-            PlayerSettings.SetArchitecture(BuildTargetGroup.iOS, 0);
-            //PlayerSettings.SetAdditionalIl2CppArgs("");
-            //PlayerSettings.SetScriptingDefineSymbolsForGroup(BuildTargetGroup.iOS, "");
+            { 
+                PlayerSettings.accelerometerFrequency = 0;
+                PlayerSettings.bakeCollisionMeshes = false;
+                PlayerSettings.stripEngineCode = true;
+                PlayerSettings.SetScriptingBackend(BuildTargetGroup.iOS, ScriptingImplementation.IL2CPP);
+                PlayerSettings.SetApiCompatibilityLevel(BuildTargetGroup.iOS, ApiCompatibilityLevel.NET_2_0);
+                PlayerSettings.SetIncrementalIl2CppBuild(BuildTargetGroup.iOS, true);
+                PlayerSettings.SetArchitecture(BuildTargetGroup.iOS, 2);
+                //PlayerSettings.SetAdditionalIl2CppArgs("");
+                //PlayerSettings.SetScriptingDefineSymbolsForGroup(BuildTargetGroup.iOS, "");
+            }
 
             //添加场景
             List<string> levels = new List<string>();
@@ -119,25 +174,23 @@ namespace GameCore
             {
                 Directory.CreateDirectory(exportPath);
             }       
-
-            if(levels.Count == 0)
+            if(File.Exists(errorFlagPath))
             {
-                Debug.LogError("必须添加要打包的默认场景");
+                File.Delete(errorFlagPath);
             }
-            else
+
+            try
             {
-                try
-                {
-                    //确保修改生效
-                    AssetDatabase.SaveAssets();
-                    AssetDatabase.Refresh();
-                    BuildPipeline.BuildPlayer(levels.ToArray(), exportPath, BuildTarget.iOS, debug ? BuildOptions.Development : BuildOptions.None);
-                }
-                catch(System.Exception e)
-                {
-                    Debug.LogError(e.Message + "\n" + e.StackTrace);
-                }
-            }            
+                //确保修改生效
+                AssetDatabase.SaveAssets();
+                AssetDatabase.Refresh();
+                BuildPipeline.BuildPlayer(levels.ToArray(), exportPath, BuildTarget.iOS, debug ? BuildOptions.Development : BuildOptions.None);
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e.Message + "\n" + e.StackTrace);
+                File.Create(errorFlagPath);
+            }
         }
 
         [PostProcessBuild()]

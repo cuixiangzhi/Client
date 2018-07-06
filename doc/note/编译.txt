@@ -10,6 +10,16 @@ GDB调试
 	b 文件:行号 函数 
 	d 删除断点
 	p 打印
+VI编辑器
+	编辑模式
+		输入i进入编辑模式,编辑文本
+	命令模式
+		输入esc进入命令模式
+		:行号,跳转到指定行
+		/ name 向后查找
+		? name 向前查找
+		:wq 保存并退出
+		:set number 显示行号
 	
 NDK编译 
 	LOCAL_PATH := $(call my-dir)
