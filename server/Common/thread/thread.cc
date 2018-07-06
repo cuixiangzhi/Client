@@ -17,7 +17,7 @@ VOID thread::start()
 #ifdef _WIN32
 	m_handle = CreateThread(NULL, 0, loop_func, this, NULL, &m_tid);
 #else
-	m_tid = pthread_create(&m_tid, NULL, );
+	m_tid = pthread_create(&m_tid, NULL, loop_func, this);
 #endif
 }
 
@@ -42,7 +42,7 @@ DWORD WINAPI loop_func(VOID* param)
 
 }
 #else
-VOID loop_func(VOID* param)
+VOID *loop_func(VOID* param)
 {
 
 }
