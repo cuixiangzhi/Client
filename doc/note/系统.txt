@@ -36,11 +36,14 @@
 			ASCII既是字符集也是字符编码
 			GB2312是字符集
 			zh_cn.utf-8 是本地系统语言及字符集,国家_语言.字符编码
-			C# string是unicode对象,静态字符串初始化会根据cs文件编码解码
+			C# string是unicode对象,静态字符串初始化会根据cs文件编码解码,一个char是一个字符
+			C++string是char数组,一个char不一定是一个有效字符,需要自己根据编码来解析真实的字符个数
+			   wstring是wchar_t数组,一个wchar_t占用两个字节,代表一个字符
 			python 分为str和unicode两种对象,decode解码为unicode对象,encode编码为str对象
 			terminal 会根据设置的编码来显示传输的字节
 			MSVC
 				bom 字节序标记,表明了文件编码,不带BOM的话会按照系统编码来解释
+					不同的编码有不同的字节序标记 UTF-8是0xEFBBBF
 				源码编码: 源代码文件的编码,分为带BOM和不带BOM
 				执行编码: 二进制文件内字符编码,编译时会根据系统编码来设定
 				解释编码: 终端编码
