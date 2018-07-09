@@ -31,7 +31,7 @@
 		文件编码
 			大端模式: 把字节按顺序存储,即低地址存储高字节,高地址存储低字节
 			小端模式: 正好相反
-			字符集和字符编码,字符集是一个数字,编码是这个数字的存储方式
+			字符集和字符编码,字符集是一个字库表,编码是这个数字的存储方式
 			UNICODE字符集,有UTF-8 UTF-16 UTF-32等
 			ASCII既是字符集也是字符编码
 			GB2312是字符集
@@ -129,6 +129,10 @@
 			pthread_rwlock_init(&rwid);
 			pthread_rwlock_rdlock(&rwid);
 			pthread_rwlock_rdunlock(&rwid);
+		线程资源
+			pthread_exit return pthread_cancel后线程退出,资源释放有两种方式
+			默认创建的线程处于joinable(可以通过设置pthread_attr来改变)状态,需要调用pthread_join(只有一个调用者)之后才会回收已退出的线程的资源
+			分离状态,调用pthread_detach后线程处于游离状态,由操作系统来回收资源
 进程通信
 		本地通信
 				mmap shm filemap
