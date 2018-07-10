@@ -1,34 +1,53 @@
 #pragma once
-#include "define/type.h"
+#include "define/stdafx.h"
+
+enum THREAD_STATUS
+{
+	READY,
+	START,
+	RUN,
+	EXIT,
+	DEAD,
+};
 
 class thread
 {
-	enum THREAD_STATUS
-	{
-		READY,
-		RUN,
-		EXIT,
-		STOP,
-	};
 public:
-	thread();
+	thread(uint64 framerate);
 	virtual ~thread();
 public:
-	VOID start();
-	VOID stop();
-private:
-	virtual VOID loop();
-	VOID exit();
+	void start();
+	void stop();
+	void exit();
+	void sleep();
 public:
-	THREAD_ID get_tid();
-	BOOL get_active();
-	THREAD_STATUS get_status();
-private:
-	THREAD_ID m_tid;
-	BOOL m_active;
+	inline thread_id get_tid() const { return m_tid; }
+	inline bool get_active() const { return m_active; }
+	inline THREAD_STATUS get_status() const { return m_status; }
+	inline void set_status(THREAD_STATUS status) { m_status = status; }
+	inline uint8 get_framerate() { return m_framerate; }
+	inline void set_framerate(uint8 framerate) { m_framerate = framerate; }
+	inline uint64 get_deltatime() { return m_deltatime; }
+public: 
+	virtual void init();
+	virtual void loop();
+	virtual void clear();
+protected:
+	thread_id m_tid;
 	THREAD_STATUS m_status;
+	bool m_active;
+
+	uint8 m_framerate;
+	uint64 m_framecount;
+
+	uint64 m_deltatime;
+	uint64 m_pre_frame_start_time;
+	uint64 m_cur_frame_start_time;
 #ifdef _WIN32
 	HANDLE m_handle;
 #endif
-
+private:
+	thread() = delete;
+	thread(thread&) = delete;
+	thread& operator=(thread&) = delete;
 };

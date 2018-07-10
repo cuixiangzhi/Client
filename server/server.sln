@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GameEngine", "GameEngine\GameEngine.vcxproj", "{785B8E55-69E2-46D5-8887-982F8ADFCA37}"
+	ProjectSection(ProjectDependencies) = postProject
+		{7F518693-3873-4C92-BFEA-485219C31E89} = {7F518693-3873-4C92-BFEA-485219C31E89}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GateServer", "GateServer\GateServer.vcxproj", "{4E9B431E-223B-487C-8806-EFCCC6C67D0A}"
 EndProject

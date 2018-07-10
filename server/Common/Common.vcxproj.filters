@@ -623,5 +623,8 @@
     <ClInclude Include="define\type.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="define\stdafx.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

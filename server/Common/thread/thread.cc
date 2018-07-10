@@ -1,6 +1,48 @@
 #include "thread.h"
 
-thread::thread() :m_active(false), m_status(THREAD_STATUS::READY), m_tid(0)
+void thread_main_loop(void* param)
+{
+	try
+	{
+		thread* thread_object = reinterpret_cast<thread*>(param);
+		thread_object->init();
+		thread_object->set_status(THREAD_STATUS::RUN);
+		while (thread_object->get_active())
+		{
+			thread_object->sleep();
+			thread_object->loop();
+		}
+		thread_object->clear();
+		thread_object->exit();
+	}
+	catch(...)
+	{
+
+	}
+}
+#ifdef _WIN32
+DWORD WINAPI thread_main(void* param)
+{
+	thread_main_loop(param);
+	return NULL;
+}
+#else
+void* thread_main(void* param)
+{
+	thread_main_loop(param);
+	return NULL;
+}
+#endif
+
+thread::thread(uint64 framerate) :
+	m_tid(0),
+	m_status(THREAD_STATUS::READY),
+	m_active(true),
+	m_framerate(framerate),
+	m_framecount(0),
+	m_deltatime(0),
+	m_pre_frame_start_time(0),
+	m_cur_frame_start_time(0)
 {
 #ifdef _WIN32
 	m_handle = NULL;
@@ -12,40 +54,63 @@ thread::~thread()
 
 }
 
-VOID thread::start()
+void thread::start()
 {
+	if (m_status != THREAD_STATUS::READY)
+		return;
+	m_status = THREAD_STATUS::START;
 #ifdef _WIN32
-	m_handle = CreateThread(NULL, 0, loop_func, this, NULL, &m_tid);
+	m_handle = CreateThread(NULL, 0, thread_main, this, NULL, &m_tid);
 #else
-	m_tid = pthread_create(&m_tid, NULL, loop_func, this);
+	m_tid = pthread_create(&m_tid, NULL, thread_main, this);
 #endif
 }
 
-VOID thread::stop()
+void thread::stop()
 {
 	m_active = false;
 }
 
-VOID thread::loop()
+void thread::exit()
 {
-
-}
-
-VOID thread::exit()
-{
-
-}
-
+	m_status = THREAD_STATUS::EXIT;
 #ifdef _WIN32
-DWORD WINAPI loop_func(VOID* param)
-{
-
-}
+	CloseHandle(m_handle);
+	m_handle = NULL;
 #else
-VOID* loop_func(VOID* param)
+	pthread_exit(NULL);
+#endif
+	m_status = THREAD_STATUS::DEAD;
+}
+
+void thread::sleep()
+{
+	if (m_framecount != 0)
+	{
+		m_pre_frame_start_time = m_cur_frame_start_time;
+		m_cur_frame_start_time = clock();
+		m_deltatime = m_cur_frame_start_time - m_pre_frame_start_time;
+	}
+	else
+	{
+		m_cur_frame_start_time = clock();
+	}
+	++m_framecount;
+}
+
+void thread::init()
 {
 
 }
-#endif
+
+void thread::loop()
+{
+		
+}
+
+void thread::clear()
+{
+
+}
 
 

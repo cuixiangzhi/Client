@@ -214,6 +214,7 @@
     <ClCompile Include="thread\thread.cc" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="define\stdafx.h" />
     <ClInclude Include="define\type.h" />
     <ClInclude Include="google\protobuf\any.h" />
     <ClInclude Include="google\protobuf\any.pb.h" />

@@ -2,16 +2,20 @@
 
 #include <vector>
 #include <list>
+#include <stack>
+#include <queue>
 #include <map>
-#include <hash_map>
-#include <hash_set>
+#include <set>
+#include <algorithm>
+#include <numeric>
 
 #include <cassert>
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
 #include <cstdlib>
 #include <cstdarg>
 #include <cstdio>
-#include <cstdint>
-#include <cstring>
 #include <ctime>
 #include <cmath>
 
@@ -19,25 +23,26 @@
 #include <csignal>
 #include <exception>
 #include <csetjmp>
+#include <atomic>
 
-typedef void					VOID;
-typedef char					CHAR;
-typedef unsigned char			UCHAR;
-typedef int						INT;
-typedef unsigned int			UINT;
-typedef short					SHORT;
-typedef unsigned short			USHORT;
-typedef float					FLOAT;
-typedef unsigned char			BYTE;
-typedef bool					BOOL;
-typedef int64_t					INT64;
-typedef uint64_t				UINT64;
+typedef unsigned char			byte;
+typedef unsigned char			uchar;
+typedef int8_t					int8;
+typedef uint8_t					uint8;
+typedef int16_t					int16;
+typedef uint16_t				uint16;
+typedef int32_t					int32;
+typedef uint32_t				uint32;
+typedef int64_t					int64;
+typedef uint64_t				uint64;
 
 #ifdef _MSC_VER
 #include <windows.h>
 #include <winsock.h>
-typedef DWORD					THREAD_ID;
+typedef DWORD					thread_id;
 #else
+#include <unistd.h>
+
 #include <sys/ipc.h>
 #include <sys/shm.h>
 
@@ -47,5 +52,7 @@ typedef DWORD					THREAD_ID;
 #include <sys/epoll.h>
 
 #include <pthread.h>
-typedef pthread_t				THREAD_ID;
+typedef pthread_t				thread_id;
 #endif
+
+using namespace std;
