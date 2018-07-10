@@ -34,7 +34,7 @@ void* thread_main(void* param)
 }
 #endif
 
-thread::thread(uint64 framerate) :
+thread::thread(uint8 framerate) :
 	m_tid(0),
 	m_status(THREAD_STATUS::READY),
 	m_active(true),
@@ -90,12 +90,18 @@ void thread::sleep()
 		m_pre_frame_start_time = m_cur_frame_start_time;
 		m_cur_frame_start_time = clock();
 		m_deltatime = m_cur_frame_start_time - m_pre_frame_start_time;
+		++m_framecount;
 	}
 	else
 	{
 		m_cur_frame_start_time = clock();
+		++m_framecount;
 	}
-	++m_framecount;
+#ifdef _WIN32
+	Sleep(1000 / m_framerate);
+#else
+	usleep(1000000 / m_framerate);
+#endif
 }
 
 void thread::init()
@@ -105,7 +111,7 @@ void thread::init()
 
 void thread::loop()
 {
-		
+
 }
 
 void thread::clear()

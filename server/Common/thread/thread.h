@@ -3,17 +3,17 @@
 
 enum THREAD_STATUS
 {
-	READY,
-	START,
-	RUN,
-	EXIT,
-	DEAD,
+	READY		= 0,
+	START		= 1,
+	RUN			= 2,
+	EXIT		= 3,
+	DEAD		= 4,
 };
 
 class thread
 {
 public:
-	thread(uint64 framerate);
+	thread(uint8 framerate);
 	virtual ~thread();
 public:
 	void start();
