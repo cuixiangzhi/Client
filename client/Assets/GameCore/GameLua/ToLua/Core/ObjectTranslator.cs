@@ -119,7 +119,7 @@ namespace LuaInterface
 
                 if (LogGC)
                 {
-                    GameCore.LogMgr.Log("gc object {0}, id {1}", o, udata);
+                    Debugger.Log("gc object {0}, id {1}", o, udata);
                 }
             }
         }
@@ -143,7 +143,7 @@ namespace LuaInterface
 
                 if (LogGC)
                 {
-                    GameCore.LogMgr.Log("destroy object {0}, id {1}", o, udata);
+                    Debugger.Log("destroy object {0}, id {1}", o, udata);
                 }
             }
         }
@@ -201,7 +201,7 @@ namespace LuaInterface
 
                 if (LogGC)
                 {
-                    GameCore.LogMgr.Log("destroy object {0}, id {1}", o, udata);
+                    Debugger.Log("destroy object {0}, id {1}", o, udata);
                 }
             }
 

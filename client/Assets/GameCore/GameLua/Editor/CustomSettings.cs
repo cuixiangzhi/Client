@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using LuaInterface;
+using UnityEditor;
 
 using BindType = ToLuaMenu.BindType;
 using System.Reflection;
@@ -22,8 +23,7 @@ public static class CustomSettings
     //附加导出委托类型(在导出委托时, customTypeList 中牵扯的委托类型都会导出， 无需写在这里)
     public static DelegateType[] customDelegateList = 
     {        
-        _DT(typeof(Action<string,LuaByteBuffer>)),
-        _DT(typeof(Action<string,UnityEngine.Object>)),
+
     };
 
     //在这里添加你要导出注册到lua的类型列表

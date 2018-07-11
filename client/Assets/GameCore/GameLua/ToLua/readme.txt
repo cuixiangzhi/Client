@@ -48,7 +48,7 @@ bug 反馈群: 286510803
 - NEW: 修改proto-gen-lua库，使之支持int64, uint64。fixed64, ufixed64等等
 - NEW: CheckTypes系列函数放入TypeChecker类
 - NEW: 加入预加载库功能，预加载的库通过require类型延迟导入, 比如 require "UnityEngine.GameObject"。严格区分.与/。使用目录切勿用.
-- NEW: LuaConst加入ZeroBraneStudio路径设置，可以通过LuaClient.OpenZbsGameCore.LogMgr启动ZeroBraneStudio调试
+- NEW: LuaConst加入ZeroBraneStudio路径设置，可以通过LuaClient.OpenZbsDebugger启动ZeroBraneStudio调试
 - NEW: print 编辑器下可以打印所在的lua文件名和位置
 - NEW: this操作符增加this属性，可以通过get和set操作, 在get_Item有重载函数，并且重载函数折叠掉this属性函数可以使用
 - NEW: 增加LuaByteBufferAttribute, 加上这个标记的委托类型，在压入byte[]时作为lua string压入，而不是System.Array
@@ -79,7 +79,7 @@ bug 反馈群: 286510803
 1.0.6 (需要重新生成库文件，需要Clear all, 重新导出wrap)
 - NEW: 加入LuaStatePtr最为LuaDLL函数简单封装层
 - NEW: LuaState ToLuaException 更名为 ThrowLuaException
-- NEW: GameCore.LogMgr 放入到 LuaInterface namespace
+- NEW: Debugger 放入到 LuaInterface namespace
 - NEW: module.name 如果.name不存在，可以自动进行preloading操作，相当于 require "module.name"
 - NEW: 在控制台窗口点击print打印的lua log, 将会自动打开lua文件，或者跳转到设置的cs文件中
 - NEW: 支持int64和uint64. c# 端long做为int64压入，ulong作为uint64压入

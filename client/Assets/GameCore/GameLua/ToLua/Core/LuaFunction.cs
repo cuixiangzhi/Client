@@ -55,7 +55,7 @@ namespace LuaInterface
 #if UNITY_EDITOR
             if (oldTop != -1 && count <= 1)
             {
-                GameCore.LogMgr.LogError("You must call EndPCall before calling Dispose");
+                Debugger.LogError("You must call EndPCall before calling Dispose");
             }
 #endif
             base.Dispose();
@@ -85,7 +85,7 @@ namespace LuaInterface
 #if UNITY_EDITOR
             if (oldTop == -1)
             {
-                GameCore.LogMgr.LogError("You must call BeginPCall before calling PCall");
+                Debugger.LogError("You must call BeginPCall before calling PCall");
             }
 #endif
 
@@ -365,6 +365,7 @@ namespace LuaInterface
         }
 
         //慎用, 有gc alloc
+        [System.Obsolete("LuaFunction.LazyCall() is obsolete.Use LuaFunction.Invoke()")]
         public object[] LazyCall(params object[] args)
         {
             BeginPCall();
@@ -375,7 +376,7 @@ namespace LuaInterface
                 EndPCall();
                 throw new LuaException("stack overflow");
             }
-
+            
             PushArgs(args);
             PCall();
             object[] objs = luaState.CheckObjects(oldTop);

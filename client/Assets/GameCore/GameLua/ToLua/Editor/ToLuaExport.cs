@@ -127,6 +127,7 @@ public static class ToLuaExport
         "AnimationClip.isAnimatorMotion",
         "AnimationClip.isHumanMotion",
         "AnimatorOverrideController.PerformOverrideClipListCleanup",
+        "AnimatorControllerParameter.name",
         "Caching.SetNoBackupFlag",
         "Caching.ResetNoBackupFlag",
         "Light.areaSize",
@@ -135,6 +136,7 @@ public static class ToLuaExport
         "Security.GetChainOfTrustValue",
         "Texture2D.alphaIsTransparency",
         "WWW.movie",
+        "WWW.GetMovieTexture",
         "WebCamTexture.MarkNonReadable",
         "WebCamTexture.isReadable",
         "Graphic.OnRebuildRequested",
@@ -148,6 +150,7 @@ public static class ToLuaExport
         "MonoBehaviour.runInEditMode",
         "TextureFormat.DXT1Crunched",
         "TextureFormat.DXT5Crunched",
+        "Texture.imageContentsHash",
         //NGUI
         "UIInput.ProcessEvent",
         "UIWidget.showHandlesWithMoveTool",
@@ -287,7 +290,7 @@ public static class ToLuaExport
                 else
                 {
                     Type genericClass = typeof(LuaOut<>);
-                    Type t = genericClass.MakeGenericType(args[i].ParameterType);
+                    Type t = genericClass.MakeGenericType(args[i].ParameterType.GetElementType());
                     list.Add(t);
                 }
             }
@@ -622,8 +625,8 @@ public static class ToLuaExport
         }
     }
 
-	public static List<MemberInfo> memberInfoFilter = new List<MemberInfo>
-	{
+    public static List<MemberInfo> memberInfoFilter = new List<MemberInfo>
+    {
         //可精确查找一个函数
 		//Type.GetMethod(string name, BindingFlags bindingAttr, Binder binder, CallingConventions callConvention, Type[] types, ParameterModifier[] modifiers);
     };
@@ -641,7 +644,7 @@ public static class ToLuaExport
 
     static ToLuaExport()
     {
-        
+        Debugger.useLog = true;
     }
 
     public static void Clear()
@@ -740,14 +743,16 @@ public static class ToLuaExport
 
     public static void Generate(string dir)
     {
+#if !EXPORT_INTERFACE
         Type iterType = typeof(System.Collections.IEnumerator);
 
         if (type.IsInterface && type != iterType)
         {
             return;
         }
+#endif
 
-        //GameCore.LogMgr.Log("Begin Generate lua Wrap for class {0}", className);        
+        //Debugger.Log("Begin Generate lua Wrap for class {0}", className);        
         sb = new StringBuilder();
         usingList.Add("System");                
 
@@ -1443,6 +1448,7 @@ public static class ToLuaExport
         if (!haveParams)
         {
             int count = paramInfos.Length + offset;
+            if (m.Name == "op_UnaryNegation") count = 2;
             sb.AppendFormat("\t\t\tToLua.CheckArgsCount(L, {0});\r\n", count);
         }
         else
@@ -1547,7 +1553,7 @@ public static class ToLuaExport
 
             if (IsGenericMethod(m.Method))
             {
-                GameCore.LogMgr.Log("Generic Method {0}.{1} cannot be export to lua", LuaMisc.GetTypeName(type), m.GetTotalName());
+                Debugger.Log("Generic Method {0}.{1} cannot be export to lua", LuaMisc.GetTypeName(type), m.GetTotalName());
                 continue;
             }
 
@@ -1617,7 +1623,7 @@ public static class ToLuaExport
 
     static string GetPushFunction(Type t, bool isByteBuffer = false)
     {        
-        if (t.IsEnum || t.IsPrimitive || t == typeof(string) || t == typeof(LuaTable) || t == typeof(LuaCSFunction) || t == typeof(LuaThread) 
+        if (t.IsEnum || t.IsPrimitive || t == typeof(string) || t == typeof(LuaTable) || t == typeof(LuaCSFunction) || t == typeof(LuaThread) || t == typeof(LuaFunction)
             || t == typeof(Type) || t == typeof(IntPtr) || typeof(Delegate).IsAssignableFrom(t) || t == typeof(LuaByteBuffer) // || t == typeof(LuaInteger64)
             || t == typeof(Vector3) || t == typeof(Vector2) || t == typeof(Vector4) || t == typeof(Quaternion) || t == typeof(Color) || t == typeof(RaycastHit)
             || t == typeof(Ray) || t == typeof(Touch) || t == typeof(Bounds) || t == typeof(object))
@@ -2720,14 +2726,14 @@ public static class ToLuaExport
         {
             if (CompareMethod(list[index], r) == 2)
             {                
-                GameCore.LogMgr.LogWarning("{0}.{1} has been dropped as function {2} more match lua", className, list[index].GetTotalName(), r.GetTotalName());
+                Debugger.LogWarning("{0}.{1} has been dropped as function {2} more match lua", className, list[index].GetTotalName(), r.GetTotalName());
                 list.RemoveAt(index);
                 list.Add(r);
                 return;
             }
             else
             {
-                GameCore.LogMgr.LogWarning("{0}.{1} has been dropped as function {2} more match lua", className, r.GetTotalName(), list[index].GetTotalName());
+                Debugger.LogWarning("{0}.{1} has been dropped as function {2} more match lua", className, r.GetTotalName(), list[index].GetTotalName());
                 return;
             }
         }
@@ -3324,7 +3330,7 @@ public static class ToLuaExport
             name = beDefined ? name : type + " " + name;
             sb.AppendFormat("{0}{1} = ({2})func.CheckObject(typeof({2}));\r\n", head, name, type);
 
-            //GameCore.LogMgr.LogError("GenLuaFunctionCheckValue undefined type:" + t.FullName);
+            //Debugger.LogError("GenLuaFunctionCheckValue undefined type:" + t.FullName);
         }
     }
 
@@ -4177,16 +4183,20 @@ public static class ToLuaExport
                     {
                         continue;
                     }
-                }
+                }                
 
                 if (IsUseDefinedAttributee(list2[i]))
                 {
-                    list.RemoveAll((md) => { return md.Name == list2[i].Name; });
+                    list.RemoveAll((md) => { return md.Name == list2[i].Name; });                    
                 }
                 else
                 {
                     int index = list.FindIndex((md) => { return IsMethodEqualExtend(md.Method, list2[i]); });
-                    if (index >= 0) list.RemoveAt(index);
+
+                    if (index >= 0)
+                    {                        
+                        list.RemoveAt(index);
+                    }
                 }
 
                 if (!IsObsolete(list2[i]))

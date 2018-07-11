@@ -1,0 +1,17 @@
+1.LayerMask.lua
+    lua中数值是double类型,加法会超过int上限,需要使用位运算
+2.protobuf.lua containers.lua
+    函数定义不完整,有歧义
+    MergeFromString改为ParseFromString
+    MergeFrom改为ParseFrom,并增加数组类型的ParseFrom方法
+3.Misc
+    与自己的框架不兼容
+    删除Misc文件夹
+    删除Profiler.lua
+4.ToLuaMenu
+    关闭编译之后的重新生成提示
+5.ToLua LuaState LuaFileUtils
+    封装ReadFile返回值,可以使用固定的buffer及指定的长度
+6.LuaConst CustomSettings
+    修改Lua代码目录
+    

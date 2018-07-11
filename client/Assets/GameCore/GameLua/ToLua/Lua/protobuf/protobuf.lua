@@ -699,7 +699,7 @@ end
 
 
 
-local function _AddMergeFromStringMethod(message_descriptor, message_meta)
+local function _AddParseFromStringMethod(message_descriptor, message_meta)
     local ReadTag = decoder.ReadTag
     local SkipField = decoder.SkipField
     local decoders_by_tag = message_meta._decoders_by_tag
@@ -726,18 +726,16 @@ local function _AddMergeFromStringMethod(message_descriptor, message_meta)
     end
     message_meta._member._InternalParse = _internal_parse 
 
-    local merge_from_string = function(self, serialized)
+    local parse_from_string = function(self, serialized)
         local length = #serialized
         if _internal_parse(self, serialized, 0, length) ~= length then
             error('Unexpected end-group tag.')
         end
         return length 
     end
-    message_meta._member.MergeFromString = merge_from_string
-
     message_meta._member.ParseFromString = function(self, serialized)
         message_meta._member.Clear(self)
-        merge_from_string(self, serialized)
+        parse_from_string(self, serialized)
     end
 end
 
@@ -819,11 +817,11 @@ local function _AddIsInitializedMethod(message_descriptor, message_meta)
     end
 end
 
-local function _AddMergeFromMethod(message_meta)
+local function _AddParseFromMethod(message_meta)
     local LABEL_REPEATED = FieldDescriptor.LABEL_REPEATED
     local CPPTYPE_MESSAGE = FieldDescriptor.CPPTYPE_MESSAGE
 
-    message_meta._member.MergeFrom = function (self, msg)
+    message_meta._member.ParseFrom = function (self, msg)
         assert(msg ~= self)
         message_meta._member._Modified(self)
 
@@ -836,19 +834,11 @@ local function _AddMergeFromMethod(message_meta)
                     field_value = field._default_constructor(self)
                     fields[field] = field_value
                 end
-                field_value:MergeFrom(value)
+                field_value:ParseFrom(value)
             else
                 self._fields[field] = value
             end
         end
-    end
-end
-
-local function _AddCopyFromMethod(message_meta)
-    message_meta._member.CopyFrom = function (self, msg)
-        assert(msg ~= self)
-        message_meta._member.Clear(self)
-        message_meta._member.MergeFrom(self, msg)
     end
 end
 
@@ -867,10 +857,9 @@ local function _AddMessageMethods(message_descriptor, message_meta)
     _AddByteSizeMethod(message_descriptor, message_meta)
     _AddSerializeToStringMethod(message_descriptor, message_meta)
     _AddSerializePartialToStringMethod(message_descriptor, message_meta)
-    _AddMergeFromStringMethod(message_descriptor, message_meta)
+    _AddParseFromStringMethod(message_descriptor, message_meta)
     _AddIsInitializedMethod(message_descriptor, message_meta)
-    _AddMergeFromMethod(message_meta)
-    _AddCopyFromMethod(message_meta)
+    _AddParseFromMethod(message_meta)
 end
 
 local function _AddPrivateHelperMethods(message_meta)

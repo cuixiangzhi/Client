@@ -186,7 +186,7 @@ namespace LuaInterface
             LuaException.projectFolder = (string)field.GetValue(null);
             projectFolder = projectFolder.Replace('\\', '/');
 #if DEVELOPER
-            GameCore.LogMgr.Log("projectFolder is {0}", projectFolder);
+            Debugger.Log("projectFolder is {0}", projectFolder);
 #endif
         }
     }

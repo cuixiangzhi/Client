@@ -41,18 +41,15 @@ local _RCFC_meta = {
     __newindex = function(self, key, value)
         error("RepeatedCompositeFieldContainer Can't set value directly")
     end,
-    MergeFrom = function(self,array)
+    ParseFrom = function(self,array)
+        for i = #self,1,-1 do
+            table.remove(self,i);
+        end
         for i = 1,#array do
             local data = self:add();
-            data:MergeFrom(array[i]);
+            data:ParseFrom(array[i]);
         end
-    end,
-    CopyFrom = function(self,array)
-        for i = #array,1 do
-            self:remove(i);
-        end
-        self:MergeFrom(array);
-    end,
+    end
 }
 _RCFC_meta.__index = _RCFC_meta
 
@@ -77,17 +74,14 @@ local _RSFC_meta = {
     __newindex = function(self, key, value)
         error("RepeatedCompositeFieldContainer Can't set value directly")
     end,
-    MergeFrom = function(self,array)
+    ParseFrom = function(self,array)
+        for i = #self,1,-1 do
+            table.remove(self,i);
+        end
         for i = 1,#array do
             self:append(array[i]);
         end
-    end,
-    CopyFrom = function(self,array)
-        for i = #array,1 do
-            self:remove(i);
-        end
-        self:MergeFrom(array);        
-    end,
+    end
 }
 _RSFC_meta.__index = _RSFC_meta
 

@@ -46,7 +46,7 @@ namespace LuaInterface
 
 #if UNITY_EDITOR
         static int _instanceID = -1;
-        static int _line = 200;
+        static int _line = 201;
         private static object consoleWindow;
         private static object logListView;
         private static FieldInfo logListViewCurrentRow;
@@ -73,8 +73,6 @@ namespace LuaInterface
             LuaDLL.tolua_atpanic(L, Panic);
             LuaDLL.tolua_pushcfunction(L, Print);
             LuaDLL.lua_setglobal(L, "print");
-            LuaDLL.tolua_pushcfunction(L, PrintError);
-            LuaDLL.lua_setglobal(L, "print_error");
             LuaDLL.tolua_pushcfunction(L, DoFile);
             LuaDLL.lua_setglobal(L, "dofile");
             LuaDLL.tolua_pushcfunction(L, LoadFile);
@@ -199,73 +197,7 @@ namespace LuaInterface
                         }
                     }
 
-                    GameCore.LogMgr.Log(sb.ToString());            //200行与_line一致
-                }
-                return 0;
-            }
-            catch (Exception e)
-            {
-                return LuaDLL.toluaL_exception(L, e);
-            }
-        }
-
-        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-        static int PrintError(IntPtr L)
-        {
-            try
-            {
-                int n = LuaDLL.lua_gettop(L);
-
-                using (CString.Block())
-                {
-                    CString sb = CString.Alloc(256);
-#if UNITY_EDITOR
-                    int line = LuaDLL.tolua_where(L, 1);
-                    string filename = LuaDLL.lua_tostring(L, -1);
-                    LuaDLL.lua_settop(L, n);
-
-                    if (!filename.Contains("."))
-                    {
-                        sb.Append('[').Append(filename).Append(".lua:").Append(line).Append("]:");
-                    }
-                    else
-                    {
-                        sb.Append('[').Append(filename).Append(':').Append(line).Append("]:");
-                    }
-#endif
-
-                    for (int i = 1; i <= n; i++)
-                    {
-                        if (i > 1) sb.Append("    ");
-
-                        if (LuaDLL.lua_isstring(L, i) == 1)
-                        {
-                            sb.Append(LuaDLL.lua_tostring(L, i));
-                        }
-                        else if (LuaDLL.lua_isnil(L, i))
-                        {
-                            sb.Append("nil");
-                        }
-                        else if (LuaDLL.lua_isboolean(L, i))
-                        {
-                            sb.Append(LuaDLL.lua_toboolean(L, i) ? "true" : "false");
-                        }
-                        else
-                        {
-                            IntPtr p = LuaDLL.lua_topointer(L, i);
-
-                            if (p == IntPtr.Zero)
-                            {
-                                sb.Append("nil");
-                            }
-                            else
-                            {
-                                sb.Append(LuaDLL.luaL_typename(L, i)).Append(":0x").Append(p.ToString("X"));
-                            }
-                        }
-                    }
-
-                    GameCore.LogMgr.LogError(sb.ToString());            //200行与_line一致
+                    Debugger.Log(sb.ToString());            //200行与_line一致
                 }
                 return 0;
             }
@@ -455,7 +387,7 @@ namespace LuaInterface
                 }
                 else
                 {
-                    GameCore.LogMgr.LogError("type not register to lua");
+                    Debugger.LogError("type not register to lua");
                     LuaDLL.lua_pushnil(L);
                 }
             }
@@ -2646,7 +2578,7 @@ namespace LuaInterface
             if (LuaOpenLib != null)
             {
 #if UNITY_EDITOR
-                GameCore.LogMgr.LogWarning("register PreLoad type {0} to lua", LuaMisc.GetTypeName(type));
+                Debugger.LogWarning("register PreLoad type {0} to lua", LuaMisc.GetTypeName(type));
 #endif
                 reference = LuaPCall(L, LuaOpenLib);                
             }

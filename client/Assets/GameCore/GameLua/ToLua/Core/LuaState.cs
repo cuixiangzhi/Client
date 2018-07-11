@@ -116,7 +116,7 @@ namespace LuaInterface
             OpenBaseLibs();
             LuaSetTop(0);
             InitLuaPath();
-            GameCore.LogMgr.Log("Init lua state cost: {0}", Time.realtimeSinceStartup - time);
+            Debugger.Log("Init lua state cost: {0}", Time.realtimeSinceStartup - time);
         }        
 
         void OpenBaseLibs()
@@ -204,7 +204,7 @@ namespace LuaInterface
 
         void OpenBaseLuaLibs()
         {
-            DoFile("tolua");            //tolua table名字已经存在了,不能用require
+            DoFile("tolua.lua");            //tolua table名字已经存在了,不能用require
             LuaUnityLibs.OpenLuaLibs(L);
         }
 
@@ -213,7 +213,7 @@ namespace LuaInterface
 #if UNITY_EDITOR
             beStart = true;
 #endif
-            GameCore.LogMgr.Log("LuaState start");
+            Debugger.Log("LuaState start");
             OpenBaseLuaLibs();
             PackBounds = GetFuncRef("Bounds.New");
             UnpackBounds = GetFuncRef("Bounds.Get");
@@ -579,7 +579,7 @@ namespace LuaInterface
             return LuaLoadBuffer<T>(new LuaByteBuffer(buffer), chunkName);
         }
 
-        public void DoFile(string fileName)
+        LuaByteBuffer LoadFileBuffer(string fileName)
         {
 #if UNITY_EDITOR
             if (!beStart)
@@ -596,36 +596,30 @@ namespace LuaInterface
                 throw new LuaException(error);
             }
 
+            return buffer;
+        }
+
+        string LuaChunkName(string name)
+        {
             if (LuaConst.openLuaDebugger)
             {
-                fileName = LuaFileUtils.Instance.FindFile(fileName);
+                name = LuaFileUtils.Instance.FindFile(name);
             }
 
+            return name;
+        }
+
+        public void DoFile(string fileName)
+        {
+            LuaByteBuffer buffer = LoadFileBuffer(fileName);
+            fileName = LuaChunkName(fileName);
             LuaLoadBuffer(buffer, fileName);
         }
 
         public T DoFile<T>(string fileName)
         {
-#if UNITY_EDITOR
-            if (!beStart)
-            {
-                throw new LuaException("you must call Start() first to initialize LuaState");
-            }
-#endif
-            LuaByteBuffer buffer = LuaFileUtils.Instance.ReadFile(fileName);
-
-            if (buffer.buffer == null)
-            {
-                string error = string.Format("cannot open {0}: No such file or directory", fileName);
-                error += LuaFileUtils.Instance.FindFileError(fileName);
-                throw new LuaException(error);
-            }
-
-            if (LuaConst.openLuaDebugger)
-            {
-                fileName = LuaFileUtils.Instance.FindFile(fileName);
-            }
-
+            LuaByteBuffer buffer = LoadFileBuffer(fileName);
+            fileName = LuaChunkName(fileName);
             return LuaLoadBuffer<T>(buffer, fileName);
         }
 
@@ -921,13 +915,13 @@ namespace LuaInterface
                 funcMap.Add(name, new WeakReference(fun));
                 funcRefMap.Add(reference, new WeakReference(fun));
                 RemoveFromGCList(reference);
-                if (LogGC) GameCore.LogMgr.Log("Alloc LuaFunction name {0}, id {1}", name, reference);                
+                if (LogGC) Debugger.Log("Alloc LuaFunction name {0}, id {1}", name, reference);                
                 return fun;
             }
 
             if (beLogMiss)
             {
-                GameCore.LogMgr.Log("Lua function {0} not exists", name);                
+                Debugger.Log("Lua function {0} not exists", name);                
             }
 
             return null;
@@ -964,7 +958,7 @@ namespace LuaInterface
             {                
                 func = new LuaFunction(reference, this);
                 funcRefMap.Add(reference, new WeakReference(func));
-                if (LogGC) GameCore.LogMgr.Log("Alloc LuaFunction name , id {0}", reference);      
+                if (LogGC) Debugger.Log("Alloc LuaFunction name , id {0}", reference);      
             }
 
             RemoveFromGCList(reference);
@@ -1021,14 +1015,14 @@ namespace LuaInterface
                 table.name = fullPath;
                 funcMap.Add(fullPath, new WeakReference(table));
                 funcRefMap.Add(reference, new WeakReference(table));
-                if (LogGC) GameCore.LogMgr.Log("Alloc LuaTable name {0}, id {1}", fullPath, reference);     
+                if (LogGC) Debugger.Log("Alloc LuaTable name {0}, id {1}", fullPath, reference);     
                 RemoveFromGCList(reference);
                 return table;
             }
 
             if (beLogMiss)
             {
-                GameCore.LogMgr.LogWarning("Lua table {0} not exists", fullPath);
+                Debugger.LogWarning("Lua table {0} not exists", fullPath);
             }
 
             return null;
@@ -1132,7 +1126,7 @@ namespace LuaInterface
 
             if (n != 0)
             {
-                GameCore.LogMgr.LogWarning("Lua stack top is {0}", n);
+                Debugger.LogWarning("Lua stack top is {0}", n);
                 return false;
             }
 
@@ -1807,6 +1801,46 @@ namespace LuaInterface
             }
         }
 
+        public void NewTable(string fullPath)
+        {
+            string[] path = fullPath.Split(new char[] { '.' });
+            int oldTop = LuaDLL.lua_gettop(L);
+
+            if (path.Length == 1)
+            {
+                LuaDLL.lua_newtable(L);
+                LuaDLL.lua_setglobal(L, fullPath);
+            }
+            else
+            {
+                LuaDLL.lua_getglobal(L, path[0]);
+
+                for (int i = 1; i < path.Length - 1; i++)
+                {
+                    LuaDLL.lua_pushstring(L, path[i]);
+                    LuaDLL.lua_gettable(L, -2);
+                }
+
+                LuaDLL.lua_pushstring(L, path[path.Length - 1]);
+                LuaDLL.lua_newtable(L);
+                LuaDLL.lua_settable(L, -3);
+            }
+
+            LuaDLL.lua_settop(L, oldTop);
+        }
+
+
+        public LuaTable NewTable(int narr = 0, int nrec = 0)
+        {
+            int oldTop = LuaDLL.lua_gettop(L);
+
+            LuaDLL.lua_createtable(L, 0, 0);
+            LuaTable table = ToLua.ToLuaTable(L, oldTop + 1);
+
+            LuaDLL.lua_settop(L, oldTop);
+            return table;
+        }
+
         //慎用
         public void ReLoad(string moduleFileName)
         {
@@ -1847,7 +1881,7 @@ namespace LuaInterface
                     if (!missSet.Contains(t))
                     {
                         missSet.Add(t);
-                        GameCore.LogMgr.LogWarning("Type {0} not wrap to lua, push as {1}, the warning is only raised once", LuaMisc.GetTypeName(t), LuaMisc.GetTypeName(type));
+                        Debugger.LogWarning("Type {0} not wrap to lua, push as {1}, the warning is only raised once", LuaMisc.GetTypeName(t), LuaMisc.GetTypeName(type));
                     }
 #endif                    
                     return reference;              
@@ -1866,7 +1900,7 @@ namespace LuaInterface
             if (!missSet.Contains(t))
             {
                 missSet.Add(t);
-                GameCore.LogMgr.LogWarning("Type {0} not wrap to lua, push as {1}, the warning is only raised once", LuaMisc.GetTypeName(t), LuaMisc.GetTypeName(type));
+                Debugger.LogWarning("Type {0} not wrap to lua, push as {1}, the warning is only raised once", LuaMisc.GetTypeName(t), LuaMisc.GetTypeName(type));
             }            
 #endif
 
@@ -1909,7 +1943,6 @@ namespace LuaInterface
         {
             if (IntPtr.Zero != L)
             {
-                LuaGC(LuaGCOptions.LUA_GCCOLLECT, 0);
                 Collect();
 
                 foreach (KeyValuePair<Type, int> kv in metaMap)
@@ -1949,7 +1982,7 @@ namespace LuaInterface
                 missSet.Clear();
 #endif
                 OnDestroy();
-                GameCore.LogMgr.Log("LuaState destroy");
+                Debugger.Log("LuaState destroy");
             }
 
             if (mainState == this)
@@ -2029,7 +2062,7 @@ namespace LuaInterface
 
             while (iter2.MoveNext())
             {
-                GameCore.LogMgr.Log("map item, k,v is {0}:{1}", iter2.Current.Key, iter2.Current.Value);
+                Debugger.Log("map item, k,v is {0}:{1}", iter2.Current.Key, iter2.Current.Value);
             }
 
             iter2.Dispose();
@@ -2064,7 +2097,7 @@ namespace LuaInterface
                     if (LogGC)
                     {
                         string str = name == null ? "null" : name;
-                        GameCore.LogMgr.Log("collect lua reference name {0}, id {1} in thread", str, reference);
+                        Debugger.Log("collect lua reference name {0}, id {1} in thread", str, reference);
                     }
                 }
             }
@@ -2093,7 +2126,7 @@ namespace LuaInterface
                 if (LogGC)
                 {
                     string str = name == null ? "null" : name;
-                    GameCore.LogMgr.Log("collect lua reference name {0}, id {1} in main", str, reference);
+                    Debugger.Log("collect lua reference name {0}, id {1} in main", str, reference);
                 }
             }
         }
@@ -2150,7 +2183,7 @@ namespace LuaInterface
                 LuaDLL.lua_settop(L, top);
                 if (beLogMiss)
                 {
-                    GameCore.LogMgr.Log("Lua function {0} not exists", name);
+                    Debugger.Log("Lua function {0} not exists", name);
                 }
                 
                 return false;

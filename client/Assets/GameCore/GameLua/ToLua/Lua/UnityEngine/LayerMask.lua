@@ -36,8 +36,8 @@ function LayerMask.GetMask(...)
 	for i = 1, #arg do		
 		local n = LayerMask.NameToLayer(arg[i])
 		
-		if n ~= nil and n ~= 0 then
-			value = value + 2 ^ n				
+		if n ~= nil then
+			value = bit.bor(value,bit.lshift(1,n));				
 		end
 	end	
 		
