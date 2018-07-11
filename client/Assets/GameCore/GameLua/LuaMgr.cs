@@ -85,8 +85,8 @@ namespace GameCore
             OpenCJson();
             //模式匹配库
             mLuaState.OpenLibs(LuaDLL.luaopen_lpeg);
+            //位操作库
             mLuaState.OpenLibs(LuaDLL.luaopen_bit);
-
             //导出C# API
             LuaBinder.Bind(mLuaState);
             DelegateFactory.Init();
