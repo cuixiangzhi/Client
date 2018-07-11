@@ -237,7 +237,10 @@
     <ClCompile Include="google\protobuf\wrappers.pb.cc">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="thread\thread.cc">
+    <ClCompile Include="thread\cthread.cc">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="network\csocket.cc">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -617,13 +620,16 @@
     <ClInclude Include="google\protobuf\wrappers.pb.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="thread\thread.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="define\type.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="define\stdafx.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="thread\cthread.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="network\csocket.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="define\ctype.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

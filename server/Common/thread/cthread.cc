@@ -1,19 +1,19 @@
-#include "thread.h"
+#include "cthread.h"
 
-void thread_main_loop(void* param)
+void cthread_main_loop(void* param)
 {
 	try
 	{
-		thread* thread_object = reinterpret_cast<thread*>(param);
-		thread_object->init();
-		thread_object->set_status(THREAD_STATUS::RUN);
-		while (thread_object->get_active())
+		cthread* cthread_object = reinterpret_cast<cthread*>(param);
+		cthread_object->init();
+		cthread_object->set_status(THREAD_STATUS::RUN);
+		while (cthread_object->get_active())
 		{
-			thread_object->sleep();
-			thread_object->loop();
+			cthread_object->sleep();
+			cthread_object->loop();
 		}
-		thread_object->clear();
-		thread_object->exit();
+		cthread_object->clear();
+		cthread_object->exit();
 	}
 	catch(...)
 	{
@@ -21,20 +21,20 @@ void thread_main_loop(void* param)
 	}
 }
 #ifdef _WIN32
-DWORD WINAPI thread_main(void* param)
+DWORD WINAPI cthread_main(void* param)
 {
-	thread_main_loop(param);
+	cthread_main_loop(param);
 	return NULL;
 }
 #else
-void* thread_main(void* param)
+void* cthread_main(void* param)
 {
-	thread_main_loop(param);
+	cthread_main_loop(param);
 	return NULL;
 }
 #endif
 
-thread::thread(uint8 framerate) :
+cthread::cthread(uint8 framerate) :
 	m_tid(0),
 	m_status(THREAD_STATUS::READY),
 	m_active(true),
@@ -49,29 +49,29 @@ thread::thread(uint8 framerate) :
 #endif
 }
 
-thread::~thread()
+cthread::~cthread()
 {
 
 }
 
-void thread::start()
+void cthread::start()
 {
 	if (m_status != THREAD_STATUS::READY)
 		return;
 	m_status = THREAD_STATUS::START;
 #ifdef _WIN32
-	m_handle = CreateThread(NULL, 0, thread_main, this, NULL, &m_tid);
+	m_handle = CreateThread(NULL, 0, cthread_main, this, NULL, &m_tid);
 #else
-	m_tid = pthread_create(&m_tid, NULL, thread_main, this);
+	m_tid = pthread_create(&m_tid, NULL, cthread_main, this);
 #endif
 }
 
-void thread::stop()
+void cthread::stop()
 {
 	m_active = false;
 }
 
-void thread::exit()
+void cthread::exit()
 {
 	m_status = THREAD_STATUS::EXIT;
 #ifdef _WIN32
@@ -83,7 +83,7 @@ void thread::exit()
 	m_status = THREAD_STATUS::DEAD;
 }
 
-void thread::sleep()
+void cthread::sleep()
 {
 	if (m_framecount != 0)
 	{
@@ -104,17 +104,17 @@ void thread::sleep()
 #endif
 }
 
-void thread::init()
+void cthread::init()
 {
 
 }
 
-void thread::loop()
+void cthread::loop()
 {
 
 }
 
-void thread::clear()
+void cthread::clear()
 {
 
 }

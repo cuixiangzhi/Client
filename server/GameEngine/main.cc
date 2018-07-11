@@ -1,4 +1,4 @@
-#include "thread/thread.h"
+#include "thread/cthread.h"
 
 int main(int argc,char** argv)
 {

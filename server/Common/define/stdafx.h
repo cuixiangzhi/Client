@@ -1,2 +1,2 @@
 #pragma once
-#include "define/type.h"
+#include "define/ctype.h"

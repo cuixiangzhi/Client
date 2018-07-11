@@ -10,11 +10,11 @@ enum THREAD_STATUS
 	DEAD		= 4,
 };
 
-class thread
+class cthread
 {
 public:
-	thread(uint8 framerate);
-	virtual ~thread();
+	cthread(uint8 framerate);
+	virtual ~cthread();
 public:
 	void start();
 	void stop();
@@ -47,7 +47,7 @@ protected:
 	HANDLE m_handle;
 #endif
 private:
-	thread() = delete;
-	thread(thread&) = delete;
-	thread& operator=(thread&) = delete;
+	cthread() = delete;
+	cthread(cthread&) = delete;
+	cthread& operator=(cthread&) = delete;
 };
