@@ -1,7 +1,7 @@
-//----------------------------------------------
+//-------------------------------------------------
 //            NGUI: Next-Gen UI kit
-// Copyright © 2011-2016 Tasharen Entertainment
-//----------------------------------------------
+// Copyright © 2011-2017 Tasharen Entertainment Inc
+//-------------------------------------------------
 
 using UnityEngine;
 using UnityEditor;
@@ -380,6 +380,12 @@ public class NGUISettings
 	{
 		get { return GetBool("NGUI Truecolor", true); }
 		set { SetBool("NGUI Truecolor", value); }
+	}
+
+	static public bool autoUpgradeSprites
+	{
+		get { return GetBool("NGUI AutoUpgrade", false); }
+		set { SetBool("NGUI AutoUpgrade", value); }
 	}
 
 	static public bool keepPadding

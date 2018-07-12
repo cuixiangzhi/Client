@@ -17,6 +17,7 @@ Shader "Hidden/Unlit/Transparent Masked 1"
 			"Queue" = "Transparent"
 			"IgnoreProjector" = "True"
 			"RenderType" = "Transparent"
+			"DisableBatching" = "True"
 		}
 		
 		Pass
@@ -93,6 +94,7 @@ Shader "Hidden/Unlit/Transparent Masked 1"
 			"Queue" = "Transparent"
 			"IgnoreProjector" = "True"
 			"RenderType" = "Transparent"
+			"DisableBatching" = "True"
 		}
 		
 		Pass

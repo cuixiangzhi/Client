@@ -1,7 +1,7 @@
-//----------------------------------------------
+//-------------------------------------------------
 //            NGUI: Next-Gen UI kit
-// Copyright © 2011-2016 Tasharen Entertainment
-//----------------------------------------------
+// Copyright © 2011-2017 Tasharen Entertainment Inc
+//-------------------------------------------------
 
 using UnityEngine;
 using System.Collections.Generic;
@@ -125,7 +125,7 @@ public class UIGrid : UIWidgetContainer
 		for (int i = 0; i < myTrans.childCount; ++i)
 		{
 			Transform t = myTrans.GetChild(i);
-			if (!hideInactive || (t && NGUITools.GetActive(t.gameObject)))
+			if (!hideInactive || (t && t.gameObject.activeSelf))
 				list.Add(t);
 		}
 
@@ -162,13 +162,22 @@ public class UIGrid : UIWidgetContainer
 	/// Convenience method -- add a new child.
 	/// </summary>
 
-	public void AddChild (Transform trans) { AddChild(trans, true); }
+	[System.Obsolete("Use gameObject.AddChild or transform.parent = gridTransform")]
+	public void AddChild (Transform trans)
+	{
+		if (trans != null)
+		{
+			trans.parent = transform;
+			ResetPosition(GetChildList());
+		}
+	}
 
 	/// <summary>
 	/// Convenience method -- add a new child.
 	/// Note that if you plan on adding multiple objects, it's faster to GetChildList() and modify that instead.
 	/// </summary>
 
+	[System.Obsolete("Use gameObject.AddChild or transform.parent = gridTransform")]
 	public void AddChild (Transform trans, bool sort)
 	{
 		if (trans != null)
@@ -411,8 +420,10 @@ public class UIGrid : UIWidgetContainer
 
 				if (sp != null)
 				{
+					sp.enabled = false;
 					sp.target.x -= fx;
 					sp.target.y -= fy;
+					sp.enabled = true;
 				}
 				else
 				{

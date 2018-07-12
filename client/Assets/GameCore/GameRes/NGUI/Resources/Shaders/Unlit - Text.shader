@@ -16,6 +16,7 @@ Shader "Unlit/Text"
 			"Queue" = "Transparent"
 			"IgnoreProjector" = "True"
 			"RenderType" = "Transparent"
+			"DisableBatching" = "True"
 		}
 
 		Cull Off
@@ -28,42 +29,55 @@ Shader "Unlit/Text"
 		Pass
 		{
 			CGPROGRAM
-				#pragma vertex vert
-				#pragma fragment frag
-				#include "UnityCG.cginc"
+			#pragma vertex vert
+			#pragma fragment frag
+			#include "UnityCG.cginc"
 
-				struct appdata_t
-				{
-					float4 vertex : POSITION;
-					half4 color : COLOR;
-					float2 texcoord : TEXCOORD0;
-				};
+			// Unity 4 compatibility
+			#ifndef UNITY_VERTEX_INPUT_INSTANCE_ID
+			#define UNITY_VERTEX_INPUT_INSTANCE_ID
+			#define UNITY_VERTEX_OUTPUT_STEREO
+			#define UNITY_SETUP_INSTANCE_ID(v)
+			#define UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(i)
+			#define UnityObjectToClipPos(v) UnityObjectToClipPos(v)
+			#endif
 
-				struct v2f
-				{
-					float4 vertex : SV_POSITION;
-					half4 color : COLOR;
-					float2 texcoord : TEXCOORD0;
-				};
+			struct appdata_t
+			{
+				float4 vertex : POSITION;
+				half4 color : COLOR;
+				float2 texcoord : TEXCOORD0;
+				UNITY_VERTEX_INPUT_INSTANCE_ID
+			};
 
-				sampler2D _MainTex;
-				float4 _MainTex_ST;
+			struct v2f
+			{
+				float4 vertex : SV_POSITION;
+				half4 color : COLOR;
+				float2 texcoord : TEXCOORD0;
+				UNITY_VERTEX_OUTPUT_STEREO
+			};
 
-				v2f vert (appdata_t v)
-				{
-					v2f o;
-					o.vertex = UnityObjectToClipPos(v.vertex);
-					o.texcoord = v.texcoord;
-					o.color = v.color;
-					return o;
-				}
+			sampler2D _MainTex;
+			float4 _MainTex_ST;
 
-				half4 frag (v2f i) : SV_Target
-				{
-					half4 col = i.color;
-					col.a *= tex2D(_MainTex, i.texcoord).a;
-					return col;
-				}
+			v2f vert (appdata_t v)
+			{
+				v2f o;
+				UNITY_SETUP_INSTANCE_ID(v);
+				UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
+				o.vertex = UnityObjectToClipPos(v.vertex);
+				o.texcoord = v.texcoord;
+				o.color = v.color;
+				return o;
+			}
+
+			half4 frag (v2f i) : SV_Target
+			{
+				half4 col = i.color;
+				col.a *= tex2D(_MainTex, i.texcoord).a;
+				return col;
+			}
 			ENDCG
 		}
 	}
@@ -75,6 +89,7 @@ Shader "Unlit/Text"
 			"Queue"="Transparent"
 			"IgnoreProjector"="True"
 			"RenderType"="Transparent"
+			"DisableBatching" = "True"
 		}
 		
 		Lighting Off

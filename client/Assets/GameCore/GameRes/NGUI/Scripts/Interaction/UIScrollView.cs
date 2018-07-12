@@ -1,7 +1,7 @@
-//----------------------------------------------
+//-------------------------------------------------
 //            NGUI: Next-Gen UI kit
-// Copyright © 2011-2016 Tasharen Entertainment
-//----------------------------------------------
+// Copyright © 2011-2017 Tasharen Entertainment Inc
+//-------------------------------------------------
 
 using UnityEngine;
 
@@ -46,8 +46,6 @@ public class UIScrollView : MonoBehaviour
 	/// </summary>
 
 	public Movement movement = Movement.Horizontal;
-
-    public Vector3 resetOffset = Vector3.zero;
 
 	/// <summary>
 	/// Effect to apply when dragging.
@@ -178,22 +176,18 @@ public class UIScrollView : MonoBehaviour
 	protected int mDragID = -10;
 	protected Vector2 mDragStartOffset = Vector2.zero;
 	protected bool mDragStarted = false;
+    public Vector3 resetOffset = Vector3.zero;
+    /// <summary>
+    /// Panel that's being dragged.
+    /// </summary>
 
-	/// <summary>
-	/// Panel that's being dragged.
-	/// </summary>
-
-	public UIPanel panel { get { return mPanel; } }
+    public UIPanel panel { get { return mPanel; } }
 
 	/// <summary>
 	/// Whether the scroll view is being dragged.
 	/// </summary>
 
 	public bool isDragging { get { return mPressed && mDragStarted; } }
-
-    public bool considerChild = false;
-
-    public System.Collections.Generic.List<UIPanel> childPanel;
 
 	/// <summary>
 	/// Calculate the bounds used by the widgets.
@@ -207,7 +201,7 @@ public class UIScrollView : MonoBehaviour
 			{
 				mCalculatedBounds = true;
 				mTrans = transform;
-				mBounds = NGUIMath.CalculateRelativeWidgetBounds(mTrans, mTrans,false,considerChild,childPanel);
+				mBounds = NGUIMath.CalculateRelativeWidgetBounds(mTrans, mTrans);
 			}
 			return mBounds;
 		}
@@ -428,10 +422,8 @@ public class UIScrollView : MonoBehaviour
 				// Spring back into place
 				Vector3 pos = mTrans.localPosition + constraint;
 				pos.x = Mathf.Round(pos.x);
-				pos.y = Mathf.Round(pos.y);
-
-                pos += resetOffset;
-				SpringPanel.Begin(mPanel.gameObject, pos, 8f);
+				pos.y = Mathf.Round(pos.y); pos += resetOffset;
+                SpringPanel.Begin(mPanel.gameObject, pos, 8f);
 			}
 			else
 			{

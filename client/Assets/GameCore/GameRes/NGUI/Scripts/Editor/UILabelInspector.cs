@@ -1,7 +1,7 @@
-//----------------------------------------------
+//-------------------------------------------------
 //            NGUI: Next-Gen UI kit
-// Copyright © 2011-2016 Tasharen Entertainment
-//----------------------------------------------
+// Copyright © 2011-2017 Tasharen Entertainment Inc
+//-------------------------------------------------
 
 #if !UNITY_FLASH
 #define DYNAMIC_FONT
@@ -127,6 +127,8 @@ public class UILabelInspector : UIWidgetInspector
 				"When you do run into such issues, please submit a Bug Report to Unity via Help -> Report a Bug (as this is will be a Unity bug, not an NGUI one).", MessageType.Warning);
 		}
 
+		NGUIEditorTools.DrawProperty("Material", serializedObject, "mMat");
+
 		EditorGUI.BeginDisabledGroup(!isValid);
 		{
 			UIFont uiFont = (fnt != null) ? fnt.objectReferenceValue as UIFont : null;
@@ -154,8 +156,6 @@ public class UILabelInspector : UIWidgetInspector
 					EditorGUI.EndDisabledGroup();
 				}
 				GUILayout.EndHorizontal();
-
-				NGUIEditorTools.DrawProperty("Material", serializedObject, "mMaterial");
 			}
 			else if (uiFont != null)
 			{

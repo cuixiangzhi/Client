@@ -1,7 +1,7 @@
-//----------------------------------------------
+//-------------------------------------------------
 //            NGUI: Next-Gen UI kit
-// Copyright © 2011-2016 Tasharen Entertainment
-//----------------------------------------------
+// Copyright © 2011-2017 Tasharen Entertainment Inc
+//-------------------------------------------------
 
 using UnityEngine;
 using System.Collections.Generic;
@@ -37,8 +37,6 @@ public class UITable : UIWidgetContainer
 	/// </summary>
 
 	public int columns = 0;
-
-    public bool considerChildren = false;
 
 	/// <summary>
 	/// Which way the new lines will be added.
@@ -197,7 +195,7 @@ public class UITable : UIWidgetContainer
 		for (int i = 0, imax = children.Count; i < imax; ++i)
 		{
 			Transform t = children[i];
-			Bounds b = NGUIMath.CalculateRelativeWidgetBounds(t, !hideInactive, considerChildren);
+			Bounds b = NGUIMath.CalculateRelativeWidgetBounds(t, !hideInactive);
 
 			Vector3 scale = t.localScale;
 			b.min = Vector3.Scale(b.min, scale);
@@ -276,8 +274,10 @@ public class UITable : UIWidgetContainer
 
 				if (sp != null)
 				{
+					sp.enabled = false;
 					sp.target.x -= fx;
 					sp.target.y -= fy;
+					sp.enabled = true;
 				}
 				else
 				{

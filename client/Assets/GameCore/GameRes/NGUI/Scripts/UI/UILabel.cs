@@ -1,7 +1,7 @@
-//----------------------------------------------
+//-------------------------------------------------
 //            NGUI: Next-Gen UI kit
-// Copyright © 2011-2016 Tasharen Entertainment
-//----------------------------------------------
+// Copyright © 2011-2017 Tasharen Entertainment Inc
+//-------------------------------------------------
 
 using UnityEngine;
 using System.Collections.Generic;
@@ -66,7 +66,6 @@ public class UILabel : UIWidget
 	[HideInInspector][SerializeField] NGUIText.SymbolStyle mSymbols = NGUIText.SymbolStyle.Normal;
 	[HideInInspector][SerializeField] Vector2 mEffectDistance = Vector2.one;
 	[HideInInspector][SerializeField] Overflow mOverflow = Overflow.ShrinkContent;
-	[HideInInspector][SerializeField] Material mMaterial;
 	[HideInInspector][SerializeField] bool mApplyGradient = false;
 	[HideInInspector][SerializeField] Color mGradientTop = Color.white;
 	[HideInInspector][SerializeField] Color mGradientBottom = new Color(0.7f, 0.7f, 0.7f);
@@ -162,19 +161,32 @@ public class UILabel : UIWidget
 	{
 		get
 		{
-			if (mMaterial != null) return mMaterial;
+			if (mMat != null) return mMat;
 			if (mFont != null) return mFont.material;
 			if (mTrueTypeFont != null) return mTrueTypeFont.material;
 			return null;
 		}
 		set
 		{
-			if (mMaterial != value)
-			{
-				RemoveFromPanel();
-				mMaterial = value;
-				MarkAsChanged();
-			}
+			base.material = value;
+		}
+	}
+
+	/// <summary>
+	/// Label's main texture comes from the font itself.
+	/// </summary>
+
+	public override Texture mainTexture
+	{
+		get
+		{
+			if (mFont != null) return mFont.texture;
+			if (mTrueTypeFont != null) { var mat = mTrueTypeFont.material; if (mat != null) return mat.mainTexture; }
+			return null;
+		}
+		set
+		{
+			base.mainTexture = value;
 		}
 	}
 
@@ -825,6 +837,21 @@ public class UILabel : UIWidget
 	}
 
 	/// <summary>
+	/// How many quads there are per printed character.
+	/// </summary>
+	
+	public int quadsPerCharacter
+	{
+		get
+		{
+			if (mEffectStyle == Effect.Shadow) return 2;
+			else if (mEffectStyle == Effect.Outline) return 5;
+			else if (mEffectStyle == Effect.Outline8) return 9;
+			return 1;
+		}
+	}
+
+	/// <summary>
 	/// Whether the label will automatically shrink its size in order to fit the maximum line width.
 	/// </summary>
 
@@ -1033,6 +1060,8 @@ public class UILabel : UIWidget
 
 	static void OnFontChanged (Font font)
 	{
+		++mFontChangedDepth;
+
 		for (int i = 0; i < mList.size; ++i)
 		{
 			UILabel lbl = mList[i];
@@ -1043,33 +1072,56 @@ public class UILabel : UIWidget
 
 				if (fnt == font)
 				{
-					fnt.RequestCharactersInTexture(lbl.printedText, lbl.mFinalFontSize, lbl.mFontStyle);
-					lbl.MarkAsChanged();
+					if (mTempLabels == null) mTempLabels = new BetterList<UILabel>();
 
-					if (lbl.panel == null)
-						lbl.CreatePanel();
-
-					if (mTempDrawcalls == null)
-						mTempDrawcalls = new List<UIDrawCall>();
-
-					if (lbl.drawCall != null && !mTempDrawcalls.Contains(lbl.drawCall))
-						mTempDrawcalls.Add(lbl.drawCall);
+					if (!mTempLabels.Contains(lbl))
+					{
+						mTempLabels.Add(lbl);
+						lbl.UpdateNGUIText();
+						fnt.RequestCharactersInTexture(lbl.printedText, lbl.mFinalFontSize, lbl.mFontStyle);
+					}
 				}
 			}
 		}
 
-		if (mTempDrawcalls != null)
+		if (mFontChangedDepth == 1 && mTempLabels != null)
 		{
-			for (int i = 0, imax = mTempDrawcalls.Count; i < imax; ++i)
+			var frame = Time.frameCount;
+
+			for (int i = 0, imax = mTempLabels.size; i < imax; ++i)
 			{
-				UIDrawCall dc = mTempDrawcalls[i];
-				if (dc.panel != null) dc.panel.FillDrawCall(dc);
+				var lbl = mTempLabels.buffer[i];
+				if (lbl.panel == null) lbl.CreatePanel();
+				lbl.MarkAsChanged();
+				lbl.UpdateGeometry(frame);
+
+				var dc = lbl.drawCall;
+
+				if (dc != null)
+				{
+					if (mTempDrawcalls == null) mTempDrawcalls = new BetterList<UIDrawCall>();
+					if (!mTempDrawcalls.Contains(dc)) mTempDrawcalls.Add(dc);
+				}
 			}
-			mTempDrawcalls.Clear();
+
+			mTempLabels.Clear();
+
+			if (mTempDrawcalls != null)
+			{
+				for (int i = 0, imax = mTempDrawcalls.size; i < imax; ++i)
+				{
+					var dc = mTempDrawcalls.buffer[i];
+					if (dc.panel != null) dc.panel.FillDrawCall(dc);
+				}
+				mTempDrawcalls.Clear();
+			}
 		}
+		--mFontChangedDepth;
 	}
 
-	static List<UIDrawCall> mTempDrawcalls;
+	[System.NonSerialized] static int mFontChangedDepth = 0;
+	[System.NonSerialized] static BetterList<UIDrawCall> mTempDrawcalls;
+	[System.NonSerialized] static BetterList<UILabel> mTempLabels;
 
 	/// <summary>
 	/// Get the sides of the rectangle relative to the specified transform.
@@ -1254,13 +1306,7 @@ public class UILabel : UIWidget
 	/// Process the raw text, called when something changes.
 	/// </summary>
 
-	public void ProcessText () { ProcessText(false, true); }
-
-	/// <summary>
-	/// Process the raw text, called when something changes.
-	/// </summary>
-
-	void ProcessText (bool legacyMode, bool full)
+	public void ProcessText (bool legacyMode = false, bool full = true)
 	{
 		if (!isValid) return;
 
@@ -1334,8 +1380,7 @@ public class UILabel : UIWidget
 				NGUIText.Update(false);
 
 				// Wrap the text
-				bool fits = NGUIText.WrapText(printedText, out mProcessedText, true, false,
-					mOverflowEllipsis && mOverflow == Overflow.ClampContent);
+				bool fits = NGUIText.WrapText(printedText, out mProcessedText, false, false, mOverflowEllipsis);
 
 				if (mOverflow == Overflow.ShrinkContent && !fits)
 				{
@@ -1479,8 +1524,8 @@ public class UILabel : UIWidget
 	[System.Obsolete("Use UILabel.GetCharacterAtPosition instead")]
 	public int GetCharacterIndex (Vector2 localPos) { return GetCharacterIndexAtPosition(localPos, false); }
 
-	static BetterList<Vector3> mTempVerts = new BetterList<Vector3>();
-	static BetterList<int> mTempIndices = new BetterList<int>();
+	static List<Vector3> mTempVerts = new List<Vector3>();
+	static List<int> mTempIndices = new List<int>();
 
 	/// <summary>
 	/// Return the index of the character at the specified world position.
@@ -1508,7 +1553,7 @@ public class UILabel : UIWidget
 			if (precise) NGUIText.PrintExactCharacterPositions(text, mTempVerts, mTempIndices);
 			else NGUIText.PrintApproximateCharacterPositions(text, mTempVerts, mTempIndices);
 
-			if (mTempVerts.size > 0)
+			if (mTempVerts.Count > 0)
 			{
 				ApplyOffset(mTempVerts, 0);
 				int retVal = precise ?
@@ -1692,11 +1737,11 @@ public class UILabel : UIWidget
 
 			NGUIText.PrintApproximateCharacterPositions(text, mTempVerts, mTempIndices);
 
-			if (mTempVerts.size > 0)
+			if (mTempVerts.Count > 0)
 			{
 				ApplyOffset(mTempVerts, 0);
 
-				for (int i = 0; i < mTempIndices.size; ++i)
+				for (int i = 0, imax = mTempIndices.Count; i < imax; ++i)
 				{
 					if (mTempIndices[i] == currentIndex)
 					{
@@ -1744,23 +1789,23 @@ public class UILabel : UIWidget
 		string text = processedText;
 		UpdateNGUIText();
 
-		int startingCaretVerts = caret.verts.size;
+		int startingCaretVerts = caret.verts.Count;
 		Vector2 center = new Vector2(0.5f, 0.5f);
 		float alpha = finalAlpha;
 
 		// If we have a highlight to work with, fill the buffer
 		if (highlight != null && start != end)
 		{
-			int startingVertices = highlight.verts.size;
+			int startingVertices = highlight.verts.Count;
 			NGUIText.PrintCaretAndSelection(text, start, end, caret.verts, highlight.verts);
 
-			if (highlight.verts.size > startingVertices)
+			if (highlight.verts.Count > startingVertices)
 			{
 				ApplyOffset(highlight.verts, startingVertices);
 
 				Color c = new Color(highlightColor.r, highlightColor.g, highlightColor.b, highlightColor.a * alpha);
 
-				for (int i = startingVertices; i < highlight.verts.size; ++i)
+				for (int i = startingVertices, imax = highlight.verts.Count; i < imax; ++i)
 				{
 					highlight.uvs.Add(center);
 					highlight.cols.Add(c);
@@ -1773,7 +1818,7 @@ public class UILabel : UIWidget
 		ApplyOffset(caret.verts, startingCaretVerts);
 		Color cc = new Color(caretColor.r, caretColor.g, caretColor.b, caretColor.a * alpha);
 
-		for (int i = startingCaretVerts; i < caret.verts.size; ++i)
+		for (int i = startingCaretVerts, imax = caret.verts.Count; i < imax; ++i)
 		{
 			caret.uvs.Add(center);
 			caret.cols.Add(cc);
@@ -1787,18 +1832,18 @@ public class UILabel : UIWidget
 	/// Draw the label.
 	/// </summary>
 
-	public override void OnFill (BetterList<Vector3> verts, BetterList<Vector2> uvs, BetterList<Color> cols)
+	public override void OnFill (List<Vector3> verts, List<Vector2> uvs, List<Color> cols)
 	{
 		if (!isValid) return;
 
-		int offset = verts.size;
+		int offset = verts.Count;
 		Color col = color;
 		col.a = finalAlpha;
 		
 		if (mFont != null && mFont.premultipliedAlphaShader) col = NGUITools.ApplyPMA(col);
 
 		string text = processedText;
-		int start = verts.size;
+		int start = verts.Count;
 
 		UpdateNGUIText();
 
@@ -1816,7 +1861,7 @@ public class UILabel : UIWidget
 		// Apply an effect if one was requested
 		if (effectStyle != Effect.None)
 		{
-			int end = verts.size;
+			int end = verts.Count;
 			pos.x = mEffectDistance.x;
 			pos.y = mEffectDistance.y;
 
@@ -1825,39 +1870,39 @@ public class UILabel : UIWidget
 			if ((effectStyle == Effect.Outline) || (effectStyle == Effect.Outline8))
 			{
 				offset = end;
-				end = verts.size;
+				end = verts.Count;
 
 				ApplyShadow(verts, uvs, cols, offset, end, -pos.x, pos.y);
 
 				offset = end;
-				end = verts.size;
+				end = verts.Count;
 
 				ApplyShadow(verts, uvs, cols, offset, end, pos.x, pos.y);
 
 				offset = end;
-				end = verts.size;
+				end = verts.Count;
 
 				ApplyShadow(verts, uvs, cols, offset, end, -pos.x, -pos.y);
 
 				if (effectStyle == Effect.Outline8)
 				{
 					offset = end;
-					end = verts.size;
+					end = verts.Count;
 
 					ApplyShadow(verts, uvs, cols, offset, end, -pos.x, 0);
 
 					offset = end;
-					end = verts.size;
+					end = verts.Count;
 
 					ApplyShadow(verts, uvs, cols, offset, end, pos.x, 0);
 
 					offset = end;
-					end = verts.size;
+					end = verts.Count;
 
 					ApplyShadow(verts, uvs, cols, offset, end, 0, pos.y);
 
 					offset = end;
-					end = verts.size;
+					end = verts.Count;
 
 					ApplyShadow(verts, uvs, cols, offset, end, 0, -pos.y);
 				}
@@ -1873,7 +1918,7 @@ public class UILabel : UIWidget
 	/// Returns the offset that was applied.
 	/// </summary>
 
-	public Vector2 ApplyOffset (BetterList<Vector3> verts, int start)
+	public Vector2 ApplyOffset (List<Vector3> verts, int start)
 	{
 		Vector2 po = pivotOffset;
 
@@ -1883,21 +1928,15 @@ public class UILabel : UIWidget
 		fx = Mathf.Round(fx);
 		fy = Mathf.Round(fy);
 
-#if UNITY_FLASH
-		for (int i = start; i < verts.size; ++i)
+		Vector3 v;
+
+		for (int i = start, imax = verts.Count; i < imax; ++i)
 		{
-			Vector3 buff = verts.buffer[i];
-			buff.x += fx;
-			buff.y += fy;
-			verts.buffer[i] = buff;
+			v = verts[i];
+			v.x += fx;
+			v.y += fy;
+			verts[i] = v;
 		}
-#else
-		for (int i = start; i < verts.size; ++i)
-		{
-			verts.buffer[i].x += fx;
-			verts.buffer[i].y += fy;
-		}
-#endif
 		return new Vector2(fx, fy);
 	}
 
@@ -1905,35 +1944,35 @@ public class UILabel : UIWidget
 	/// Apply a shadow effect to the buffer.
 	/// </summary>
 
-	public void ApplyShadow (BetterList<Vector3> verts, BetterList<Vector2> uvs, BetterList<Color> cols, int start, int end, float x, float y)
+	public void ApplyShadow (List<Vector3> verts, List<Vector2> uvs, List<Color> cols, int start, int end, float x, float y)
 	{
 		Color c = mEffectColor;
 		c.a *= finalAlpha;
 		if (bitmapFont != null && bitmapFont.premultipliedAlphaShader) c = NGUITools.ApplyPMA(c);
-		Color col = c.GammaToLinearSpace();
+		Color col = c;
 
 		for (int i = start; i < end; ++i)
 		{
-			verts.Add(verts.buffer[i]);
-			uvs.Add(uvs.buffer[i]);
-			cols.Add(cols.buffer[i]);
+			verts.Add(verts[i]);
+			uvs.Add(uvs[i]);
+			cols.Add(cols[i]);
 
-			Vector3 v = verts.buffer[i];
+			var v = verts[i];
 			v.x += x;
 			v.y += y;
-			verts.buffer[i] = v;
+			verts[i] = v;
 
-			Color uc = cols.buffer[i];
+			Color uc = cols[i];
 
 			if (uc.a == 1f)
 			{
-				cols.buffer[i] = col;
+				cols[i] = col;
 			}
 			else
 			{
 				Color fc = c;
 				fc.a = uc.a * c.a;
-				cols.buffer[i] = fc.GammaToLinearSpace();
+				cols[i] = fc;
 			}
 		}
 	}

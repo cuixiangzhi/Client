@@ -1,7 +1,7 @@
-//----------------------------------------------
+//-------------------------------------------------
 //            NGUI: Next-Gen UI kit
-// Copyright © 2011-2016 Tasharen Entertainment
-//----------------------------------------------
+// Copyright © 2011-2017 Tasharen Entertainment Inc
+//-------------------------------------------------
 
 using UnityEditor;
 using UnityEngine;
@@ -12,7 +12,7 @@ using System.Reflection;
 /// Tools for the editor
 /// </summary>
 
-public static class NGUIEditorTools
+static public class NGUIEditorTools
 {
 	static Texture2D mBackdropTex;
 	static Texture2D mContrastTex;
@@ -438,12 +438,24 @@ public static class NGUIEditorTools
 		TextureImporter ti = AssetImporter.GetAtPath(path) as TextureImporter;
 		if (ti == null) return false;
 
-		if (force || !ti.isReadable || ti.npotScale != TextureImporterNPOTScale.None || ti.alphaIsTransparency)
+		TextureImporterSettings settings = new TextureImporterSettings();
+		ti.ReadTextureSettings(settings);
+
+		if (force || !settings.readable || settings.npotScale != TextureImporterNPOTScale.None || settings.alphaIsTransparency)
 		{
-            ti.isReadable = true;
-			if (NGUISettings.trueColorAtlas) ti.textureCompression = TextureImporterCompression.Uncompressed;
-            ti.npotScale = TextureImporterNPOTScale.None;
-            ti.alphaIsTransparency = false;
+			settings.readable = true;
+#if !UNITY_4_7 && !UNITY_5_3 && !UNITY_5_4
+			if (NGUISettings.trueColorAtlas)
+			{
+				var platform = ti.GetDefaultPlatformTextureSettings();
+				platform.format = TextureImporterFormat.RGBA32;
+			}
+#else
+			if (NGUISettings.trueColorAtlas) settings.textureFormat = TextureImporterFormat.AutomaticTruecolor;
+#endif
+			settings.npotScale = TextureImporterNPOTScale.None;
+			settings.alphaIsTransparency = false;
+			ti.SetTextureSettings(settings);
 			AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceUpdate | ImportAssetOptions.ForceSynchronousImport);
 		}
 		return true;
@@ -456,31 +468,47 @@ public static class NGUIEditorTools
 	static bool MakeTextureAnAtlas (string path, bool force, bool alphaTransparency)
 	{
 		if (string.IsNullOrEmpty(path)) return false;
-		TextureImporter ti = AssetImporter.GetAtPath(path) as TextureImporter;
+		var ti = AssetImporter.GetAtPath(path) as TextureImporter;
 		if (ti == null) return false;
 
-        if (force ||
-            ti.isReadable ||
-            ti.maxTextureSize < 4096 ||
-            ti.wrapMode != TextureWrapMode.Clamp ||
-            ti.npotScale != TextureImporterNPOTScale.ToNearest)
-        {
-            ti.isReadable = false;
-            ti.maxTextureSize = 4096;
-            ti.wrapMode = TextureWrapMode.Clamp;
-            ti.npotScale = TextureImporterNPOTScale.ToNearest;
+		var settings = new TextureImporterSettings();
+		ti.ReadTextureSettings(settings);
 
-            if (NGUISettings.trueColorAtlas)
-            {
-                ti.textureCompression = TextureImporterCompression.Uncompressed;
-                ti.filterMode = FilterMode.Trilinear;
-            }
+		if (force || settings.readable ||
+#if UNITY_5_5_OR_NEWER
+			ti.maxTextureSize < 4096 ||
+			(NGUISettings.trueColorAtlas && ti.textureCompression != TextureImporterCompression.Uncompressed) ||
+#else
+			settings.maxTextureSize < 4096 ||
+#endif
+			settings.wrapMode != TextureWrapMode.Clamp ||
+			settings.npotScale != TextureImporterNPOTScale.ToNearest)
+		{
+			settings.readable = false;
+#if !UNITY_4_7 && !UNITY_5_3 && !UNITY_5_4
+			ti.maxTextureSize = 4096;
+#else
+			settings.maxTextureSize = 4096;
+#endif
+			settings.wrapMode = TextureWrapMode.Clamp;
+			settings.npotScale = TextureImporterNPOTScale.ToNearest;
 
-            ti.anisoLevel = 4;
-            ti.alphaIsTransparency = alphaTransparency;
-            AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceUpdate | ImportAssetOptions.ForceSynchronousImport);
-        }
-        return true;
+			if (NGUISettings.trueColorAtlas)
+			{
+#if UNITY_5_5_OR_NEWER
+				ti.textureCompression = TextureImporterCompression.Uncompressed;
+#else
+				settings.textureFormat = TextureImporterFormat.ARGB32;
+#endif
+				settings.filterMode = FilterMode.Trilinear;
+			}
+
+			settings.aniso = 4;
+			settings.alphaIsTransparency = alphaTransparency;
+			ti.SetTextureSettings(settings);
+			AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceUpdate | ImportAssetOptions.ForceSynchronousImport);
+		}
+		return true;
 	}
 
 	/// <summary>
@@ -818,7 +846,7 @@ public static class NGUIEditorTools
 	/// Draw the specified sprite.
 	/// </summary>
 
-	public static void DrawTexture (Texture2D tex, Rect rect, Rect uv, Color color)
+	static public void DrawTexture (Texture2D tex, Rect rect, Rect uv, Color color)
 	{
 		DrawTexture(tex, rect, uv, color, null);
 	}
@@ -827,7 +855,7 @@ public static class NGUIEditorTools
 	/// Draw the specified sprite.
 	/// </summary>
 
-	public static void DrawTexture (Texture2D tex, Rect rect, Rect uv, Color color, Material mat)
+	static public void DrawTexture (Texture2D tex, Rect rect, Rect uv, Color color, Material mat)
 	{
 		int w = Mathf.RoundToInt(tex.width * uv.width);
 		int h = Mathf.RoundToInt(tex.height * uv.height);
@@ -2213,6 +2241,8 @@ public static class NGUIEditorTools
 			GUILayout.Space(18f);
 	}
 
+	static System.Collections.Generic.Dictionary<string, TextureImporterType> mOriginal = new Dictionary<string, TextureImporterType>();
+
 	/// <summary>
 	/// Force the texture to be readable. Returns the asset database path to the texture.
 	/// </summary>
@@ -2228,6 +2258,26 @@ public static class NGUIEditorTools
 			if (textureImporter != null && textureImporter.isReadable != readable)
 			{
 				textureImporter.isReadable = readable;
+
+				if (readable)
+				{
+					mOriginal[path] = textureImporter.textureType;
+#if UNITY_5_5_OR_NEWER
+					textureImporter.textureType = TextureImporterType.Default;
+#else
+					textureImporter.textureType = TextureImporterType.Image;
+#endif
+				}
+				else
+				{
+					TextureImporterType type;
+
+					if (mOriginal.TryGetValue(path, out type))
+					{
+						textureImporter.textureType = type;
+						mOriginal.Remove(path);
+					}
+				}
 				AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceUpdate);
 			}
 		}

@@ -1,7 +1,7 @@
-//----------------------------------------------
+//-------------------------------------------------
 //            NGUI: Next-Gen UI kit
-// Copyright © 2011-2016 Tasharen Entertainment
-//----------------------------------------------
+// Copyright © 2011-2017 Tasharen Entertainment Inc
+//-------------------------------------------------
 
 using UnityEngine;
 using UnityEditor;
@@ -616,7 +616,22 @@ public class UIPanelInspector : UIRectEditor
 			GUILayout.EndHorizontal();
 
 			GUI.changed = false;
-			int so = EditorGUILayout.IntField("Sort Order", mPanel.sortingOrder, GUILayout.Width(120f));
+			GUILayout.BeginHorizontal();
+			var use = EditorGUILayout.Toggle("Sort Order", mPanel.useSortingOrder, GUILayout.Width(100f));
+
+			if (GUI.changed)
+			{
+				mPanel.useSortingOrder = use;
+				mPanel.RebuildAllDrawCalls();
+				EditorUtility.SetDirty(mPanel);
+			}
+
+			GUI.changed = false;
+			EditorGUI.BeginDisabledGroup(!use);
+			int so = EditorGUILayout.IntField(mPanel.sortingOrder, GUILayout.Width(40f));
+			GUILayout.Label(so == 0 ? "Automatic" : "Explicit", GUILayout.MinWidth(20f));
+			EditorGUI.EndDisabledGroup();
+			GUILayout.EndHorizontal();
 			if (GUI.changed) mPanel.sortingOrder = so;
 
 			GUILayout.BeginHorizontal();
@@ -631,6 +646,20 @@ public class UIPanelInspector : UIRectEditor
 				EditorUtility.SetDirty(mPanel);
 			}
 
+			GUILayout.BeginHorizontal();
+			bool uv2 = EditorGUILayout.Toggle("UV2", mPanel.generateUV2, GUILayout.Width(100f));
+			GUILayout.Label("For custom shader effects", GUILayout.MinWidth(20f));
+			GUILayout.EndHorizontal();
+
+			if (mPanel.generateUV2 != uv2)
+			{
+				mPanel.generateUV2 = uv2;
+				mPanel.RebuildAllDrawCalls();
+				EditorUtility.SetDirty(mPanel);
+			}
+#if !UNITY_4_7
+			serializedObject.DrawProperty("shadowMode");
+#endif
 			GUILayout.BeginHorizontal();
 			bool cull = EditorGUILayout.Toggle("Cull", mPanel.cullWhileDragging, GUILayout.Width(100f));
 			GUILayout.Label("Cull widgets while dragging them", GUILayout.MinWidth(20f));

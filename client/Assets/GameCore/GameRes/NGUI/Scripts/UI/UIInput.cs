@@ -1,7 +1,7 @@
-//----------------------------------------------
+//-------------------------------------------------
 //            NGUI: Next-Gen UI kit
-// Copyright © 2011-2016 Tasharen Entertainment
-//----------------------------------------------
+// Copyright © 2011-2017 Tasharen Entertainment Inc
+//-------------------------------------------------
 
 #if !UNITY_EDITOR && (UNITY_IPHONE || UNITY_ANDROID || UNITY_WP8 || UNITY_WP_8_1 || UNITY_BLACKBERRY || UNITY_WINRT || UNITY_METRO)
 #define MOBILE
@@ -180,14 +180,12 @@ public class UIInput : MonoBehaviour
 
 	public OnValidate onValidate;
 
-    public bool useDefaultAlign = true;
+	/// <summary>
+	/// Input field's value.
+	/// </summary>
 
-    /// <summary>
-    /// Input field's value.
-    /// </summary>
-
-    [SerializeField][HideInInspector] protected string mValue;
-
+	[SerializeField][HideInInspector] protected string mValue;
+	
 	[System.NonSerialized] protected string mDefaultText = "";
 	[System.NonSerialized] protected Color mDefaultColor = Color.white;
 	[System.NonSerialized] protected float mPosition = 0f;
@@ -197,7 +195,7 @@ public class UIInput : MonoBehaviour
 
 	static protected int mDrawStart = 0;
 	static protected string mLastIME = "";
-
+	public bool useDefaultAlign = false;
 #if MOBILE
 	// Unity fails to compile if the touch screen keyboard is used on a non-mobile device
 	static protected TouchScreenKeyboard mKeyboard;
@@ -300,11 +298,11 @@ public class UIInput : MonoBehaviour
 		// BB10's implementation has a bug in Unity
 #if UNITY_4_3
 		if (Application.platform == RuntimePlatform.BB10Player)
+			value = value.Replace("\\b", "\b");
 #elif UNITY_4_7 || UNITY_5_0 || UNITY_5_1 || UNITY_5_2 || UNITY_5_3
 		if (Application.platform == RuntimePlatform.BlackBerryPlayer)
-#endif
 			value = value.Replace("\\b", "\b");
-
+#endif
 		// Validate all input
 		value = Validate(value);
 #if MOBILE
@@ -502,7 +500,6 @@ public class UIInput : MonoBehaviour
 			mDoInit = false;
 			mDefaultText = label.text;
 			mDefaultColor = label.color;
-			label.supportEncoding = false;
 			mEllipsis = label.overflowEllipsis;
 
 			if (label.alignment == NGUIText.Alignment.Justified)
@@ -542,6 +539,8 @@ public class UIInput : MonoBehaviour
 	{
 		if (isSelected)
 		{
+			if (label != null) label.supportEncoding = false;
+
 #if !MOBILE
 			if (mOnGUI == null)
 				mOnGUI = gameObject.AddComponent<UIInputOnGUI>();
@@ -653,19 +652,15 @@ public class UIInput : MonoBehaviour
 			RuntimePlatform pf = Application.platform;
 			if (pf == RuntimePlatform.IPhonePlayer
 				|| pf == RuntimePlatform.Android
-#if !UNITY_5_3_OR_NEWER
 				|| pf == RuntimePlatform.WP8Player
-#endif
-#if UNITY_4_3 && !UNITY_5_4_OR_NEWER
+ #if UNITY_4_3
 				|| pf == RuntimePlatform.BB10Player
-#else
-#if !UNITY_5_4_OR_NEWER
-                || pf == RuntimePlatform.BlackBerryPlayer
-#endif
-                || pf == RuntimePlatform.WSAPlayerARM
-				|| pf == RuntimePlatform.WSAPlayerX64
-				|| pf == RuntimePlatform.WSAPlayerX86
-#endif
+ #else
+				|| pf == RuntimePlatform.BlackBerryPlayer
+				|| pf == RuntimePlatform.MetroPlayerARM
+				|| pf == RuntimePlatform.MetroPlayerX64
+				|| pf == RuntimePlatform.MetroPlayerX86
+ #endif
 			)
 			{
 				string val;
@@ -703,8 +698,8 @@ public class UIInput : MonoBehaviour
 			}
 			else
 #endif // MOBILE
-            {
-                Vector2 pos = (UICamera.current != null && UICamera.current.cachedCamera != null) ?
+			{
+				Vector2 pos = (UICamera.current != null && UICamera.current.cachedCamera != null) ?
 					UICamera.current.cachedCamera.WorldToScreenPoint(label.worldCorners[0]) :
 					label.worldCorners[0];
 				pos.y = Screen.height - pos.y;
@@ -762,7 +757,7 @@ public class UIInput : MonoBehaviour
 				// Windows has them, OSX may not. They get handled inside OnGUI() instead.
 				string s = Input.inputString;
 
-                for (int i = 0; i < s.Length; ++i)
+				for (int i = 0; i < s.Length; ++i)
 				{
 					char ch = s[i];
 					if (ch < ' ') continue;
@@ -772,6 +767,7 @@ public class UIInput : MonoBehaviour
 					if (ch == '\uF701') continue;
 					if (ch == '\uF702') continue;
 					if (ch == '\uF703') continue;
+					if (ch == '\uF728') continue;
 
 					Insert(ch.ToString());
 				}
@@ -780,8 +776,8 @@ public class UIInput : MonoBehaviour
 			// Append IME composition
 			if (mLastIME != ime && !string.IsNullOrEmpty(Input.inputString))
 			{
-                //mSelectionEnd = string.IsNullOrEmpty(ime) ? mSelectionStart : mSelectionStart + ime.Length;
-                mLastIME = ime;
+				//mSelectionEnd = string.IsNullOrEmpty(ime) ? mSelectionStart : mValue.Length + ime.Length;
+				mLastIME = ime;
 				UpdateLabel();
 				ExecuteOnChange();
 			}

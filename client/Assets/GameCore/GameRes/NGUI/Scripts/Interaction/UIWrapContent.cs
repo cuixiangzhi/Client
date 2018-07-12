@@ -1,7 +1,7 @@
-//----------------------------------------------
+//-------------------------------------------------
 //            NGUI: Next-Gen UI kit
-// Copyright © 2011-2016 Tasharen Entertainment
-//----------------------------------------------
+// Copyright © 2011-2017 Tasharen Entertainment Inc
+//-------------------------------------------------
 
 using UnityEngine;
 using System.Collections.Generic;
@@ -22,16 +22,12 @@ public class UIWrapContent : MonoBehaviour
 {
 	public delegate void OnInitializeItem (GameObject go, int wrapIndex, int realIndex);
 
-	/// <summary>
-	/// Width or height of the child items for positioning purposes.
-	/// </summary>
-
-	public int itemWidth = 100;
-
+    /// <summary>
+    /// Width or height of the child items for positioning purposes.
+    /// </summary>
+    public int itemWidth = 100;
     public int itemHeight = 100;
-
     public int itemCountPerLine = 1;
-
 	/// <summary>
 	/// Whether the content will be automatically culled. Enabling this will improve performance in scroll views that contain a lot of items.
 	/// </summary>
@@ -78,10 +74,9 @@ public class UIWrapContent : MonoBehaviour
 
 	protected virtual void Start ()
 	{
-        //SortBasedOnScrollMovement();
-        //WrapContent();
-        CacheScrollView();
-        if (mScroll != null) mScroll.GetComponent<UIPanel>().onClipMove = OnMove;
+		//SortBasedOnScrollMovement();
+		CacheScrollView();//WrapContent();
+		if (mScroll != null) mScroll.GetComponent<UIPanel>().onClipMove = OnMove;
 		mFirstTime = false;
 	}
 
@@ -163,52 +158,18 @@ public class UIWrapContent : MonoBehaviour
 		for (int i = 0, imax = mChildren.Count; i < imax; ++i)
 		{
 			Transform t = mChildren[i];
-            if(mHorizontal)
-            {
-                t.localPosition = new Vector3((i / itemCountPerLine) * itemWidth, -(i % itemCountPerLine) * itemHeight, 0f);
-            }
-            else
-            {
-                t.localPosition = new Vector3((i % itemCountPerLine) * itemWidth, -(i / itemCountPerLine) * itemHeight, 0f);
-            }
-		}
+            int row = i / itemCountPerLine, col = i % itemCountPerLine;
+            t.localPosition = mHorizontal ? new Vector3(row * itemWidth, -col * itemHeight, 0f) : new Vector3(col * itemWidth,-row * itemHeight , 0f);
+            UpdateItem(t, i);
+        }
 	}
-
-    public void ResetWrapContent(int count, OnInitializeItem method)
-    {
-        mFirstTime = true;
-        cullContent = false;
-        onInitializeItem = method;
-        maxIndex = count > 0 ? count - 1 : 0;
-        minIndex = 0;
-
-        SortAlphabetically();
-
-        WrapContent();
-        mFirstTime = false;
-
-        if (mPanel != null)
-        {
-            mPanel.transform.localPosition = Vector3.zero;
-            mPanel.clipOffset = Vector2.zero;
-        }
-
-        if (mScroll != null)
-        {
-            mScroll.DisableSpring();
-            //mScroll.ResetPosition();
-        }
-    }
-
 	/// <summary>
 	/// Wrap all content, repositioning all children as needed.
 	/// </summary>
 
 	public virtual void WrapContent ()
 	{
-        float delta = mHorizontal ? itemWidth : itemHeight;
-
-        float extents = (delta * mChildren.Count / itemCountPerLine) * 0.5f;
+		float extents = (mHorizontal ? itemWidth : itemHeight) * mChildren.Count / itemCountPerLine * 0.5f;
 		Vector3[] corners = mPanel.worldCorners;
 		
 		for (int i = 0; i < 4; ++i)
@@ -219,129 +180,105 @@ public class UIWrapContent : MonoBehaviour
 		}
 		
 		Vector3 center = Vector3.Lerp(corners[0], corners[2], 0.5f);
-        bool allWithinRange = true;
-        float ext2 = extents * 2f;
+		bool allWithinRange = true;
+		float ext2 = extents * 2f;
 
 		if (mHorizontal)
 		{
-			float min = corners[0].x - delta;
-			float max = corners[2].x + delta;
+			float min = corners[0].x - itemWidth;
+			float max = corners[2].x + itemWidth;
 
 			for (int i = 0, imax = mChildren.Count; i < imax; ++i)
 			{
 				Transform t = mChildren[i];
 				float distance = t.localPosition.x - center.x;
-
-                if (mFirstTime)
-                {
-                    UpdateItem(t, i);
-                    t.name = (10000 + i).ToString();
-                }
-                else if (distance < -extents)
-                {
-                    Vector3 pos = t.localPosition;
-                    pos.x += ext2;
-                    distance = pos.x - center.x;
-
-                    int realIndex = Mathf.RoundToInt(pos.x / delta);
-                    realIndex *= itemCountPerLine;
-                    realIndex += Mathf.RoundToInt(-pos.y / itemHeight);
+                if (mFirstTime) UpdateItem(t, i);
+                else if(distance < -extents)
+				{
+					Vector3 pos = t.localPosition;
+					pos.x += ext2;
+					distance = pos.x - center.x;
+					int realIndex = Mathf.RoundToInt(pos.x / itemWidth) * itemCountPerLine + Mathf.RoundToInt(-pos.y / itemHeight);
 
                     if (minIndex == maxIndex || (minIndex <= realIndex && realIndex <= maxIndex))
-                    {
-                        t.localPosition = pos;
-                        UpdateItem(t, i);
-                        t.name = (10000 + realIndex).ToString();
-                    }
-                    else allWithinRange = false;
-                }
-                else if (distance > extents)
-                {
-                    Vector3 pos = t.localPosition;
-                    pos.x -= ext2;
-                    distance = pos.x - center.x;
-                    int realIndex = Mathf.RoundToInt(pos.x / delta);
-                    realIndex *= itemCountPerLine;
-                    realIndex += Mathf.RoundToInt(-pos.y / itemHeight);
+					{
+						t.localPosition = pos;
+						UpdateItem(t, i);
+					}
+					else allWithinRange = false;
+				}
+				else if (distance > extents)
+				{
+					Vector3 pos = t.localPosition;
+					pos.x -= ext2;
+					distance = pos.x - center.x;
+					int realIndex = Mathf.RoundToInt(pos.x / itemWidth) * itemCountPerLine + Mathf.RoundToInt(-pos.y / itemHeight);
 
                     if (minIndex == maxIndex || (minIndex <= realIndex && realIndex <= maxIndex))
-                    {
-                        t.localPosition = pos;
-                        UpdateItem(t, i);
-                        t.name = (10000 + realIndex).ToString();
-                    }
-                    else allWithinRange = false;
-                }
+					{
+						t.localPosition = pos;
+						UpdateItem(t, i);
+					}
+					else allWithinRange = false;
+				}
+				 
 
-                if (cullContent)
-                {
-                    distance += mPanel.clipOffset.x - mTrans.localPosition.x;
-                    if (!UICamera.IsPressed(t.gameObject))
-                        NGUITools.SetActive(t.gameObject, (distance > min && distance < max), false);
-                }
-            }
+				if (cullContent)
+				{
+					distance += mPanel.clipOffset.x - mTrans.localPosition.x;
+					if (!UICamera.IsPressed(t.gameObject))
+						NGUITools.SetActive(t.gameObject, (distance > min && distance < max), false);
+				}
+			}
 		}
 		else
 		{
-            float min = corners[0].y - delta;
-            float max = corners[2].y + delta;
+			float min = corners[0].y - itemHeight;
+			float max = corners[2].y + itemHeight;
 
-            for (int i = 0, imax = mChildren.Count; i < imax; ++i)
-            {
-                Transform t = mChildren[i];
-                float distance = t.localPosition.y - center.y;
-
-                if (mFirstTime)
-                {
-                    UpdateItem(t, i);
-                    t.name = (10000 + i).ToString();
-                }
-                else if (distance < -extents)
-                {
-                    Vector3 pos = t.localPosition;
-                    pos.y += ext2;
-                    distance = pos.y - center.y;
-
-                    int realIndex = -Mathf.RoundToInt(pos.y / delta);
-                    realIndex *= itemCountPerLine;
-                    realIndex += Mathf.RoundToInt(pos.x / itemWidth);
+			for (int i = 0, imax = mChildren.Count; i < imax; ++i)
+			{
+				Transform t = mChildren[i];
+				float distance = t.localPosition.y - center.y;
+                if (mFirstTime) UpdateItem(t, i);
+                else if(distance < -extents)
+				{
+					Vector3 pos = t.localPosition;
+					pos.y += ext2;
+					distance = pos.y - center.y;
+					int realIndex = Mathf.RoundToInt(-pos.y / itemHeight) * itemCountPerLine + Mathf.RoundToInt(pos.x / itemWidth);
 
                     if (minIndex == maxIndex || (minIndex <= realIndex && realIndex <= maxIndex))
-                    {
-                        t.localPosition = pos;
-                        UpdateItem(t, i);
-                        t.name = (10000 + realIndex).ToString();
-                    }
-                    else allWithinRange = false;
-                }
-                else if (distance > extents)
-                {
-                    Vector3 pos = t.localPosition;
-                    pos.y -= ext2;
-                    distance = pos.y - center.y;
-
-                    int realIndex = -Mathf.RoundToInt(pos.y / delta);
-                    realIndex *= itemCountPerLine;
-                    realIndex += Mathf.RoundToInt(pos.x / itemWidth);
-
+					{
+						t.localPosition = pos;
+						UpdateItem(t, i);
+					}
+					else allWithinRange = false;
+				}
+				else if (distance > extents)
+				{
+					Vector3 pos = t.localPosition;
+					pos.y -= ext2;
+					distance = pos.y - center.y;
+					int realIndex = Mathf.RoundToInt(-pos.y / itemHeight) * itemCountPerLine + Mathf.RoundToInt(pos.x / itemWidth);
+                    
                     if (minIndex == maxIndex || (minIndex <= realIndex && realIndex <= maxIndex))
-                    {
-                        t.localPosition = pos;
-                        UpdateItem(t, i);
-                        t.name = (10000 + realIndex).ToString();
-                    }
-                    else allWithinRange = false;
-                }
+					{
+						t.localPosition = pos;
+						UpdateItem(t, i);
+					}
+					else allWithinRange = false;
+				}
+				 
 
-                if (cullContent)
-                {
-                    distance += mPanel.clipOffset.y - mTrans.localPosition.y;
-                    if (!UICamera.IsPressed(t.gameObject))
-                        NGUITools.SetActive(t.gameObject, (distance > min && distance < max), false);
-                }
-            }
-            mScroll.restrictWithinPanel = !allWithinRange;
-        }
+				if (cullContent)
+				{
+					distance += mPanel.clipOffset.y - mTrans.localPosition.y;
+					if (!UICamera.IsPressed(t.gameObject))
+						NGUITools.SetActive(t.gameObject, (distance > min && distance < max), false);
+				}
+			}
+		}
 		mScroll.restrictWithinPanel = !allWithinRange;
 		mScroll.InvalidateBounds();
 	}
@@ -366,24 +303,10 @@ public class UIWrapContent : MonoBehaviour
 	{
 		if (onInitializeItem != null)
 		{
-            int realIndex = 0;
-            if (!mHorizontal)
-            {
-                if (itemHeight > 0)
-                    realIndex = -Mathf.RoundToInt(item.localPosition.y / itemHeight);
-                realIndex *= itemCountPerLine;
-                if (itemWidth > 0)
-                    realIndex += Mathf.RoundToInt(item.localPosition.x / itemWidth);
-            }
-            else
-            {
-                if (itemWidth > 0)
-                    realIndex = Mathf.RoundToInt(item.localPosition.x / itemWidth);
-                realIndex *= itemCountPerLine;
-                if (itemHeight > 0)
-                    realIndex += Mathf.RoundToInt(-item.localPosition.y / itemHeight);
-            }
-            onInitializeItem(item.gameObject, index, realIndex);
-        }
+            int realIndex = mHorizontal ?
+                Mathf.RoundToInt(item.localPosition.x / itemWidth) * itemCountPerLine + Mathf.RoundToInt(-item.localPosition.y / itemHeight) :
+                Mathf.RoundToInt(-item.localPosition.y / itemHeight) * itemCountPerLine + Mathf.RoundToInt(item.localPosition.x / itemWidth);
+			onInitializeItem(item.gameObject, index, realIndex);
+		}
 	}
 }

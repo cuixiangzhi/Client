@@ -1,7 +1,7 @@
-//----------------------------------------------
+//-------------------------------------------------
 //            NGUI: Next-Gen UI kit
-// Copyright © 2011-2016 Tasharen Entertainment
-//----------------------------------------------
+// Copyright © 2011-2017 Tasharen Entertainment Inc
+//-------------------------------------------------
 
 using UnityEngine;
 using System.Collections;
@@ -92,6 +92,9 @@ public abstract class UITweener : MonoBehaviour
 	[HideInInspector]
 	public int tweenGroup = 0;
 
+	[Tooltip("By default, Update() will be used for tweening. Setting this to 'true' will make the tween happen in FixedUpdate() insted.")]
+	public bool useFixedUpdate = false;
+
 	/// <summary>
 	/// Event delegates called when the animation finishes.
 	/// </summary>
@@ -157,16 +160,18 @@ public abstract class UITweener : MonoBehaviour
 	/// Update as soon as it's started so that there is no delay.
 	/// </summary>
 
-	protected virtual void Start () { Update(); }
+	protected virtual void Start () { DoUpdate(); }
+	protected void Update () { if (!useFixedUpdate) DoUpdate(); }
+	protected void FixedUpdate () { if (useFixedUpdate) DoUpdate(); }
 
 	/// <summary>
 	/// Update the tweening factor and call the virtual update function.
 	/// </summary>
 
-	void Update ()
+	protected void DoUpdate ()
 	{
-		float delta = ignoreTimeScale ? RealTime.deltaTime : Time.deltaTime;
-		float time = ignoreTimeScale ? RealTime.time : Time.time;
+		float delta = ignoreTimeScale && !useFixedUpdate ? Time.unscaledDeltaTime : Time.deltaTime;
+		float time = ignoreTimeScale && !useFixedUpdate ? Time.unscaledTime : Time.time;
 
 		if (!mStarted)
 		{
@@ -384,12 +389,18 @@ public abstract class UITweener : MonoBehaviour
 	/// Manually activate the tweening process, reversing it if necessary.
 	/// </summary>
 
-	public void Play (bool forward)
+	public virtual void Play (bool forward)
 	{
 		mAmountPerDelta = Mathf.Abs(amountPerDelta);
 		if (!forward) mAmountPerDelta = -mAmountPerDelta;
-		enabled = true;
-		Update();
+
+		if (!enabled)
+		{
+			enabled = true;
+			mStarted = false;
+		}
+
+		DoUpdate();
 	}
 
 	/// <summary>
@@ -432,7 +443,7 @@ public abstract class UITweener : MonoBehaviour
 	/// Starts the tweening operation.
 	/// </summary>
 
-	static public T Begin<T> (GameObject go, float duration) where T : UITweener
+	static public T Begin<T> (GameObject go, float duration, float delay = 0f) where T : UITweener
 	{
 		T comp = go.GetComponent<T>();
 #if UNITY_FLASH
@@ -463,13 +474,17 @@ public abstract class UITweener : MonoBehaviour
 		}
 #endif
 		comp.mStarted = false;
-		comp.duration = duration;
 		comp.mFactor = 0f;
-		comp.mAmountPerDelta = Mathf.Abs(comp.amountPerDelta);
+		comp.duration = duration;
+		comp.mDuration = duration;
+		comp.delay = delay;
+		comp.mAmountPerDelta = duration > 0f ? Mathf.Abs(1f / duration) : 1000f;
 		comp.style = Style.Once;
 		comp.animationCurve = new AnimationCurve(new Keyframe(0f, 0f, 0f, 1f), new Keyframe(1f, 1f, 1f, 0f));
 		comp.eventReceiver = null;
 		comp.callWhenFinished = null;
+		comp.onFinished.Clear();
+		if (comp.mTemp != null) comp.mTemp.Clear();
 		comp.enabled = true;
 		return comp;
 	}
