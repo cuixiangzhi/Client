@@ -307,6 +307,7 @@ public class UIWrapContent : MonoBehaviour
                 Mathf.RoundToInt(item.localPosition.x / itemWidth) * itemCountPerLine + Mathf.RoundToInt(-item.localPosition.y / itemHeight) :
                 Mathf.RoundToInt(-item.localPosition.y / itemHeight) * itemCountPerLine + Mathf.RoundToInt(item.localPosition.x / itemWidth);
 			onInitializeItem(item.gameObject, index, realIndex);
+            item.name = realIndex.ToString();
 		}
 	}
 }
