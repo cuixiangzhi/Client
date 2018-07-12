@@ -1,0 +1,14 @@
+2018.7.11
+    1.ComponentSelector NGUIEditorTools UIAtlasMaker UICameraTools UILocalizeEditor UIPanelTool
+        编辑器"AS TextArea"报警告,改为"TextArea"
+    2.UIScrollView
+        增加一个初始位置偏移,可用于下拉刷新回弹效果
+    4.UIWrapContent
+        改为多行多列排列子物体,可设定宽、高、每行子物体个数
+    5.NGUIMath
+        计算Widget边界时是否计算子结点默认改为false
+        计算Widget边界不考虑子Panel,减少GCAlloc
+    6.UIInput
+        PC端在中间输入时选中位置变化不正确,选中时修改选中位置变化不正确
+        获取选中位置左右两侧下标时不正确
+        增加输入文本对齐方式
