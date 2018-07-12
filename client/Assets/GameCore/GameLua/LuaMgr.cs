@@ -93,10 +93,6 @@ namespace GameCore
 
             //启动虚拟机
             mLuaState.Start();
-
-            //LUA逻辑入口
-            mLuaState.DoFile("GameMain");
-            CallLuaFunc("GameMain.GameInit");
         }
 
         public void Loop()
@@ -132,7 +128,6 @@ namespace GameCore
 
         public void Exit()
         {
-            CallLuaFunc("GameMain.GameQuit");
             mLuaState.Dispose();
             mLuaState = null;
             mLuaReader.Dispose();
