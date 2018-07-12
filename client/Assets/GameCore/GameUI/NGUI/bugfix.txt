@@ -6,6 +6,7 @@
     4.UIWrapContent
         改为多行多列排列子物体,可设定宽、高、每行子物体个数
         子物体根据realIndex命名
+        增加初始化函数
     5.NGUIMath
         计算Widget边界时是否计算子结点默认改为false
         计算Widget边界不考虑子Panel,减少GCAlloc
