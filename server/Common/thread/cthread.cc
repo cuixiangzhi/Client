@@ -62,7 +62,7 @@ void cthread::start()
 #ifdef _WIN32
 	m_handle = CreateThread(NULL, 0, cthread_main, this, NULL, &m_tid);
 #else
-	m_tid = pthread_create(&m_tid, NULL, cthread_main, this);
+	pthread_create(&m_tid, NULL, cthread_main, this);
 #endif
 }
 
