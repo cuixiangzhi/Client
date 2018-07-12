@@ -1,3 +1,5 @@
+Monday Tuesday Wednesday Thursday Friday Saturday SunDay
+January February March April May June July August Spetember October November December
 变量类型
 	 计算机只有加法运算器, 负数是以补码形式存在,符号位不变,其余位取反加1  正数补码与原码一致 (+0原码与-0补码一致)
 	 计算机存储补码,运算器补码运算   -128没有反码,补码与原码一致
