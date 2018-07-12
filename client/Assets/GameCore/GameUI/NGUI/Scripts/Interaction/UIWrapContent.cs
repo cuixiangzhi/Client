@@ -310,4 +310,30 @@ public class UIWrapContent : MonoBehaviour
             item.name = realIndex.ToString();
 		}
 	}
+
+    public void ResetWrapContent(int count, OnInitializeItem method)
+    {
+        mFirstTime = true;
+        cullContent = false;
+        onInitializeItem = method;
+        maxIndex = count > 0 ? count - 1 : 0;
+        minIndex = 0;
+
+        SortAlphabetically();
+
+        WrapContent();
+        mFirstTime = false;
+
+        if (mPanel != null)
+        {
+            mPanel.transform.localPosition = Vector3.zero;
+            mPanel.clipOffset = Vector2.zero;
+        }
+
+        if (mScroll != null)
+        {
+            mScroll.DisableSpring();
+            //mScroll.ResetPosition();
+        }
+    }
 }
