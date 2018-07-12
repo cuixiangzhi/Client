@@ -36,7 +36,7 @@ typedef uint32_t				uint32;
 typedef int64_t					int64;
 typedef uint64_t				uint64;
 
-#ifdef _MSC_VER
+#ifdef _WIN32
 #include <windows.h>
 #include <winsock.h>
 typedef DWORD					thread_id;
@@ -49,7 +49,11 @@ typedef DWORD					thread_id;
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#ifdef __APPLE__
+#include <sys/select.h>
+#else
 #include <sys/epoll.h>
+#endif
 
 #include <pthread.h>
 typedef pthread_t				thread_id;
