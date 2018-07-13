@@ -243,6 +243,12 @@
     <ClCompile Include="network\csocket.cc">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="thread\cthread_pool.cc">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="thread\cthread_manager.cc">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="google\protobuf\compiler\importer.h">
@@ -630,6 +636,12 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="define\ctype.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="thread\cthread_pool.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="thread\cthread_manager.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

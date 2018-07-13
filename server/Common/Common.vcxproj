@@ -213,6 +213,8 @@
     <ClCompile Include="google\protobuf\wrappers.pb.cc" />
     <ClCompile Include="network\csocket.cc" />
     <ClCompile Include="thread\cthread.cc" />
+    <ClCompile Include="thread\cthread_manager.cc" />
+    <ClCompile Include="thread\cthread_pool.cc" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="define\stdafx.h" />
@@ -344,6 +346,8 @@
     <ClInclude Include="google\protobuf\wrappers.pb.h" />
     <ClInclude Include="network\csocket.h" />
     <ClInclude Include="thread\cthread.h" />
+    <ClInclude Include="thread\cthread_manager.h" />
+    <ClInclude Include="thread\cthread_pool.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
