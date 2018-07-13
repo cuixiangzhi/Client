@@ -1161,15 +1161,12 @@ local function debugger_getBreakVar(body, server)
 					vinfos = {}
 				end
 			end
-			for k, v in pairs(vars) do
-				if k == "_fields" then
-					for _k,_v in pairs(v) do
-						add_value(_k.name,vars[_k.name]);
-					end
-					add_value("MRID",vars["MRID"]);
-					add_value("GROUPID",vars["GROUPID"]);
-					add_value("UNITID",vars["UNITID"]);
-				else
+			if vars._fields then
+				for _k,_v in pairs(vars._fields) do
+					add_value(_k.name,vars[_k.name]);
+				end				
+			else
+				for k, v in pairs(vars) do
 					add_value(k,v);
 				end
 			end
