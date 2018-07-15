@@ -39,7 +39,10 @@ TCP连接与断开
 	  	client发送fin请求断开连接,表示我不会再给你发数据了进入FIN_WAIT1
 	  	server收到fin请求,返回ack给client,表示我还有数据要发送,client进入FIN_WAIT2状态,server进入close_wait
 	  	server发送fin给client,告诉它我没有数据要发送了,server进入last_wait
-	  	client返回ack给server,进入TIME_WAIT,server收到ack进入closed,client等待Nms后进入closed
+	  	client返回ack给server,进入TIME_WAIT,server收到ack进入closed,client等待2MSL后进入closed
+	半关闭
+		主动断开连接的一端发送FIN之后进入半关闭状态,只能收不能发
+		一个socket文件可以通过dup2复制,close只能关闭一个,使用shutdown该链接进入半关闭
 TCP发包与收包
 	丢包 发送速度太快、缓存溢出、带宽太小
 	seq是当前数据包的编号,下一个数据包的编号是seq+data_len,也就是发送端的seq号是按照发送字节排序的
