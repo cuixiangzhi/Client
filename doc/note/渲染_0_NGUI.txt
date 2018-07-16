@@ -1,0 +1,23 @@
+NGUI裁剪
+    clipSoftness.xy,虚边界大小
+    clipRange.xyzw,裁剪区域中心及大小
+    shader内_clipRange = (-px/z,-py/w,1/z,1/w) clipArg = (z/sx,w/sy)
+    前提条件,Panel在摄像机坐标系下没有偏移
+    1.计算顶点坐标在Panel内到中心的距离(归一化为0到1的值),o.worldPos = (vx-px)/z,(vy-py)/w = v.vertex * _clipRange.zw + _clipRange.xy
+      o.worldPos绝对值大于1则处于Panel外面,小于1在Panel内部
+    2.计算顶点坐标在Panel内到边界的距离(归一化为0到1的值),o.distance = (z,w)-abs(vx-px,vy-py)
+      该距离和虚边界大小比值可用于计算像素点alpha值 clamp(min(o.distance.xy/s.xy),0,1)
+      算出最终表达式为 factor = [(z,w)-abs(vx-px,vy-py)]/(sx,sy)=[(1,1)-abs((vx-px)/z,(vy-py)/w)] * (z/sx,w/sy) = [(1,1) - abs(o.worldPos)] * clipArg;
+      a = clamp(min(factor.x,factor.y),0,1)
+    3.整理上述过程得出
+      1.设置裁剪参数_clipRange=-px/z,-py/w,1/z,1/w) _clipArg=(z/sx,w/sy)
+      2.顶点着色器内计算顶点坐标 o.worldPos = o.vertex * _clipRange.zw + _clipRange.xy
+      3.像素着色器内计算alpha值 factor = [(1,1) - abs(o.worldPos)] * _clipArg; a = clamp(min(factor.x,factor.y),0,1)
+UIDrawCall
+    所有UI组件都是创建了一个隐藏的GameObject,并添加了UIDrawCall组件、MeshFilter组件、MeshRenderer组件
+    每个UIDrawCall包含一个MESH一个材质
+    UIPanel会更新每个UIDrawCall的Gemotry信息(Mesh信息,Mesh顶点是相对于自身局部坐标系的顶点)
+    会经过panel.worldToLocal * trans.localToWorld变换到Panel根节点下
+    此时所有Panel下的UI组件
+UIAtals UIFont
+    UISprite和UILabel使用的材质排序后相邻的如果相同,unity会做动态批处理合并MESH
