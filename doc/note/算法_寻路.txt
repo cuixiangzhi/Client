@@ -50,10 +50,23 @@
                     for x=xmin;x<=xmax;x+=dx(cs)
                     切割多边形,计算切割后多边形Y方向ymin,ymax,填充x,z处的y方向体素信息(ymin到ymax之间都是实心填充,只包含一部分也算实心)
                     添加体素时计算yminymax相邻区域是否有体素,有就合并,没有则插入新的体素,每个体素包括ymin,ymax,area,next
-            过滤
+            过滤可行走体素
                 根据climbHeight计算Y方向相邻体素距离,如果上一个体素可行走并且当前体素不可行走,当前体素距离小于climbHeight,则标记当前区域可行走
-                根据climbHeight计算XZ方向相邻体素距离,如果当前体素周围四个体素到达该体素距离均大于climbHeight,则标记为不可行走
-                根据climbHeight计算每个体素最大值和最小值之差,如果小于agentHeight,说明该体素不可行走
+                根据climbHeight计算XZ方向相邻体素距离,如果当前体素周围四个体素最大距离均大于climbHeight,则标记为不可行走(悬崖边)
+                根据climbHeight计算Y方向相邻体素之间的空隙,如果小于agentHeight,说明该体素不可行走
+            以上操作均处于处理rcHeightField阶段,最终生成了一个rcSpan二维数组,并记录了每个体素是否可行走,smax,smin
+            创建压缩的高度场
+                将实心的体素信息压缩为只保留smax的可行走体素信息
+                rcCompactHeightfield
+                    w&h bmin&bmax cs&ch agentHeight&agentClimbHeight
+                    int spanCount;              ///< The number of spans in the heightfield.
+                    unsigned short maxDistance; ///< The maximum distance value of any span within the field. 
+                    unsigned short maxRegions;  ///< The maximum region id of any span within the field. 
+                    rcCompactCell* cells;       ///< Array of cells. [Size: #width*#height]
+                    rcCompactSpan* spans;       ///< Array of spans. [Size: #spanCount]
+                    unsigned short* dist;       ///< Array containing border distance data. [Size: #spanCount]
+                    unsigned char* areas;       ///< Array containing area id data. [Size: #spanCount]
+
             TODO 以下配置尚不明确具体用途
             轮廓配置
             maxEdgeLen          根据用户输入的轮廓的最大边长计算出的最大边长单位
@@ -64,12 +77,6 @@
             detailSampleMaxError采样最大值
             tileSize
             borderSize
-            光栅化 计算三角形AABB
-                   在xz平面切割三角形(切割过程新增切割点),y方向是连续的,切割后是一个实心体素集(Span)
-                   检查当前列是否有Span,如果有就合并,合并时根据Climp大小标记区域可行走性质
-            过滤可行走体素 根据角色脚步来过滤y方向(此时不能保证相邻的体素限制角色高度)
-            过滤可行走体素 根据角色脚步和角色高度来过滤xz方向
-            过滤可行走体素 根据角色半径来过滤无法站立的地方
             创建压缩的高度场 压缩到XZ平面,CompactCell为压缩后的数据,CompactSpan为压缩后的Span
             过滤可行走体素 根据体素距离边界的最小距离和角色半径*2比较,水平相邻距离为2,斜对角为3,离边界越远距离越大
                            默认格子大小为0.3(1倍距离),角色半径为0.6(2倍距离),默认判断2*2距离才可以站立
