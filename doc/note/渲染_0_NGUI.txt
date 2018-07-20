@@ -16,7 +16,12 @@ NGUI裁剪
 UIDrawCall
     所有UI组件都是创建了一个隐藏的GameObject,并添加了UIDrawCall组件、MeshFilter组件、MeshRenderer组件
     每个UIDrawCall会创建一个MESH和一个材质并赋值给MeshFilter和MeshRenderer
-    UIPanel会更新每个UIDrawCall的Gemotry信息(Mesh信息,Mesh顶点是相对于自身局部坐标系的顶点)
-    会经过panel.worldToLocal * trans.localToWorld变换到Panel根结点下
+    UI组件更新过程 panel.LateUpdate->UpdateSelf->UpdateWidgets->UpdateGemotry->UpdateDrawCall
+    UpdateGemotry之后会进行坐标系变换,把UI组件变换到UIPanel根结点下panel.worldToLocal * trans.localToWorld
 UIAtals UIFont
     UISprite和UILabel使用的材质排序后相邻的如果相同,unity会做动态批处理合并MESH
+Alpha
+    通过父结点alpha值控制子物体显示,有坑如下
+    UI组件显示时会计算父物体alpha值,父物体是在OnEnable之后做了缓存
+    如果在OnEnable之后修改了父结点,alpha计算就会出现BUG(新父结点alpha为0不生效)
+    UpdateGeometry->CalculateFinalAlpha->UpdateFinalAlpha->parent.CalculateFinalAlpha

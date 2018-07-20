@@ -27,6 +27,7 @@
 
 typedef unsigned char			byte;
 typedef unsigned char			uchar;
+typedef unsigned short			ushort;
 typedef int8_t					int8;
 typedef uint8_t					uint8;
 typedef int16_t					int16;
@@ -39,7 +40,8 @@ typedef uint64_t				uint64;
 #ifdef _WIN32
 #include <windows.h>
 #include <winsock.h>
-typedef DWORD					thread_id;
+typedef DWORD					thread_fd;
+typedef SOCKET					socket_fd;
 #else
 #include <unistd.h>
 
@@ -49,14 +51,16 @@ typedef DWORD					thread_id;
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#ifdef __APPLE__
 #include <sys/select.h>
-#else
+#ifndef __APPLE__
 #include <sys/epoll.h>
 #endif
+typedef int						socket_fd;
+#define INVALID_SOCKET			-1
+#define SOCKET_ERROR			-1
 
 #include <pthread.h>
-typedef pthread_t				thread_id;
+typedef pthread_t				thread_fd;
 #endif
 
 using namespace std;

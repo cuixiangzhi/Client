@@ -1,5 +1,5 @@
 #pragma once
-#include "define/stdafx.h"
+#include "define/common.h"
 
 enum THREAD_STATUS
 {
@@ -21,21 +21,20 @@ public:
 	void exit();
 	void sleep();
 public:
-	inline thread_id get_tid() const { return m_tid; }
-	inline bool get_active() const { return m_active; }
-	inline THREAD_STATUS get_status() const { return m_status; }
+	inline thread_fd id() const { return m_fd; }
+	inline bool active() const { return m_active; }
+	inline THREAD_STATUS status() const { return m_status; }
+	inline uint8 framerate() { return m_framerate; }
+	inline uint64 deltatime() { return m_deltatime; }
 	inline void set_status(THREAD_STATUS status) { m_status = status; }
-	inline uint8 get_framerate() { return m_framerate; }
 	inline void set_framerate(uint8 framerate) { m_framerate = framerate; }
-	inline uint64 get_deltatime() { return m_deltatime; }
 public: 
 	virtual void init();
 	virtual void loop();
 	virtual void clear();
 protected:
-	thread_id m_tid;
+	thread_fd m_fd;
 	THREAD_STATUS m_status;
-	bool m_active;
 
 	uint8 m_framerate;
 	uint64 m_framecount;
@@ -46,6 +45,7 @@ protected:
 #ifdef _WIN32
 	HANDLE m_handle;
 #endif
+	bool m_active;
 private:
 	cthread() = delete;
 	cthread(cthread&) = delete;

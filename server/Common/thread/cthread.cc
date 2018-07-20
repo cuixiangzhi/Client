@@ -7,7 +7,7 @@ void cthread_main_loop(void* param)
 		cthread* cthread_object = reinterpret_cast<cthread*>(param);
 		cthread_object->init();
 		cthread_object->set_status(THREAD_STATUS::RUN);
-		while (cthread_object->get_active())
+		while (cthread_object->active())
 		{
 			cthread_object->sleep();
 			cthread_object->loop();
@@ -35,7 +35,7 @@ void* cthread_main(void* param)
 #endif
 
 cthread::cthread(uint8 framerate) :
-	m_tid(0),
+	m_fd(0),
 	m_status(THREAD_STATUS::READY),
 	m_active(true),
 	m_framerate(framerate),
