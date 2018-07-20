@@ -23,37 +23,47 @@
                     cs&ch               用户输入的xz平面单位大小,y方向单位大小, 一般为0.2米 0.3米,越小越精确,体素越多,生成速度越慢
                     角色配置
                     walkSlope           用户输入的行走单位的行走角度
-                    walkRadius          根据用户输入的行走单位的最小半径计算出的单位半径    
-                    walkHeight          根据用户输入的行走单位的最小高度计算出的单位高度
-                    walkClimbHeight     根据用户输入的行走单位的脚步高度计算出的单位高度
+                    agentRadius          根据用户输入的行走单位的最小半径计算出的单位半径    
+                    agentHeight          根据用户输入的行走单位的最小高度计算出的单位高度
+                    agentClimbHeight     根据用户输入的行走单位的脚步高度计算出的单位高度
                     多边形配置
                     maxVertPerPoly      凸多边形最大顶点数
                     输入网格信息
-                    ntris               三角形个数
-                    nverts              顶点个数
-                    verts               顶点数组(三个表示一个顶点)
-                    tris                三角形数组(三个点构成一个三角形,存储了顶点起始下标)
-
-                    TODO 以下配置尚不明确具体用途
-                    轮廓配置
-                    maxEdgeLen          根据用户输入的轮廓的最大边长计算出的最大边长单位
-                    maxSimpleError      用户输入的简化后的轮廓需要分割的最大长度
-                    maxRegionArea       区域的最小面积
-                    mergeRegionArea     区域的合并最小面积
-                    detailSampleDist    采样距离
-                    detailSampleMaxError采样最大值
-                    tileSize
-                    borderSize
+                    ntris&tris          三角形个数&三角形数组(三个点构成一个三角形,存储了顶点起始下标)
+                    nverts&verts        顶点个数&顶点数组(三个表示一个顶点)
             创建高度场并初始化
                 rcHeightField
                     bmin&bmax           从配置里读取的AABB边界
                     w&h                 从配置里读取的xz平面宽高
                     cs&ch               从配置里读取的每个单位x、y、z方向的单位大小
-                    spans               从配置里读取宽高然后分配好的XZ平面的体素二维数组
+                    spans               从配置里读取宽高然后分配好的XZ平面的体素二维数组,大小为sizeof(rcSpan*) * w * h
             标记输入三角形区域ID
-
-            创建高度场,仅包含空的span数组,体素个数即XZ大小和AABB
-            创建可行走标记数组,遍历所有的三角形,根据可行走角度以及法线,标记可行走的三角形
+                    m_triareas          输入的三角面的区域类型,初始化为RC_NULL_AREA(不可行走)
+                    nomal               每个三角面的法线,单位化之后Y值正好等于三角面倾斜角的cos值
+                    倾斜角小于最大行走倾斜角度时标记为可行走区域 RC_WALKABLE_AREA(可行走)
+            光栅体素化所有三角面
+                    遍历每个三角面,计算其AABB包围盒tmin,tmax(也就是三个顶点的最小xyz,最大xyz)
+                    根据包围盒计算zmin=[(bmax[2]-tmin[2])*(1/cs)],zmax=[(bmax[2]-tmax[2])*(1/cs)]
+                    for z=zmin;z<=zmax;z+=dz(cs)
+                    切割多边形,每次输入是三个点(一个三角面),输出仍然是三个点(水平方向切割Z轴)
+                    逆时针遍历所有顶点,计算其Z值是否在切割线两侧,是则计算交点(按照等比三角形)加入输入多边形顶点数组内
+                    for x=xmin;x<=xmax;x+=dx(cs)
+                    切割多边形,计算切割后多边形Y方向ymin,ymax,填充x,z处的y方向体素信息(ymin到ymax之间都是实心填充,只包含一部分也算实心)
+                    添加体素时计算yminymax相邻区域是否有体素,有就合并,没有则插入新的体素,每个体素包括ymin,ymax,area,next
+            过滤
+                根据climbHeight计算Y方向相邻体素距离,如果上一个体素可行走并且当前体素不可行走,当前体素距离小于climbHeight,则标记当前区域可行走
+                根据climbHeight计算XZ方向相邻体素距离,如果当前体素周围四个体素到达该体素距离均大于climbHeight,则标记为不可行走
+                根据climbHeight计算每个体素最大值和最小值之差,如果小于agentHeight,说明该体素不可行走
+            TODO 以下配置尚不明确具体用途
+            轮廓配置
+            maxEdgeLen          根据用户输入的轮廓的最大边长计算出的最大边长单位
+            maxSimpleError      用户输入的简化后的轮廓需要分割的最大长度
+            maxRegionArea       区域的最小面积
+            mergeRegionArea     区域的合并最小面积
+            detailSampleDist    采样距离
+            detailSampleMaxError采样最大值
+            tileSize
+            borderSize
             光栅化 计算三角形AABB
                    在xz平面切割三角形(切割过程新增切割点),y方向是连续的,切割后是一个实心体素集(Span)
                    检查当前列是否有Span,如果有就合并,合并时根据Climp大小标记区域可行走性质
