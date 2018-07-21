@@ -6,15 +6,18 @@
         概念
             高度场(HeightField) 根据cell(一般为0.2,0.2,0.2)大小在xyz三个方向切割,由体素构成的对象
             体素(Span) 三维空间的像素
-            开放区间(CompactSpan) 垂直方向一列相邻实心体素的集合
-            闭合区间(CompactCell) 垂直方向一列相邻空心体素的集合
-            压缩的高度场(CompactHeightfield) 由开放区间和闭合区间构成
-            层级的高度场(HeightfieldLayerSet)
-            轮廓
-            凸多边形
-            细节多边形
         实现
-            加载网格信息,每行不是v就是f,v代表一个顶点,f代表三角形,针对每个三角形创建AABB包围盒,然后创建二叉搜索树
+            加载网格信息
+                .gset类型文件是区域标记文件
+                    f
+                    filename
+                    v nverts area hmin hmax
+                    %f %f %f
+                    s 配置信息 %f %f %f %f %f %f %f %f %f %f %f %f %f %d %f %f %f %f %f %f %f
+                    c 代表Off-Mesh信息
+                .obj类型文件是MESH信息文件
+                    f代表三角面, %d %d %d
+                    v代表顶点 %f %f %f
             初始化配置信息 
                 rcConfig
                     地形配置
@@ -22,10 +25,10 @@
                     w&h                 根据边界和单位大小计算出的xz平面的单位宽度和高度(也就是xz平面有多少个体素)
                     cs&ch               用户输入的xz平面单位大小,y方向单位大小, 一般为0.2米 0.3米,越小越精确,体素越多,生成速度越慢
                     角色配置
-                    walkSlope           用户输入的行走单位的行走角度
-                    agentRadius          根据用户输入的行走单位的最小半径计算出的单位半径    
-                    agentHeight          根据用户输入的行走单位的最小高度计算出的单位高度
-                    agentClimbHeight     根据用户输入的行走单位的脚步高度计算出的单位高度
+                    walkSlope           坡度大小,角色能在多陡的斜坡上行走
+                    agentRadius         角色半径,已转化为单位长度
+                    agentHeight         角色高度,已转化为单位长度
+                    agentClimbHeight    角色能爬多高的建筑物或者每一步最多跨越多高的距离
                     多边形配置
                     maxVertPerPoly      凸多边形最大顶点数
                     输入网格信息
@@ -41,7 +44,7 @@
                     m_triareas          输入的三角面的区域类型,初始化为RC_NULL_AREA(不可行走)
                     nomal               每个三角面的法线,单位化之后Y值正好等于三角面倾斜角的cos值
                     倾斜角小于最大行走倾斜角度时标记为可行走区域 RC_WALKABLE_AREA(可行走)
-            光栅体素化所有三角面
+            光栅体素化所有三角面,对应于 RecastRasterlization.cpp
                     遍历每个三角面,计算其AABB包围盒tmin,tmax(也就是三个顶点的最小xyz,最大xyz)
                     根据包围盒计算zmin=[(bmax[2]-tmin[2])*(1/cs)],zmax=[(bmax[2]-tmax[2])*(1/cs)]
                     for z=zmin;z<=zmax;z+=dz(cs)
@@ -50,23 +53,36 @@
                     for x=xmin;x<=xmax;x+=dx(cs)
                     切割多边形,计算切割后多边形Y方向ymin,ymax,填充x,z处的y方向体素信息(ymin到ymax之间都是实心填充,只包含一部分也算实心)
                     添加体素时计算yminymax相邻区域是否有体素,有就合并,没有则插入新的体素,每个体素包括ymin,ymax,area,next
-            过滤可行走体素
-                根据climbHeight计算Y方向相邻体素距离,如果上一个体素可行走并且当前体素不可行走,当前体素距离小于climbHeight,则标记当前区域可行走
-                根据climbHeight计算XZ方向相邻体素距离,如果当前体素周围四个体素最大距离均大于climbHeight,则标记为不可行走(悬崖边)
+            过滤可行走体素,对应于RecastFilter.cpp
+                根据climbHeight计算Y方向相邻体素距离,如果上一个体素可行走并且当前体素不可行走,相邻体素smax距离小于climbHeight,则标记当前区域可行走
+                根据climbHeight计算XZ方向相邻体素距离,如果当前体素周围四个体素有大于或小于climbHeight,则标记为不可行走(悬崖边悬挂物体)
                 根据climbHeight计算Y方向相邻体素之间的空隙,如果小于agentHeight,说明该体素不可行走
-            以上操作均处于处理rcHeightField阶段,最终生成了一个rcSpan二维数组,并记录了每个体素是否可行走,smax,smin
-            创建压缩的高度场
-                将实心的体素信息压缩为只保留smax的可行走体素信息
+            以上操作均处于处理rcHeightField阶段,最终生成了一个rcSpan二维数组(障碍物集合),并记录了每个体素上边界是否可行走,smax,smin
+            接下来要把障碍物空间转化为可行走空间,即生成Y方向相邻的两个Span下ymax上ymin构成的开放可行走Span
+
+            创建CompactHeightfield
                 rcCompactHeightfield
-                    w&h bmin&bmax cs&ch agentHeight&agentClimbHeight
-                    int spanCount;              ///< The number of spans in the heightfield.
-                    unsigned short maxDistance; ///< The maximum distance value of any span within the field. 
-                    unsigned short maxRegions;  ///< The maximum region id of any span within the field. 
-                    rcCompactCell* cells;       ///< Array of cells. [Size: #width*#height]
-                    rcCompactSpan* spans;       ///< Array of spans. [Size: #spanCount]
+                    w&h bmin&bmax cs&ch agentHeight&agentClimbHeight bmax要加上角色高度
+                    int spanCount;              可行走Span数量,标记为RC_WALKABLE_AREA的Span个数
+                    cells;       二维数组,XZ平面格子, index第一个当前列Span,count表示Span个数
+                    spans;       可行走Span数组,y最低的站立面纵坐标,h距离下一个Span下边界距离,con记录了四个方向邻接Span的index
+                    areas        可行走Span标记,默认为空RC_NULL_AREA不可行走   
                     unsigned short* dist;       ///< Array containing border distance data. [Size: #spanCount]
                     unsigned char* areas;       ///< Array containing area id data. [Size: #spanCount]
+                    unsigned short maxDistance; ///< The maximum distance value of any span within the field. 
+                    unsigned short maxRegions;  ///< The maximum region id of any span within the field. 
+                第一步,初始化rcCompactHeightfield结构体
+                第二步,将rcHeightField内的Span修改格式后存储到rcCompactHeightfield内
+                第三步,检测每个cell内的所有span的相邻span,测试其连通性(检查相邻Span是否可以通过一个agentHeight,并且可以一步走上去climbHeight)RC_NOT_CONNECTED
+            过滤边界,确保所有Span都是可行走的
+                遍历spans,如果一个Span为不可行走或者相邻的Span有一个不可行走,则标记该Span不可行走
+                检查周围与8个Span的最小距离,XZ轴向距离为2,斜对面距离为3
+            区域标记
+                会检测每个Span在哪个Volume区域内,并修改其区域ID
 
+            区域分割算法
+
+            边界追踪算法
             TODO 以下配置尚不明确具体用途
             轮廓配置
             maxEdgeLen          根据用户输入的轮廓的最大边长计算出的最大边长单位
@@ -77,9 +93,6 @@
             detailSampleMaxError采样最大值
             tileSize
             borderSize
-            创建压缩的高度场 压缩到XZ平面,CompactCell为压缩后的数据,CompactSpan为压缩后的Span
-            过滤可行走体素 根据体素距离边界的最小距离和角色半径*2比较,水平相邻距离为2,斜对角为3,离边界越远距离越大
-                           默认格子大小为0.3(1倍距离),角色半径为0.6(2倍距离),默认判断2*2距离才可以站立
             区域分割       根据最大最小面积合并相邻的Span(标记为相同的region),并对相邻区域建立连接
             区域描边       根据分割好的区域找出边缘体素集合,然后根据最大边长和误差简化边缘
                            合并一些相邻的轮廓边
