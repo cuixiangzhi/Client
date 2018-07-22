@@ -68,18 +68,6 @@ TCP发包与收包
 		定时发送: 服务器同步每个定时间隔内的输入给所有客户端
 		战斗模拟: 和锁定同步一样
 		网络要求: 40ms以内应该是比较流畅
-服务器结构
-	  	Login: 
-	  		线程1,连接线程,管理与Client的连接,登录请求
-  		 	线程2,管理与WorldServer和第三方Server的连接,World的负载均衡,第三方SDK请求登录		        
-         	线程C,管理与DB的连接,登录验证,token生成,角色列表
-         	线程D,
-         	线程E,主线程,守护子线程
-	  	Gate   网络消息转发,流量控制
-	  	World  中心服,场景负载均衡、全局服务
-	  	Scene  场景、战斗
-	  	DBCache数据缓存,数据写库、读取 
-	  	路由  中心服&单点服务&区组,消息转发 服务注册 
 io模型
 		阻塞IO      调用系统API后  wait_data--copy_data_to_user                 copy过程是阻塞的,wait_data会阻塞直到数据到来 
 		非阻塞IO    调用系统API后  would_block--would_block--copy_data_to_user  copy过程是阻塞的,wait_data过程会直接返回,轮询
