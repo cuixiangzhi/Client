@@ -54,27 +54,9 @@
             指令字节码 lopcodes
                 每条指令的字节码构成 操作码(6位) 操作数A(9位) B(9位) C(9位) Bx(18位) sBx(有符号数)
                 OP_MOVE OP_ADD OP_SUB OP_FOR OP_NEWTABLE OP_CALL OP_TAILCALL等等38种指令
-            词法分析 llex
-                luaX_tokens定义了lua的符号占用符号信息 
-                    and break do else elseif end...等等 
-                SemInfo语义信息 lua_Number TString
-                Token符号信息 int token,SemInfo
-                LexState 
-                    current当前解析的字符
-                    linenumber当前解析的文件行数
-                    t当前解析中的词法单元
-                    lookahead预读的下一个词法单元
-                    funcState
-                    luaState
-                    ZIO* z 输入字节流
-                    Mbuffer* buff 针对Token的缓冲
-                    TString* source当前Chunk名称
-                错误处理 lexerror syntaxerror
-            语法分析 lparser
-            代码生成 lcode
+            词法分析/语法分析 代码生成 llex lparser lcode         
             垃圾回收 lgc
             虚拟机 lvm
-             lzio lundump 
             require过程:
                 栈顶参数为filepath
                 首先从注册表内取出_LOADED表,如果以filepath为key取到一个bool值,说明该文件加载过,返回该bool值
