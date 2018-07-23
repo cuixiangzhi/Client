@@ -74,15 +74,17 @@
                 第一步,初始化rcCompactHeightfield结构体
                 第二步,将rcHeightField内的Span修改格式后存储到rcCompactHeightfield内
                 第三步,检测每个cell内的所有span的相邻span,测试其连通性(检查相邻Span是否可以通过一个agentHeight,并且可以一步走上去climbHeight)RC_NOT_CONNECTED
-            过滤边界,确保所有Span都是可行走的
+            过滤边界,确保所有Span都是可行走的 RecastArea.cpp
                 遍历spans,如果一个Span为不可行走或者相邻的Span有一个不可行走,则标记该Span不可行走
                 检查周围与8个Span的最小距离,XZ轴向距离为2,斜对面距离为3
-            区域标记
+            区域标记 RecastArea.cpp
                 会检测每个Span在哪个Volume区域内,并修改其区域ID
 
-            区域分割算法
+            区域分割算法 RecastRegion
 
-            边界追踪算法
+            边界追踪算法 RecastContour
+
+            导航网格 RecastMesh
             TODO 以下配置尚不明确具体用途
             轮廓配置
             maxEdgeLen          根据用户输入的轮廓的最大边长计算出的最大边长单位

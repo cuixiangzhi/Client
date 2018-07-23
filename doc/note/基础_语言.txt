@@ -60,6 +60,11 @@ January February March April May June July August Spetember October November Dec
 		bind 参数重新排列  bind(func,placeorders::_1,_2,var);
 		function<void(int,int)>
 库&dll&依赖 __declspec(dllexport) __stdcall __cdecl
+			DLL库 
+				头文件 dlfcn.h unix可用 mac/windows需要别的API,编译时-ldl -rdynamic
+				void* dlptr = dlopen("dlname",RTLD_NOW) 
+				void* funcptr = dlsym(dlptr,"funcname")
+				int ret = dlclose(dlptr)
 			IO库 iostream 控制台读写 cin>> cout<<
 				 fstream 文件读写 成员函数 f("",ios::in|ios::out|ios:binary) 
 										   f.close() 
@@ -144,6 +149,7 @@ C++跳转
 		setjmp(jmp_buf env) 设置跳转点,保存函数上下文 直接调用返回0,跳转调用返回longjmp第二个参数
 		longjmp(jmp_buf env,int ret) 调到跳转点,恢复函数上下文
 C赋值	int ? = (1,2,3,4,5); 会取最后一个值
+		typedef struct 		 可以定义一个在其它地方定义的链接,相当于extern
 
 C#   托管代码会被编译为IL语言(生成的文件内包含元数据),CLR编译IL为机器语言(JIT编译)
 	  反射
@@ -223,62 +229,37 @@ python
 	   			  	for field in child:
 	   			  		filed.tag 
 	   			  		field.text
-lua API
-模块实现相关 module local self 
-             tostring tonumber type 
-             get/setmetatable 
-             get/setfenv 
-             rawget/set
-             unpack select
-             pairs ipairs 
-             print error assert
-             class 
-模块加载相关 require 
-             dofile dostring 
-             loadfile loadstring 
-             pcall xpcall
-
-库     math   库  abs ceil floor random randomseed cos sin acos asin tan atan exp log sqrt
-       os     库  
-       debug  库  traceback
-       io     库  
-       coroutine  
-       package库  path cpath loaded preload loaders loadlib seeall
-       string 库  lower upper len format reverse sub gsub find gmatch byte char dump match rep
-       table  库  insert concat maxn remove sort
-注册表: 所有lua_State共享的表
-全局环境: _G全局表
-栈帧:  分为函数栈帧和数据栈帧,每个函数的数据栈index属于不同的数据栈
-       
-Lua CAPI
+lua
 后缀表达式:  建立符号栈,
              遍历中缀表达式
 			   1.数字,直接输出
 			   2.运算符 (入栈  )弹出符号栈元素,遇到)停止,)弹出但不输出  其他符号,弹栈直到遇到(或者遇到优先级低的符号停止
 			   3.遍历完成,输出符号栈所有符号
-常量定义 luaconf.h       
-基础函数定义lua.h        以lua_为前缀
+常量定义 luaconf.h       平台相关 搜索路径 堆栈大小 
+基础函数定义lua.h        以lua_为前缀,版本、REGISTERINDEX、GLOBALSINDEX、T* lua_Alloc lua_CFunction lua_is* lua_to* lua_push* lua_get* lua_set*
 辅助函数定义luaxlib.h    以luaL_为前缀
+基础库注册定义lualib.h   lua_open基础库相关函数定义,实现在各个库对应的.c内
 库实现       
 	 以lua_open为前缀,具体实现分散在不同的.cc文件内  
-	 lauxlib.c  辅助库实现
-	 lbaselib.c base库实现
-	 liolib.c  io库实现
-	 lmath.c   math库实现
-	 lstrlib.c string库实现
-	 ltablib.c table库实现
+	 lauxlib.c  辅助库实现 luaL_loadfile luaL_loadbuffer luaL_reg/luaL_register luaL_check* luaL_opt* luaL_ref/unref luaL_newstate
+	 lbaselib.c base库实现 g/setfenv g/setmetatable x/pcall tonumber/string rawg/set pack/unpack dofile/loadstring
+	 liolib.c  io库实现 read write flush close open input output type
+	 lmath.c   math库实现 abs ceil floor random randomseed cos sin acos asin tan atan exp log sqrt
+	 lstrlib.c string库实现 lower upper len format reverse sub gsub find gmatch byte char dump match rep
+	 ltablib.c table库实现 insert concat maxn remove sort
 	 loslib.c  os库实现
-	 ldblib.c  debug库实现
+	 loadlib.c 文件解释入口 require module seeall path cpath loaded preload loaders loadlib seeall
+	 ldblib.c  debug库实现 traceback getenv gethook sethook getmetatable
 	 linit.c  库注册入口函数整合
 常用API:  
 	函数注册luaL_Reg注册函数结构体 luaL_Reg[] = { {"func_name",func},{"func_name1",func1} } luaL_register
 	函数调用lua_call(L,narg,nresult) lua_pcall(L,nargs,nresults,err_func)
 	table字段获取lua_getfield(L,stackid,k) lua_getmetatable lua_gettable lua_gettop lua_getglobal
 	table字段创建lua_newtable lua_newuserdata
-	lua_get会在指定位置读取指定key的数据并压入栈顶
-	lua_set会移除指定位置数据,并存入指定table的key
+	lua_raw/get会在指定位置读取指定key的数据并压入栈顶
+	lua_raw/set会移除栈顶数据(value和key),并设置指定table的key对应value
 	lua_pop会移除栈顶指定个数的数据
-	lua_push复制并压入栈顶
+	lua_push复制指定位置并压入栈顶
 	lua_to系列不会移除栈数据 lua_toboolean lua_tocfunction lua_tointeger lua_tolstring lua_tonumber lua_tostring
 	lua_is系列也不会移除栈数据 lua_isnil lua_isnumber lua_istable lua_isstring
 	lua_ref lua_unref lua_getref 会通过一个int数据创建、解除、获取引用类型数据,可以是userdata(指定大小的指针,有元表)

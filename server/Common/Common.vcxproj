@@ -215,6 +215,7 @@
     <ClCompile Include="google\protobuf\wire_format.cc" />
     <ClCompile Include="google\protobuf\wire_format_lite.cc" />
     <ClCompile Include="google\protobuf\wrappers.pb.cc" />
+    <ClCompile Include="network\cpacket.cc" />
     <ClCompile Include="network\csocket.cc" />
     <ClCompile Include="thread\cthread.cc" />
   </ItemGroup>
@@ -345,6 +346,7 @@
     <ClInclude Include="google\protobuf\wire_format_lite.h" />
     <ClInclude Include="google\protobuf\wire_format_lite_inl.h" />
     <ClInclude Include="google\protobuf\wrappers.pb.h" />
+    <ClInclude Include="network\cpacket.h" />
     <ClInclude Include="network\csocket.h" />
     <ClInclude Include="thread\cthread.h" />
   </ItemGroup>
