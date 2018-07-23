@@ -56,7 +56,7 @@
                 OP_MOVE OP_ADD OP_SUB OP_FOR OP_NEWTABLE OP_CALL OP_TAILCALL等等38种指令
             词法分析/语法分析 代码生成 llex lparser lcode         
             垃圾回收 lgc
-            虚拟机 lvm
+            虚拟机 lvm,定义了execute函数执行指令死循环直到所有指令全部执行完毕
             require过程:
                 栈顶参数为filepath
                 首先从注册表内取出_LOADED表,如果以filepath为key取到一个bool值,说明该文件加载过,返回该bool值
