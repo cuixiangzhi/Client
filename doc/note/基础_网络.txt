@@ -1,6 +1,37 @@
 Tomcat  静态+动态HTTP服务,动态是通过运行JAVA应用实现
-Apache	静态HTTP服务
-Nginx   负载均衡,反向代理 http tcp
+Apache	静态HTTP服务 负载均衡,反向代理
+CGI		通用网关接口CommonGatewayInterface
+		WEB服务器只能处理静态内容,动态内容需要调用WEB应用程序执行,而WEB程序的执行是由CGI进程来完成的
+		WEB服务器与CGI进程之间交互的协议就是CGI,CGI调用对应的WEB应用程序并返回执行结果
+Nginx   负载均衡,反向代理 http tcp fastcgi
+		配置文件设置 #注释
+			全局配置:
+				指定所属用户和用户组:   user username groupname;
+				工作进程个数:			worker_processes 8;
+				进程PID存放目录:		pid  logs/nginx.pid;
+				日志文件: 				error_log logs/error.log level(debug|info|error|warn|notice);
+			事件配置:
+				event
+				{
+					接受连接互斥锁:		accept_mutex on; 默认打开
+					同时处理多个链接:	multi_accept on; 默认关闭
+					事件驱动模型:		use select|epoll|poll;
+					工作进程连接上限:   worker_connections 1024; 默认不超过ulimit -n即单个进程可以打开的描述符个数
+				}
+			服务配置:
+				http {} http负载均衡
+				stream {} TCP/UDP负载均衡
+					upstream app {} 上游服务器,具体的应用服务器
+						hash $remote_addr consistent; 主要用于缓存服务,同一个客户端的请求转向同一个缓存服务,提高缓存命中率
+						server IP:PORT weight=1 max_fails=1 fail_timeout=5s; N秒内失败N次则标记为不可用,N秒后再次检测
+					server {} 代理服务器,worker进程
+						listen PORT;	监听端口
+						proxy_pass app; 代理哪个上游服务
+						proxy_connect_timeout 1s;与上游服务器连接超时时间
+						send_timeout 1s; 发送超时时间
+						proxy_read_timeout 1s;从上游服务器接收数据超时时间
+						proxy_send_timeout 1s;向上游服务器发送数据超时时间
+						location / { proxy_pass https://app.com }
 NodeJs  基于V8的JS框架,基于NODEJS的服务器框架pomelo
 cdn     内容分发网络,分区域部署服务器,选取距离最近的服务器获取内容
 HTTP    url?arg1=&arg2=

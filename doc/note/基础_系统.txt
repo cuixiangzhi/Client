@@ -66,7 +66,13 @@
 				  	函数查找过程: name->hash->nbuckets->bucket->.dynamic->Elf32_Sym->st_name->.dynstr->chain
 				  	解密过程也是需要找到so地址,获取权限,解密内存 
 			MACH-O格式
-
+		文件权限
+			文件拥有者-拥有者同组用户-管理员 rwx-rwx-rwx
+			读写执行分别对应rwx
+			useradd -s shell -d dir -g groupname -m username 添加用户并制定主目录和所属用户组
+			passwd username 修改用户密码
+			userdel -r username 删除用户及其主目录
+			groupadd -g id name 添加用户组并制定ID和组名
 内存管理
 		内存布局: 
 				stack-map-heap-bss-rwdata-rodata-code
