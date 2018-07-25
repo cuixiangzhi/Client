@@ -25,3 +25,15 @@ Alpha
     UI组件显示时会计算父物体alpha值,父物体是在OnEnable之后做了缓存
     如果在OnEnable之后修改了父结点,alpha计算就会出现BUG(新父结点alpha为0不生效)
     UpdateGeometry->CalculateFinalAlpha->UpdateFinalAlpha->parent.CalculateFinalAlpha
+自适应
+    UI摄像机Camera.size为高度size,也就是高度为2
+    屏幕真实宽高比为Screen.width:Screen.height
+    自定义宽高:manualHeight manualWidth
+    宽度自适应:宽度始终铺满屏幕,UI的真实高度activeHeight需要计算(manualWidth / aspect)
+              把像素高度为activeHeight的UI放入高度为2的摄像机内,需要缩放2/activeHeight倍数
+    高度自适应:把像素高度为activeHeight = manualHeight的UI放入高度为2的摄像机内,需要缩放2/activeHeight倍数
+
+    基准分辨率为16:9,宽高比超过该比例的需要高度自适应,小于等于该比例需要宽度自适应
+    iPhoneX有一个安全区的概念,屏幕周边有一圈是无法点击的只能显示
+OnDrag
+    由于自适应操作UI的高度范围可能会缩放,因此需要delta.y * (activeHeight / Screen.height)来计算真正的y偏移
