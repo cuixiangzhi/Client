@@ -16,6 +16,11 @@ namespace GameCore
 
         }
 
+        public void OnEnable()
+        {
+
+        }
+
         public void OnDisable()
         {
 

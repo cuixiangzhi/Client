@@ -1,7 +1,23 @@
 NGUI源码分析
     事件系统
         UICamera
-            
+            ignoreAllEvents 所有NGUI事件的开关
+            isOverUI 是否触摸到了NGUI组件
+            hoveredObject 触摸对象
+            currentTouch 当前触摸信息,包括lastPos&pos&delta
+            currentTouchID 当前手指ID,-1表示左手,-2右手,-3滚轮
+            CountInputSources() 触摸数量
+            Update检测并转发事件
+                优先检测Touch事件
+                    通过引擎API获取触摸点个数,Input.touchCount
+                    遍历每一个触摸结构体,Input.GetTouch(i),获取触摸状态、位置、个数、手指ID,更新对应的MouseOrTouch结构
+                    TouchPhase.Began或者第一次创建该ID的touch则属于press状态,Cancel或者End属于unpress状态
+                    遍历每一个UICamera,首先检测触摸点是否在视口内,并发射UI摄像机的cullingMask的射线
+                    遍历碰撞到的N个对象,检查UIWidget或者UIRect组件,alpha值为0跳过检测
+
+            LateUpdate检测屏幕大小变化并转发更新锚点事件
+    输入管理
+
     渲染流程
     辅助工具
 UIDrawCall
