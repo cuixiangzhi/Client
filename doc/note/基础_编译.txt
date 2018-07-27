@@ -47,6 +47,8 @@ MAC编译
 		xcodebuild archive -scheme xx -configuration Debug|Release -archivePath *.xcarchive -quiet>null
 	导出ipa 
 		xcodebuild -exportArchive -archivePath *.xcarchive -configuration D|R -exportPath *.ipa -exportOptionsPlist
+	lipo -info 查看静态库支持的CPU架构
+	lipo -create xx.a x.a -output xx.a合并多个版本的静态库
 premake构建跨平台编译工程
 	通过lua脚本定义工程生成配置文件
 	主要包括 solution 定义项目解决方案如何生成
