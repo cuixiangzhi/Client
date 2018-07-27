@@ -80,6 +80,7 @@ lua源码分析
         新建CallInfo初始化并加入L->ci数组尾部
         L->savedpc是当前函数的第一条指令,L->ci->savedpc是当前函数的调用指令的下一条指令
         所有Lua函数第一条指令都是OP_CLOSURE指令和OP_MOVE OP_GETUPVAL指令
+        调用LUA函数时先创建closure,然后执行OP_MOVE OP_GETUPVAL修改闭包的upvalue表
         循环执行当前Proto的指令,嵌套调用时只修改当前循环的下一条指令
     newstate过程:
         一个Lua虚拟机由一个全局状态和多个LuaState构成
