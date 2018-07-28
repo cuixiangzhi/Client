@@ -1,6 +1,6 @@
 NGUI源码分析
     事件系统
-        UICamera
+        UICamera&UIEventListener
             ignoreAllEvents 所有NGUI事件的开关
             isOverUI 是否触摸到了NGUI组件
             hoveredObject 触摸对象
@@ -10,24 +10,68 @@ NGUI源码分析
             Update检测并转发事件
                 优先检测Touch事件
                     通过引擎API获取触摸点个数,Input.touchCount
-                    遍历每一个触摸结构体,Input.GetTouch(i),获取触摸状态、位置、个数、手指ID,更新对应的MouseOrTouch结构
-                    TouchPhase.Began或者第一次创建该ID的touch则属于press状态,Cancel或者End属于unpress状态
-                    遍历每一个UICamera,首先检测触摸点是否在视口内,并发射UI摄像机的cullingMask的射线
-                    遍历碰撞到的N个对象,检查UIWidget或者UIRect组件,alpha值为0跳过检测
+                    遍历每一个触摸结构体,Input.GetTouch(i)
+                        获取触摸状态、位置、个数、手指ID,更新对应的MouseOrTouch结构
+                        Began或者第一次创建该ID的touch则属于press状态,Cancel或者End属于unpress状态
+                        遍历每一个UICamera,检测点到的物体,如果没有则赋值为默认值(由该物体来接收事件)
+                            首先检测触摸点是否在视口内,并发射UI摄像机的cullingMask的射线
+                            遍历碰撞到的N个对象(根据事件检测类型UI_2D(检测collider2d)UI_3D(检测layer))
+                                检查UIWidget或者UIRect组件,alpha值为0或者不可见则跳过检测
+                                计算碰撞到物体的深度(如果没有UIWidget则获取子物体,子物体没有返回0,即最低深度)
+                                加入到碰撞物体数组并按深度从大到小排序,找出第一个可见的对象
+                        如果是双击,则记录最后一次点击的时间
+                        转发Touch事件(press,unpress)
+                        unpress则移除当前touch结构,当前touch置空
+                    鼠标和手指的触摸范围不一样,乘上各自的比值后在计算触摸或者拖拽开始的下限
+                    同一个touch一般只会处于一种状态,press或者release
+                    如果当前touch的press对象非空,则优先处理release在处理press,否则反着处理
+                        处理release事件
+                            press对象非空
+                                当前处于拖拽状态?发送DragOut和DragEnd事件
+                                发送OnPress退出事件
+                                如果是鼠标事件并且press包含Collider,则触发OnHover事件
+                                如果当前拖拽对象与按住对象相同,则处理OnClick(必定触发)和OnDoubleClick(0.35秒内触发)事件
+                                否则触发OnDrop事件
+                        处理press事件
+                            press为true且press对象非空
+                                触发OnPress进入事件和OnSelect事件
+                                修改hoveredObject&pressed&dragged为当前触摸对象
+                            press为false且press对象非空
+                                当前触摸对象与初次press对象不一致或者拖拽了一定距离,则触发OnDragStart及OnDragOver事件
+                                last和current不一致,则触发OnDragOver和OnDragOut事件
+                                触发OnDrag事件
+                如果touch数为0并且没有触发过touch事件则检测Mouse事件 0单击1右击2滚轮                 
+                    与Touch一样发射线检测碰撞对象,修改currentTouch状态,然后转发Touch事件,鼠标左右中事件会同时检测
+                每种事件都有全局和指定两种触发回调,Touch和Mouse的位置信息都在currentTouch内,pos及delta、fingerId
+                开启多点触控时每个触摸手指都会触发上述状态,需要自己根据fingerId来区分
+            LateUpdate检测屏幕大小变化并转发更新锚点事件UpdateAnchors
+        EasyTouch
 
-            LateUpdate检测屏幕大小变化并转发更新锚点事件
     输入管理
+        UIInput
 
-    渲染流程
-    辅助工具
-UIDrawCall
-    所有UI组件都是创建了一个隐藏的GameObject,并添加了UIDrawCall组件、MeshFilter组件、MeshRenderer组件
-    每个UIDrawCall会创建一个MESH和一个材质并赋值给MeshFilter和MeshRenderer
-    UI组件更新过程 panel.LateUpdate->UpdateSelf->UpdateWidgets->UpdateGemotry->UpdateDrawCall
-    UpdateGemotry之后会进行坐标系变换,把UI组件变换到UIPanel根结点下panel.worldToLocal * trans.localToWorld
-UIAtals UIFont
-    UISprite和UILabel使用的材质排序后相邻的如果相同
-    unity会做动态批处理合并MESH
+    渲染组件
+        UIRect
+            UIPanel和UIWidget的基类,缓存了go和transform,通用的锚点更新及alpha计算
+        UIWidget
+            UI渲染组件的基类,包含宽、高、深度、透明度、颜色、材质、着色器
+            一个UIGemotry类用于记录当前UI的顶点、UV、颜色信息
+            一个UIDrawCall用于记录当前UI的材质、贴图、着色器信息
+                UIDrawCall内部创建了一个隐藏的GO,Attach了MeshFilter和MeshRender组件用于渲染
+            UI组件更新过程 panel.LateUpdate->UpdateSelf->UpdateWidgets->UpdateGemotry->UpdateDrawCall
+            UpdateGemotry之后会进行坐标系变换,把UI组件顶点变换到UIPanel根结点下panel.worldToLocal * trans.localToWorld
+            OnFill函数用于填充当前UI的Gemotry信息
+            CalculBounds根据width和height、pivot计算出边界四个顶点
+        UILabel
+        UISprite
+        UIAtlas
+        UIFont
+        UIPanel
+        UIAtals UIFont
+            UISprite和UILabel使用的材质排序后相邻的如果相同
+            unity会做动态批处理合并MESH
+    交互组件
+
 裁剪
     clipSoftness.xy,虚边界大小
     clipRange.xyzw,裁剪区域中心及大小
