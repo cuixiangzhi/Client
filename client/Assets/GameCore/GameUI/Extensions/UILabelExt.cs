@@ -108,6 +108,7 @@ public sealed class UILabelExt : MonoBehaviour
     private LuaFunction mLuaFunc = null;
     private UILabel mLabel = null;
     private UISprite mSprite = null;
+    private CharacterInfo mCharInfo;
 
     private float mMaxWidth = 0;
     private float mLineSpace = 0;
@@ -132,7 +133,7 @@ public sealed class UILabelExt : MonoBehaviour
     /// <param name="defaultLabelCount"></param>
     /// <param name="defaultSpriteCount"></param>
     /// <param name="frame"></param>
-    public void Init(UILabel lb,UISprite sp, LuaFunction luaFunc,float maxWidth,float lineSpace,int defaultLabelCount,int defaultSpriteCount,GameCore.Component.UIComponent uiComponent)
+    public void Init(UILabel lb,UISprite sp, LuaFunction luaFunc,float maxWidth,float lineSpace,int defaultLabelCount,int defaultSpriteCount,GameBase.UIFrame frame)
     {
         if(!mInit)
         {
@@ -147,11 +148,11 @@ public sealed class UILabelExt : MonoBehaviour
             mLineSpace = lineSpace;
             for (int i = 0; i < defaultLabelCount; i++)
             {
-                NewLabel(true);
+                NewLabel(true,null);
             }
             for (int i = 0; i < defaultSpriteCount; i++)
             {
-                NewSprite(true,string.Empty);
+                NewSprite(true,string.Empty,null);
             }
             if(mEmojiSymbol.Count == 0)
             {
@@ -261,7 +262,7 @@ public sealed class UILabelExt : MonoBehaviour
         if (mLabelRoot.childCount != 0)
             throw new Exception("you must call ProcessRelease before call this func!");
         UnityEngine.Profiling.Profiler.BeginSample("UILabelExt.ProcessText");
-        Prepare(value);
+        Prepare(value,startString,endString);
         ProcessNGUISymbol(shieldNGUISymbol);
         ProcessDefaultSymbol(startColor, startString, endColor, endString);
         ProcessCustomSymbol();
@@ -270,7 +271,7 @@ public sealed class UILabelExt : MonoBehaviour
         UnityEngine.Profiling.Profiler.EndSample();
     }
 
-    private void Prepare(string value)
+    private void Prepare(string value,string start,string end)
     {
         mCurHeight = 0;
         mCurWidth = 0;
@@ -284,6 +285,13 @@ public sealed class UILabelExt : MonoBehaviour
         mNextLineClickData.index = -1;
         mLineClicks.Clear();
         mLineEmojis.Clear();
+        int finalSize = Mathf.RoundToInt(mLabel.defaultFontSize / mLabel.root.pixelSizeAdjustment);
+        if (!string.IsNullOrEmpty(value))
+            mLabel.trueTypeFont.RequestCharactersInTexture(value, finalSize, mLabel.fontStyle);
+        if (!string.IsNullOrEmpty(start))
+            mLabel.trueTypeFont.RequestCharactersInTexture(start, finalSize, mLabel.fontStyle);
+        if (!string.IsNullOrEmpty(end))
+            mLabel.trueTypeFont.RequestCharactersInTexture(end, finalSize, mLabel.fontStyle);
     }
 
     private void ProcessNGUISymbol(bool shieldNGUISymbol)
@@ -683,9 +691,13 @@ public sealed class UILabelExt : MonoBehaviour
     {
         if(!mCharWidthCache.ContainsKey(c))
         {
-            mLabel.text = c.ToString();
-            mLabel.ProcessText();
-            mCharWidthCache[c] = mLabel.printedSize.x;
+            int finalSize = Mathf.RoundToInt(mLabel.defaultFontSize / mLabel.root.pixelSizeAdjustment);
+            if (!mLabel.trueTypeFont.HasCharacter(c))
+            {
+                mLabel.trueTypeFont.RequestCharactersInTexture(c.ToString(), finalSize, mLabel.fontStyle);
+            }
+            mLabel.trueTypeFont.GetCharacterInfo(c, out mCharInfo, finalSize, mLabel.fontStyle);
+            mCharWidthCache[c] = mCharInfo.advance * mLabel.root.pixelSizeAdjustment;
         }
         return mCharWidthCache[c];
     }
@@ -713,10 +725,9 @@ public sealed class UILabelExt : MonoBehaviour
         //处理旧行数据
         mLuaFunc.BeginPCall();
 
-        UILabel lb = NewLabel(false);
+        UILabel lb = NewLabel(false, mLabelRoot);
         lb.enabled = true;
         lb.text = mLineBuilder.ToString();
-        lb.transform.parent = mLabelRoot;
         float curLineHeight = lb.height;
 
         mLuaFunc.Push(lb);
@@ -724,9 +735,8 @@ public sealed class UILabelExt : MonoBehaviour
 
         for (int i = 0; i < mLineEmojis.Count; i++)
         {
-            UISprite sp = NewSprite(false, mLineEmojis[i].emojiName);
+            UISprite sp = NewSprite(false, mLineEmojis[i].emojiName, lb.transform);
             sp.MakePixelPerfect();
-            sp.transform.parent = lb.transform;
             sp.transform.localPosition = new Vector3(mLineEmojis[i].emojiOffset, 0, 0);
             curLineHeight = Mathf.Max(curLineHeight, mLineEmojis[i].emojiHeight);
 
@@ -855,12 +865,17 @@ public sealed class UILabelExt : MonoBehaviour
             mLabelCache.Enqueue(lb);
         }
         if (!createNew)
-            return mLabelCache.Dequeue();
+        { 
+            UILabel lb = mLabelCache.Dequeue();
+            if (parent != null)
+                lb.transform.parent = parent;
+            return lb;
+        }
         else
             return null;
     }
 
-    private UISprite NewSprite(bool createNew,string spName)
+    private UISprite NewSprite(bool createNew,string spName,Transform parent)
     {
         if (createNew || mSpriteCache.Count == 0)
         {
@@ -879,6 +894,8 @@ public sealed class UILabelExt : MonoBehaviour
         {
             UISprite sp = mSpriteCache.Dequeue();
             UISpriteAnimation spa = mSpriteAnimCache[sp];
+            if (parent != null)
+                sp.transform.parent = parent;
             sp.enabled = true;
             spa.enabled = true;
             sp.spriteName = spName;
