@@ -133,7 +133,7 @@ public sealed class UILabelExt : MonoBehaviour
     /// <param name="defaultLabelCount"></param>
     /// <param name="defaultSpriteCount"></param>
     /// <param name="frame"></param>
-    public void Init(UILabel lb,UISprite sp, LuaFunction luaFunc,float maxWidth,float lineSpace,int defaultLabelCount,int defaultSpriteCount,GameBase.UIFrame frame)
+    public void Init(UILabel lb,UISprite sp, LuaFunction luaFunc,float maxWidth,float lineSpace,int defaultLabelCount,int defaultSpriteCount,GameCore.Component.UIComponent uiComponent)
     {
         if(!mInit)
         {
@@ -852,7 +852,7 @@ public sealed class UILabelExt : MonoBehaviour
         }
     }
 
-    private UILabel NewLabel(bool createNew)
+    private UILabel NewLabel(bool createNew,Transform parent)
     {
         if(createNew || mLabelCache.Count == 0)
         {
