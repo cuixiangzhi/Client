@@ -100,6 +100,13 @@ NGUI源码分析
                         无效的drawCall会被移除
 
                 然后每个panel执行UpdateDrawCalls,起始renderQueue是累积的,按照panel内drawcall个数
+            CalculateConstrainOffset
+                已知显示区域为clipRange+clipOffset,计算出其minArea,maxArea,减去虚边
+                内容区域为minRect,maxRect
+                首先扩大area大小(中心点不变)使其可以完全放得下rect
+                计算rect移动到area重合需要的offset
+            ConstrainTargetToBounds
+                计算其移动到Panel的Bounds内需要的offset,修改目标的坐标
         UIRect
             UI显示组件的基类,是一个虚拟的矩形区域,包含四个锚点
             cachedGameObject__cachedTransform__root 基础组件缓存
@@ -125,6 +132,8 @@ NGUI源码分析
             autoResizeBoxCollider__ResizeCollider 自动计算BoxCollider大小
             aspect* 控制宽高是否成比例变化
             drawRegion是当前显示区域的范围(0,0---1,1),用于计算百分比调整后的可用区域
+            drawingDimensions
+                显示时的xy,wh(左下角为0,0)
             MarkAsChanged__ParentHasChanged__SetDirty__panel__RemoveFromPanel__CreatePanel
                 当前UI有变化,通知其panel重建该UI
                 当前UI所在的panel,加入、移除操作
@@ -171,9 +180,6 @@ NGUI源码分析
                     计算三角形个数,乘上3得出indexBuffer长度,长度不足时会导致重新分配内存
                     trim移除大小不匹配的信息,setIndices重建indexBuffer(顶点数大小变化时,优先在缓存内找一个相同的,否则新建数组,最大缓存10个)
                 超过65000个顶点无法处理              
-        UIScrollView
-
-        SpringPanel
     文字显示
         UIFont
             BMFont 图片文字类型的Font
@@ -216,17 +222,40 @@ NGUI源码分析
                 计算其FontTexture内的UV、起点、大小等信息,将矩形文字信息加入到顶点数组、UV数组、颜色数组内
     图片显示
         UIAtlas
+            图集,包含材质球、打包的纹理、着色器,List<UISpriteData>存储了所有的图片
+            UISpriteData记录了图片的名字、图片内偏移、大小、border等信息
+            UIAtlasMaker制作图集时计算最优的图片打包方式来合并图片
         UIBasicSprite
+            border slice九宫格切割的边界 (lOff,rOff,bOff,tOff)
+            drawingDimensions 绘制区域的xy,wh
+            drawingUVs 绘制区域的uv区域x0y0,x1y1
+            type 图片的显示模式,常规Simple、平铺Tile、九宫格拉伸Slice、进度条填充模式Fill
+            fillDirection__fillAmount__invent 填充方式和进度数值、是否反向填充,水平、垂直、圆形
+            flip 翻转图片
+            Fill 把原始信息按照flip、slice等方式处理
+                FillSimple 直接把原始信息填充进去,如果有渐变,则乘上渐变颜色
+                FillSlice border为0则属于Simple方式,否则顶点数翻了9倍,填充9个矩形的顶点、UV信息
+                FillTile  根据宽高,计算N个矩形顶点和对应的UV,以左下角为起点进行平铺
+                FillFill  水平或者垂直方向则修改UV,圆形则根据切割角度、进度计算出新的4个顶点个4个UV值
         UISprite
+            atlas__mat__texture_shader 当前UI使用的图集的信息
+            spriteName 当前图片的名字,根据名字在图集内找到对应的UISpriteData
+            MakePixelPerfect 根据图集内的对应图片的真实像素宽度高度,设置当前UI的宽高
+            OnFill重载UIWidget的OnFill函数,在UpdateGemotry内调用
+                找不到图片则不填充否则根据图集内图片的border和xywh作为outer、inner(用于调整UV)调用基类填充函数
         UITexture
+            与UISprite的属性几乎一致,只不过材质纹理着色器都是自己特殊的,没有共享的图集
+            如果两个UITexture的材质纹理着色器完全一致,那么相邻时会共享同一个UIDrawCall
     交互组件
-        Tween系列动画,Tween*.Begin(go,from,to,time);
+        Tween系列动画,Tween*.Begin(go,from,to,time) 比较常用,用于一些UE效果
         UIButton系列,监听OnClick事件做一些按钮处理,一般不使用
+        UISlider UIProgressBar  监听OnPress和OnDrag事件 比较常用,用于一些带进度条的UI,可选拖拽 localCorners计算thumb位置
+        UIScrollView
+        SpringPanel
+        UIGrid&UITable 不常用,固定ITEM数或者个数不多时可以使用,单纯的位置排序 
         UIDrag系列
         UIToggle系列
-        UIGrid&UITable 不常用,固定ITEM数时可以使用,单纯的位置排序 
         UIWrapContent
-        UISlider UIProgressBar  
         UIPopupList
 裁剪
     clipSoftness.xy,虚边界大小
