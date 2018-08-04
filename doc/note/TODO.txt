@@ -63,7 +63,8 @@
     其他系统    引导功能 
 
     基础框架    界面定义
-    基础框架    GameStart Data/XX UI_Loading GameInit Login
+    基础框架    GameStart Data/XX UI_Loading GameInit Login 
+                整理一下LOADING流程,设计一下LOADING相关的事件,镜像副本..
     基础框架    事件注册 ×  MessageSub  事件定义 ×  GameConfig
     基础框架    HTTP编解码
 

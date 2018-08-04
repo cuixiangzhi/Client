@@ -2,7 +2,7 @@ SQL  结构化查询语言
     数据类型: INT BIGINT TEXT FLOAT UNSIGNED CHAR定长 VARCHAR变长 
     创建数据库  CREATE DATABASE name ENGINE=InooDB DEFAULT CHARSET=utf8
 	删除数据库	DROP DATABASE name
-	创建表      CREATE TABLE name (KEY TYPE,约束)
+	创建表      CREATE TABLE name (KEY TYPE,约束) ENGINE=InnoDB 
 			字段约束  primary key主键
 					  not null非空
 					  unique 非重复

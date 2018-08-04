@@ -1,6 +1,6 @@
 NGUI源码分析
     事件系统
-        UICamera&UIEventListener
+        UICamera&UIEventListener&EventDelegate
             ignoreAllEvents 所有NGUI事件的开关
             isOverUI 是否触摸到了NGUI组件
             hoveredObject 触摸对象
@@ -50,33 +50,185 @@ NGUI源码分析
     输入管理
         UIInput
 
-    渲染组件
-        UIRect
-            UIPanel和UIWidget的基类,缓存了go和transform,通用的锚点更新及alpha计算
-        UIWidget
-            UI渲染组件的基类,包含宽、高、深度、透明度、颜色、材质、着色器
-            一个UIGemotry类用于记录当前UI的顶点、UV、颜色信息
-            一个UIDrawCall用于记录当前UI的材质、贴图、着色器信息
-                UIDrawCall内部创建了一个隐藏的GO,Attach了MeshFilter和MeshRender组件用于渲染
-            UI组件更新过程 panel.LateUpdate->UpdateSelf->UpdateWidgets->UpdateGemotry->UpdateDrawCall
-            UpdateGemotry之后会进行坐标系变换,把UI组件顶点变换到UIPanel根结点下panel.worldToLocal * trans.localToWorld
-            OnFill函数用于填充当前UI的Gemotry信息
-            CalculBounds根据width和height、pivot计算出边界四个顶点
-        UILabel
-        UISprite
-        UIAtlas
-        UIFont
-        UIPanel
-        UIAtals UIFont
-            UISprite和UILabel使用的材质排序后相邻的如果相同
-            unity会做动态批处理合并MESH
-    交互组件
+    基础组件
+        UIRoot
+            UI摄像机Camera.size为高度size,也就是高度为2
+            屏幕真实宽高比为Screen.width:Screen.height
+            自定义宽高:manualHeight manualWidth
+            宽度自适应:宽度始终铺满屏幕,UI的真实高度activeHeight需要计算(manualWidth / aspect)
+                      把像素高度为activeHeight的UI放入高度为2的摄像机内,需要缩放2/activeHeight倍数
+            高度自适应:把像素高度为activeHeight = manualHeight的UI放入高度为2的摄像机内,需要缩放2/activeHeight倍数
 
+            基准分辨率为16:9,宽高比超过该比例的需要高度Fit,小于等于该比例需要宽度Fit
+            iPhoneX有一个安全区的概念,屏幕周边有一圈是无法点击的只能显示
+        UIPanel
+            widgets__drawcalls
+                当前Panel下的所有UI和所有drawcall
+            sortingLayerName__sortingOrder__startingRenderQueue__depth__alpha
+                控制当前panel的渲染顺序
+                新版本NGUI useSortingOrder默认值为false,只有在编辑器修改后才会生效
+            clipmode
+                裁剪模式,一般用到其中三种,不带裁剪None、带虚边的裁剪SoftClip、不带虚边的裁剪ConstrainButDontClip
+            clipRange__clipOffset__finalClipRegion__clipSoftness
+                裁剪区域大小xy(中心)zw(宽高) 
+                裁剪区域偏移xy
+                裁剪虚边界xy,四周有几个像素的虚边
+            localCorners__worldCorners
+                panel四个角顶点坐标
+            SetDirty重绘当前panel下所有drawcall
+            AddWidget__RemoveWidget
+                添加移除UI,添加时给该UI找一个合适的drawcall(可能是新建的也可能是合并的)
+                mUpdateScroll标记会被置为true,lateupdate是会刷新滚动条
+            LateUpdate
+                UI组件刷新入口,会遍历所有UIPanel并刷新所有UIDrawCall,每帧每个panel一次
+                panel数组是按照depth排好序的(没有按照sortOrder排序,sortOrder是按照数组顺序指定的,除非自定义sortOrder)
+                首先每个panel执行UpdateSelf,此处只是根据UI组件的当前状态修改drawcall数据
+                    UpdateTransformMatrix
+                        根据transfrom.hasChanged,修改worldToLocal矩阵,根据clipOffset、clipRange修改minxy和maxxy
+                    UpdateLayers
+                        panel的layer变化时修改widget的layer和drawcallobj的layer
+                    UpdateWidgets
+                        遍历widgets,针对每个有效的widget执行更新操作
+                            首先UpdateTransform,检查widget是否发生了位移,是则计算其alpha可见性和panel可见性
+                            其次UpdateGeometry,重建其顶点数组或者修改顶点变换矩阵,widget的mChanged标记UI是否发生了显示属性上的变化
+                                有变化则标记其drawcall为dirty
+                    根据Rebuild标记判断是否需要重建整个panel
+                        OnEnable、移除DrawCall头尾的UI、在drawcall的深度范围内插入一个不同材质贴图的UI都会导致整个个panel重建
+                        重建时先移除所有的UIDrawcall,在对widget排序,遍历widget重建drawcall,相邻的widget材质贴图shader一致的合并使用同一个drawcall
+                    不做重建时,刷新所有dirty的drawcall
+                        FillDrawCall-->WriteToBuffers->UpdateGeometry->MeshSet->ClearVerts
+                        无效的drawCall会被移除
+
+                然后每个panel执行UpdateDrawCalls,起始renderQueue是累积的,按照panel内drawcall个数
+        UIRect
+            UI显示组件的基类,是一个虚拟的矩形区域,包含四个锚点
+            cachedGameObject__cachedTransform__root 基础组件缓存
+            mChildren当前对象的直接子结点(结点路径内不包含其它的UIRect对象)
+            parent当前对象的直接父结点(结点路径内不包含其它的UIRect对象)
+                注意此时获取了当前对象的parent(UIRect)并缓存了下来,OnEnable时会重新获取,OnEnable之后修改父结点会导致改缓存失效
+            Update更新四个锚点,更新时会检查目标是否Update过,没有会执行其Update更新目标的锚点
+                OnAnchor虚函数执行具体的锚点刷新操作
+                OnUpdate用于执行那些必须在锚点刷新后在执行计算的子类型
+        UIWidget
+            width height depth color pivot 宽高深度颜色轴
+            localCorners__localSize__localCenter__worldCorners__worldCenter__CalculBounds
+                左上角为(0,0),右下角为(1,1)
+                左下角坐标为min = (-offset.x * width, -offset.y * height)
+                右上角坐标为max = (min.x + width,min.y + height)
+                根据宽高和轴偏移计算出的(xcenter,ycenter)、(xmin,ymin)、(xmax,ymax)顶点坐标(物体坐标系和世界坐标系)    
+            material__mainTexture__shader
+                当前UI组件自己独有的材质贴图着色器        
+            alpha__finalAlpha 透明度
+                CalculateFinalAlpha__UpdateFinalAlpha
+                递归向上查找父结点(UIRect),计算alpha乘积就是最终的alpha
+                Invalidate操作会导致finalAlpha重新计算
+            autoResizeBoxCollider__ResizeCollider 自动计算BoxCollider大小
+            aspect* 控制宽高是否成比例变化
+            drawRegion是当前显示区域的范围(0,0---1,1),用于计算百分比调整后的可用区域
+            MarkAsChanged__ParentHasChanged__SetDirty__panel__RemoveFromPanel__CreatePanel
+                当前UI有变化,通知其panel重建该UI
+                当前UI所在的panel,加入、移除操作
+                OnEnable会加入,OnDisable会移除,父panel变化也会触发重建操作
+            UpdateTransfrom
+                每次移动后会重新计算(xmin,ymin)和(xmax,ymax)
+                下次如果Transform.hasChanged标记变化则计算两个点是否发生了变化,是则标记mMoved,并返回true
+            UpdateGeometry
+                mIsVisibleByAlpha当前widget的最终alpha是否是有效的
+                mIsVisibleByPanel当前widget是否在panel内可见
+                首先计算finalAlpha检查该UI是否需要显示,chang标记检查该UI是否修改过显示属性
+                如果仅仅是位置变化则重新计算变换矩阵localToPanel = panel.worldToLocal * widget.localToWorld并修改Gemotry
+                否则清空Gemotry并使用OnFill函数填充顶点、颜色、UV,然后计算矩阵并修改Gemotry
+            WriteToBuffers把Gemotry的信息写入到DrawCall内
+        UIGemotry
+            verts__uvs__cols局部坐标系下的顶点、UV、颜色
+            mRtpVerts转换到panel坐标系下的顶点
+            ApplyTransform重新计算mRtpVerts
+        UIDrawCall
+            verts__norms__tans__uvs__uv2__cols
+                合并后的顶点、颜色、UV信息
+            widgetCount 
+                当前drawcall合并了多少个UI
+            depthStart__depthEnd
+                当前drawcall的深度起点和终点,用来在插入UI时将其加入到该drawcall内
+                移除起点或者终点的UI需要重建drawcall
+            mTrans__mFilter__mRenderer
+                每个drawcall创建一个隐藏的gameobject,并添加了meshfilter和meshrender组件用于渲染
+            sortingLayerName__sortingOrder__renderQueue
+                控制当前drawcall的渲染顺序
+            mMaterial__baseMaterial__shader__mainTexture
+                原始的共享的材质着色器纹理
+                mMaterial被多个drawcall共享
+                mDynamicMat是实例化的材质属于当前drawcall
+            Create__Destroy
+                创建和删除当前drawcall
+                创建只修改共享信息,有重载函数优先获取相同共享信息的drawcall
+            CreateMaterial__RebuildMaterial__UpdateMaterials
+                修改共享信息会导致材质球重建
+                shader默认为Unlit/Transparent Colored
+            UpdateGeometry
+                首先检查顶点、颜色、UV信息是否合法,个数相等且是4的整数倍
+                不超过65000个顶点时
+                    计算三角形个数,乘上3得出indexBuffer长度,长度不足时会导致重新分配内存
+                    trim移除大小不匹配的信息,setIndices重建indexBuffer(顶点数大小变化时,优先在缓存内找一个相同的,否则新建数组,最大缓存10个)
+                超过65000个顶点无法处理              
+        UIScrollView
+
+        SpringPanel
+    文字显示
+        UIFont
+            BMFont
+            BMSymbol
+            BMGlyph
+        UILabel
+            基本属性
+                fontStyle&Size字体属性  alignment对齐方式 encoding颜色编码 effect* 描边属性 gradient* 渐变属性 space* 间距属性 ellipsis省略句支持
+                maxLine换行控制 trueTypeFont字体就是UIFont的dynamic形式,bitmapFont字体支持图片字
+                material&&mainTexture 当前使用的字体的纹理、字体自定义的材质(可用于处理字体特效)
+                printedSize&&printedText 最终显示出来的文字及其大小(像素)
+                keepCrisp && mDensity 
+                    activeHeight是用来计算UIRoot下的对象(w=manualWidth h=activeHeight)放到size为1的摄像机下需要缩小多少倍(等比缩放保持不变形)                 
+                    用于控制 UNITY屏幕下的大小 转换为 NGUI屏幕下的大小,即fontSize * pixelAdjustment
+            文字处理,解析转义、计算大小
+                ProcessText
+                    初始化NGUIText(使用当前UILabel的基本属性和Font信息)
+                    更新NGUIText状态
+                        通过Font的RequestCharactersInTexture函数申请添加文字,传入文字、文字大小(Unity屏幕下)、文字格式(粗斜会导致FontTexture重建)
+                        根据overflow模式修改NGUIText的rectW&H
+                        解析文字,根据UILabel的基本属性处理文字内的特殊字符
+                            新建StringBulder,用于存储临时文字
+                            计算文字显示区域行数和最大高度、宽度 行尾宽度(省略号图形宽度或者行间距宽度)
+                            初始化每一行的start和offset lineIsEmpty lineCount
+                            申请在FontTexture内添加文字
+                            遍历每个字符(300多行太复杂不想看了)
+                                1.首先检查是不是换行符,把该换行字符串加入sb内 start=offset+1;lineIsEmpty=true;++lineCount 修改当前行宽度x=0
+                                2.其次检查是不是转义符,把该转义字符串加入sb内 start=offset--;
+                                3.接着检查是不是图片字,获取图形宽度w=spaceX+(atlasSp.advance or glyphWidth),修改当前行宽度x=x+w offset += symbol.length - 1;
+                                4.检查新加入字符后是否超过了最大宽度,处理行尾字符
+                        计算处理后的文字显示大小
+                            遍历每个字符
+                                1.非法字符和转义符跳过不计算
+                                2.换行符,记录最大的宽度,修改x=0 y+=lineHeight
+                                3.图片字或者Glyph文字,计算其宽度,如果放不下该字符则换行,否则修改x+=w+spaceX;y+=lineHeight和下一个字符起始位置
+                            最终结果v.x=Mathf.Ceil(maxX) v.y=Mathf.Ceil(y+lineHeight)
+            顶点计算
+    图片显示
+        UIAtlas
+        UIBasicSprite
+        UISprite
+        UITexture
+    交互组件
+        Tween系列动画,Tween*.Begin(go,from,to,time);
+        UIButton系列,监听OnClick事件做一些按钮处理,一般不使用
+        UIDrag系列
+        UIToggle系列
+        UIGrid&UITable 不常用,固定ITEM数时可以使用,单纯的位置排序 
+        UIWrapContent
+        UISlider UIProgressBar  
+        UIPopupList
 裁剪
     clipSoftness.xy,虚边界大小
     clipRange.xyzw,裁剪区域中心及大小
     shader内_clipRange = (-px/z,-py/w,1/z,1/w) clipArg = (z/sx,w/sy)
-    前提条件,Panel在摄像机坐标系下没有偏移
     1.计算顶点坐标在Panel内到中心的距离(归一化为0到1的值),o.worldPos = (vx-px)/z,(vy-py)/w = v.vertex * _clipRange.zw + _clipRange.xy
       o.worldPos绝对值大于1则处于Panel外面,小于1在Panel内部
     2.计算顶点坐标在Panel内到边界的距离(归一化为0到1的值),o.distance = (z,w)-abs(vx-px,vy-py)
@@ -87,21 +239,6 @@ NGUI源码分析
       1.设置裁剪参数_clipRange=-px/z,-py/w,1/z,1/w) _clipArg=(z/sx,w/sy)
       2.顶点着色器内计算顶点坐标 o.worldPos = o.vertex * _clipRange.zw + _clipRange.xy
       3.像素着色器内计算alpha值 factor = [(1,1) - abs(o.worldPos)] * _clipArg; a = clamp(min(factor.x,factor.y),0,1)
-透明度
-    通过父结点alpha值控制子物体显示,有坑如下
-    UI组件显示时会计算父物体alpha值,父物体是在OnEnable之后做了缓存
-    如果在OnEnable之后修改了父结点,alpha计算就会出现BUG(新父结点alpha为0不生效)
-    UpdateGeometry->CalculateFinalAlpha->UpdateFinalAlpha->parent.CalculateFinalAlpha
-自适应
-    UI摄像机Camera.size为高度size,也就是高度为2
-    屏幕真实宽高比为Screen.width:Screen.height
-    自定义宽高:manualHeight manualWidth
-    宽度自适应:宽度始终铺满屏幕,UI的真实高度activeHeight需要计算(manualWidth / aspect)
-              把像素高度为activeHeight的UI放入高度为2的摄像机内,需要缩放2/activeHeight倍数
-    高度自适应:把像素高度为activeHeight = manualHeight的UI放入高度为2的摄像机内,需要缩放2/activeHeight倍数
-
-    基准分辨率为16:9,宽高比超过该比例的需要高度自适应,小于等于该比例需要宽度自适应
-    iPhoneX有一个安全区的概念,屏幕周边有一圈是无法点击的只能显示
 拖拽
     由于自适应操作UI的高度范围可能会缩放
     因此需要delta.y * (activeHeight / Screen.height)来计算真正的y偏移

@@ -46,12 +46,13 @@
                     倾斜角小于最大行走倾斜角度时标记为可行走区域 RC_WALKABLE_AREA(可行走)
             光栅体素化所有三角面,对应于 RecastRasterlization.cpp
                     遍历每个三角面,计算其AABB包围盒tmin,tmax(也就是三个顶点的最小xyz,最大xyz)
-                    根据包围盒计算zmin=[(bmax[2]-tmin[2])*(1/cs)],zmax=[(bmax[2]-tmax[2])*(1/cs)]
-                    for z=zmin;z<=zmax;z+=dz(cs)
-                    切割多边形,每次输入是三个点(一个三角面),输出仍然是三个点(水平方向切割Z轴)
-                    逆时针遍历所有顶点,计算其Z值是否在切割线两侧,是则计算交点(按照等比三角形)加入输入多边形顶点数组内
-                    for x=xmin;x<=xmax;x+=dx(cs)
-                    切割多边形,计算切割后多边形Y方向ymin,ymax,填充x,z处的y方向体素信息(ymin到ymax之间都是实心填充,只包含一部分也算实心)
+                    根据包围盒计算zmin=[(tmin[2]-bmin[2])*(1/cs)],zmax=[(tmax[2]-bmin[2])*(1/cs)]
+                    for z=zmin;z<=zmax;z+=1 cz=bmin[2]+z*cs
+                    切割多边形,每次输入是N个点,输出是上下两部分多边形,最多6边形切割为7个点
+                    逆时针遍历所有边,每次把交点(di>=0!=dj>=0,s=dj/(dj-di))和i点加入到输出内,交点两个输出都加入,di大于0加入输出1,否则加入输出2
+                    for x=xmin;x<=xmax;x+=1 
+                    切割多边形,与上述切割算法一致
+                    计算切割后多边形Y方向ymin,ymax,填充x,z处的y方向体素信息(ymin到ymax之间都是实心填充,只包含一部分也算实心)
                     添加体素时计算yminymax相邻区域是否有体素,有就合并,没有则插入新的体素,每个体素包括ymin,ymax,area,next
             过滤可行走体素,对应于RecastFilter.cpp
                 根据climbHeight计算Y方向相邻体素距离,如果上一个体素可行走并且当前体素不可行走,相邻体素smax距离小于climbHeight,则标记当前区域可行走
