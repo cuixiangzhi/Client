@@ -82,7 +82,7 @@ namespace GameCore
             PlayerSettings.Android.targetSdkVersion = AndroidSdkVersions.AndroidApiLevelAuto;
             PlayerSettings.Android.preferredInstallLocation = AndroidPreferredInstallLocation.Auto;
             PlayerSettings.Android.showActivityIndicatorOnLoading = AndroidShowActivityIndicatorOnLoading.DontShow;
-            PlayerSettings.Android.targetDevice = AndroidTargetDevice.FAT;
+            PlayerSettings.Android.targetArchitectures = AndroidArchitecture.All;
             PlayerSettings.Android.useAPKExpansionFiles = false;
             //代码配置
             PlayerSettings.accelerometerFrequency = 0;
