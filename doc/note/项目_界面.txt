@@ -176,9 +176,9 @@ NGUI源码分析
         SpringPanel
     文字显示
         UIFont
-            BMFont
-            BMSymbol
-            BMGlyph
+            BMFont 图片文字类型的Font
+            BMSymbol BMFont内的一个小图
+            BMGlyph BMFont内的一个小图(创建的时候的FontTexture)内的一个文字
         UILabel
             基本属性
                 fontStyle&Size字体属性  alignment对齐方式 encoding颜色编码 effect* 描边属性 gradient* 渐变属性 space* 间距属性 ellipsis省略句支持
@@ -194,23 +194,26 @@ NGUI源码分析
                     更新NGUIText状态
                         通过Font的RequestCharactersInTexture函数申请添加文字,传入文字、文字大小(Unity屏幕下)、文字格式(粗斜会导致FontTexture重建)
                         根据overflow模式修改NGUIText的rectW&H
-                        解析文字,根据UILabel的基本属性处理文字内的特殊字符
-                            新建StringBulder,用于存储临时文字
+                        解析文字,根据UILabel的基本属性处理文字内的特殊字符----NGUIText.WrapText()
+                            新建StringBulder,用于存储临时文字,此处可以优化,使用静态stringbuilder
                             计算文字显示区域行数和最大高度、宽度 行尾宽度(省略号图形宽度或者行间距宽度)
                             初始化每一行的start和offset lineIsEmpty lineCount
-                            申请在FontTexture内添加文字
-                            遍历每个字符(300多行太复杂不想看了)
+                            申请在FontTexture内添加文字以便后续获取字符图形信息
+                            遍历每个字符
                                 1.首先检查是不是换行符,把该换行字符串加入sb内 start=offset+1;lineIsEmpty=true;++lineCount 修改当前行宽度x=0
                                 2.其次检查是不是转义符,把该转义字符串加入sb内 start=offset--;
                                 3.接着检查是不是图片字,获取图形宽度w=spaceX+(atlasSp.advance or glyphWidth),修改当前行宽度x=x+w offset += symbol.length - 1;
-                                4.检查新加入字符后是否超过了最大宽度,处理行尾字符
-                        计算处理后的文字显示大小
+                                4.检查新加入字符后是否超过了最大宽度,处理行尾字符,插入换行符
+                        计算处理后的文字显示大小 NGUIText.CalculatePrintedSize
                             遍历每个字符
                                 1.非法字符和转义符跳过不计算
                                 2.换行符,记录最大的宽度,修改x=0 y+=lineHeight
                                 3.图片字或者Glyph文字,计算其宽度,如果放不下该字符则换行,否则修改x+=w+spaceX;y+=lineHeight和下一个字符起始位置
+                                4.BMFont对图文混排支持程度有限,一般用于数字或者ASCII+图片的简单方式
                             最终结果v.x=Mathf.Ceil(maxX) v.y=Mathf.Ceil(y+lineHeight)
-            顶点计算
+            顶点计算 NGUIText.Print
+                遍历每个字符,获取其Glyph或者BMGlyph等显示数据
+                计算其FontTexture内的UV、起点、大小等信息,将矩形文字信息加入到顶点数组、UV数组、颜色数组内
     图片显示
         UIAtlas
         UIBasicSprite
