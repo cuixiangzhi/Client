@@ -292,6 +292,7 @@ public sealed class UILabelExt : MonoBehaviour
             mLabel.trueTypeFont.RequestCharactersInTexture(start, finalSize, mLabel.fontStyle);
         if (!string.IsNullOrEmpty(end))
             mLabel.trueTypeFont.RequestCharactersInTexture(end, finalSize, mLabel.fontStyle);
+        mLabel.trueTypeFont.RequestCharactersInTexture(" ", finalSize, mLabel.fontStyle);
     }
 
     private void ProcessNGUISymbol(bool shieldNGUISymbol)
@@ -692,11 +693,11 @@ public sealed class UILabelExt : MonoBehaviour
         if(!mCharWidthCache.ContainsKey(c))
         {
             int finalSize = Mathf.RoundToInt(mLabel.defaultFontSize / mLabel.root.pixelSizeAdjustment);
-            if (!mLabel.trueTypeFont.HasCharacter(c))
+            if(!mLabel.trueTypeFont.GetCharacterInfo(c, out mCharInfo, finalSize, mLabel.fontStyle))
             {
                 mLabel.trueTypeFont.RequestCharactersInTexture(c.ToString(), finalSize, mLabel.fontStyle);
+                mLabel.trueTypeFont.GetCharacterInfo(c, out mCharInfo, finalSize, mLabel.fontStyle);
             }
-            mLabel.trueTypeFont.GetCharacterInfo(c, out mCharInfo, finalSize, mLabel.fontStyle);
             mCharWidthCache[c] = mCharInfo.advance * mLabel.root.pixelSizeAdjustment;
         }
         return mCharWidthCache[c];
