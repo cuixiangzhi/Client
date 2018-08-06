@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class UIInputEx : UIInput
 {
+    private CharacterInfo mTempChar;
+
     //是否包含无法显示的字符
     public bool HasIllegalChar()
     {
