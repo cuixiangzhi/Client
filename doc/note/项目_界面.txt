@@ -46,10 +46,8 @@ NGUI源码分析
                 开启多点触控时每个触摸手指都会触发上述状态,需要自己根据fingerId来区分
             LateUpdate检测屏幕大小变化并转发更新锚点事件UpdateAnchors
         EasyTouch
-
     输入管理
         UIInput
-
     基础组件
         UIRoot
             UI摄像机Camera.size为高度size,也就是高度为2
@@ -104,9 +102,9 @@ NGUI源码分析
                 已知显示区域为clipRange+clipOffset,计算出其minArea,maxArea,减去虚边
                 内容区域为minRect,maxRect
                 首先扩大area大小(中心点不变)使其可以完全放得下rect
-                计算rect移动到area重合需要的offset
+                计算rect移动到area右上角需要的offset
             ConstrainTargetToBounds
-                计算其移动到Panel的Bounds内需要的offset,修改目标的坐标
+                首先计算目标在panel下的bounds数据,然后计算右上角重合的offset
         UIRect
             UI显示组件的基类,是一个虚拟的矩形区域,包含四个锚点
             cachedGameObject__cachedTransform__root 基础组件缓存
@@ -185,6 +183,8 @@ NGUI源码分析
             BMFont 图片文字类型的Font
             BMSymbol BMFont内的一个小图
             BMGlyph BMFont内的一个小图(创建的时候的FontTexture)内的一个文字
+            一张FontTexture,使用Alpha8格式存储成一张灰度图,默认大小为256x256,64KB
+            字体太大会导致该Texture不断重建
         UILabel
             基本属性
                 fontStyle&Size字体属性  alignment对齐方式 encoding颜色编码 effect* 描边属性 gradient* 渐变属性 space* 间距属性 ellipsis省略句支持
@@ -248,14 +248,57 @@ NGUI源码分析
             如果两个UITexture的材质纹理着色器完全一致,那么相邻时会共享同一个UIDrawCall
     交互组件
         Tween系列动画,Tween*.Begin(go,from,to,time) 比较常用,用于一些UE效果
+        SpringPanel用于弹簧效果
         UIButton系列,监听OnClick事件做一些按钮处理,一般不使用
         UISlider UIProgressBar  监听OnPress和OnDrag事件 比较常用,用于一些带进度条的UI,可选拖拽 localCorners计算thumb位置
         UIScrollView
-        SpringPanel
-        UIGrid&UITable 不常用,固定ITEM数或者个数不多时可以使用,单纯的位置排序 
+            movement__contentPivot 移动方向,起点
+            restrictWithinPanel__constrainOnDrag__disableDragIfFits 内容控制在bounds内
+            onDragStarted__onMomentumMove_onDragFinished__onStoppedMoving 拖拽移动相关回调
+            smoothDragStart__iOSDragEmulation 默认关闭,开启后拖拽时不灵敏  
+            shouldMove* 根据content bounds和 finalClipRegion的偏移比较
+            scrollWheelFactor__Scroll()__mScroll用于控制滚动一定距离 
+            RestrictWithinBounds 计算物体在bounds内的偏移并根据弹回效果和方向弹回到初始位置
+                offset = panel.CalculateConstrainOffset; SpringPanel.Begin(go,offset,8)
+            InvalidateBounds 重新计算bounds
+            SetDragAmount 百分比偏移,以初始点为参考点 
+                clip.x - target.x;clip.y-target.y 得出回到初始点需要移动多少距离
+                clip.x = target.x - base.x;clip.y = target.y - base.y 得出最终偏移
+            MoveRelative 相对于当前panel移动一定距离,会触发onClipMove事件
+            Press事件处理
+                shouldMove为false则不移动
+                如果是取消按下则处理restrict操作,触发onDragFinish和onStopMoving事件
+                如果是按下
+                    修改offset和localPos,全部四舍五入为整数
+                    movement清零
+                    关闭Spring操作,触发onDragStart事件
+            Drag事件处理
+                移动距离使用UnityEngine.Plane来做的计算,此时直接移动一定距离
+                3D平面经过的点是UICamera.lastWorldPosition即初始的hit.position,mLastPos
+                法线方向沿着屏幕向外,Raycast得出距离平面的距离,ray.GetPoint得出射线交点
+            LateUpdate
+                拖拽结束后根据是否有偏移执行restrict操作
         UIDrag系列
-        UIToggle系列
+            UIDragScrollView 监听拖拽或者鼠标滚轮事件,调用UIScollView的Press和Drag
+            UIDragObject 监听OnDrag系列事件,拖拽移动UI
+            UIDragDropItem 继承该类并重载DragAndDropStart|Move|Release|End事件
+            UIDragDropRoot 全局的拖拽根结点
+            UIDragDropContainer 拖拽释放时的目标父结点
+        UIGrid&UITable 不常用,固定ITEM数或者个数不多时可以使用,单纯的位置排序
+            UITable支持多列
+                首先根据childCount计算col和row,新建三个Bounds二维数组,分别存储单个ITEM,1行ITEM
+                然后循环计算,填充Bounds数组,col个Item一行,计算每行Item的Bounds和每列ITEM的Bounds
+                每个ITEM计算在当前行最大Bounds和当前列最大ITEM下的坐标点偏移
+                最后计算Table的pivot偏移
         UIWrapContent
+            首先对ITEM排序并重置位置(支持多行多列,以父结点位置作为初始点,以ITEM_WIDTH|ITEM_HEIGHT作为每个ITEM的偏移)
+            UpdateItem(t,i)根据局部坐标、指定宽高、水平还是垂直方向计算真实的realIndex
+            WrapContent在每次onClipMove时都会执行一次
+                首先将panel的worldCorners即裁剪矩形转换到局部坐标系下(该矩形世界坐标位置始终不变)
+                遍历ITEM,检查其与裁剪矩形中心的距离,如果偏移超过了矩形的一半,则将其移动到最上面或者最下面(必须连续移动)
+                计算realIndex时计算y/height或者x/width得出countOfline,执行回调刷新数据
+        TypewriterEffect 打字机效果,会创建很多字符串
+        UIToggle系列 toggleObject toggle 一起使用
         UIPopupList
 裁剪
     clipSoftness.xy,虚边界大小
