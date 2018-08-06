@@ -7,9 +7,11 @@ public class UIInputEx : UIInput
     //是否包含无法显示的字符
     public bool HasIllegalChar()
     {
-        for(int i = 0;i < mValue.Length;i++)
+        int finalSize = Mathf.RoundToInt(label.defaultFontSize / label.root.pixelSizeAdjustment);
+        label.trueTypeFont.RequestCharactersInTexture(mValue, finalSize, label.fontStyle);
+        for (int i = 0; i < mValue.Length; i++)
         {
-            if(label.trueTypeFont && !label.trueTypeFont.HasCharacter(mValue[i]))
+            if (!label.trueTypeFont.GetCharacterInfo(mValue[i], out mTempChar, finalSize, label.fontStyle))
             {
                 return true;
             }
