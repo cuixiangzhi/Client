@@ -7,8 +7,10 @@ NGUI源码分析
             currentTouch 当前触摸信息,包括lastPos&pos&delta
             currentTouchID 当前手指ID,-1表示左手,-2右手,-3滚轮
             CountInputSources() 触摸数量
+            selectedObject
+                当前选中的对象,通过set触发OnSelect事件
             Update检测并转发事件
-                优先检测Touch事件
+                检测Touch事件
                     通过引擎API获取触摸点个数,Input.touchCount
                     遍历每一个触摸结构体,Input.GetTouch(i)
                         获取触摸状态、位置、个数、手指ID,更新对应的MouseOrTouch结构
@@ -19,11 +21,9 @@ NGUI源码分析
                                 检查UIWidget或者UIRect组件,alpha值为0或者不可见则跳过检测
                                 计算碰撞到物体的深度(如果没有UIWidget则获取子物体,子物体没有返回0,即最低深度)
                                 加入到碰撞物体数组并按深度从大到小排序,找出第一个可见的对象
-                        如果是双击,则记录最后一次点击的时间
-                        转发Touch事件(press,unpress)
+                        ProcessTouch(press,unpress)
                         unpress则移除当前touch结构,当前touch置空
                     鼠标和手指的触摸范围不一样,乘上各自的比值后在计算触摸或者拖拽开始的下限
-                    同一个touch一般只会处于一种状态,press或者release
                     如果当前touch的press对象非空,则优先处理release在处理press,否则反着处理
                         处理release事件
                             press对象非空
@@ -40,10 +40,13 @@ NGUI源码分析
                                 当前触摸对象与初次press对象不一致或者拖拽了一定距离,则触发OnDragStart及OnDragOver事件
                                 last和current不一致,则触发OnDragOver和OnDragOut事件
                                 触发OnDrag事件
-                如果touch数为0并且没有触发过touch事件则检测Mouse事件 0单击1右击2滚轮                 
-                    与Touch一样发射线检测碰撞对象,修改currentTouch状态,然后转发Touch事件,鼠标左右中事件会同时检测
-                每种事件都有全局和指定两种触发回调,Touch和Mouse的位置信息都在currentTouch内,pos及delta、fingerId
-                开启多点触控时每个触摸手指都会触发上述状态,需要自己根据fingerId来区分
+                检测Mouse事件(PC端touch事件不触发)                 
+                    与Touch一样发射线检测碰撞对象,修改currentTouch状态
+                    然后ProcessTouch(press,unpress)
+                    鼠标左右中事件会同时检测
+                    Touch和Mouse的位置信息都在currentTouch内,pos及delta、fingerId
+                    先执行UICamera.onXX回调,在给触摸对象发送事件
+                    每个事件触发时通过currentTouchID区分不同的手指ID
             LateUpdate检测屏幕大小变化并转发更新锚点事件UpdateAnchors
         EasyTouch
     输入管理
