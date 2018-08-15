@@ -10,6 +10,7 @@
     5.NGUIMath
         计算Widget边界时是否计算子结点默认改为false
         计算Widget边界不考虑子Panel,减少GCAlloc
+		计算Widget边界bounds结果四舍五入,因为UI的像素大小是整数
     6.UIInput
         PC端在中间输入时选中位置变化不正确,选中时修改选中位置变化不正确
         获取选中位置左右两侧下标时不正确
