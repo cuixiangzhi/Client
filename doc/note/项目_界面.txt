@@ -99,12 +99,19 @@ NGUI源码分析
             UI摄像机Camera.size为高度size,也就是高度为2
             屏幕真实宽高比为Screen.width:Screen.height
             自定义宽高:manualHeight manualWidth
-            宽度自适应:宽度始终铺满屏幕,UI的真实高度activeHeight需要计算(manualWidth / aspect)
-                      把像素高度为activeHeight的UI放入高度为2的摄像机内,需要缩放2/activeHeight倍数
-            高度自适应:把像素高度为activeHeight = manualHeight的UI放入高度为2的摄像机内,需要缩放2/activeHeight倍数
-
-            基准分辨率为16:9,宽高比超过该比例的需要高度Fit,小于等于该比例需要宽度Fit
-            iPhoneX有一个安全区的概念,屏幕周边有一圈是无法点击的只能显示
+            自适应:
+                UI制作的基准分辨率为16:9(1334:750或者1365:768)
+                UI摄像机的窗口大小高度为2,宽度为2 * Screen.width / Screen.height = 2 * aspect
+                如果目标机器分辨率小于16:9
+                    此时UI缩放后的宽度与摄像机窗口宽度相等,缩放比值为 2 * aspect / 1334
+                    此时摄像机窗口上下会留下空白区
+                    半屏UI可以自己执行额外缩放保持UI高度填满屏幕
+                如果目标机器分辨率大于16:9
+                    此时UI缩放后的高度与摄像机窗口高度相等,缩放比值为 2 / 750
+                    此时摄像机窗口左右会留下空白区
+            安全区
+                iPhoneX有一个安全区的概念,屏幕周边有一圈是无法点击的只能显示
+                角落的UI锚点需要设置在安全区之内,否则无法点击
         UIPanel
             widgets__drawcalls
                 当前Panel下的所有UI和所有drawcall
@@ -364,3 +371,5 @@ NGUI源码分析
         由于自适应操作UI的高度范围可能会缩放
         因此需要delta.y * (activeHeight / Screen.height)来计算真正的y偏移
 UGUI源码分析
+ANDROID界面
+IOS界面

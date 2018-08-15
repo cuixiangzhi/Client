@@ -440,7 +440,15 @@ static public class NGUIMath
 
 			if (isSet)
 			{
-				Bounds b = new Bounds(min, Vector3.zero);
+                min.x = Mathf.RoundToInt(min.x);
+                min.y = Mathf.RoundToInt(min.y);
+                min.z = Mathf.RoundToInt(min.z);
+
+                max.x = Mathf.RoundToInt(max.x);
+                max.y = Mathf.RoundToInt(max.y);
+                max.z = Mathf.RoundToInt(max.z);
+
+                Bounds b = new Bounds(min, Vector3.zero);
 				b.Encapsulate(max);
 				return b;
 			}
