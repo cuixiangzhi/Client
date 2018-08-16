@@ -1,9 +1,9 @@
 Monday Tuesday Wednesday Thursday Friday Saturday SunDay
 January February March April May June July August Spetember October November December
 变量类型
-	 计算机只有加法运算器, 负数是以补码形式存在,符号位不变,其余位取反加1  正数补码与原码一致 (+0原码与-0补码一致)
-	 计算机存储补码,运算器补码运算   -128没有反码,补码与原码一致
-	 有符号数没有-0的表示方式,-0表示-(2^最高位次方-1),例如1位则表示-1,2位则表示-2
+	计算机只有加法运算器, 负数是以补码形式存在,符号位不变,其余位取反加1  正数补码与原码一致 (+0原码与-0补码一致)
+	计算机存储补码,运算器补码运算   -128没有反码,补码与原码一致
+	有符号数没有-0的表示方式,-0表示-(2^最高位次方-1),例如1位则表示-1,2位则表示-2
 	int uint 32位
 	short ushort 16位
 	float double 
@@ -18,162 +18,167 @@ January February March April May June July August Spetember October November Dec
 				 C# char代表一个字符或者一个中文符号,长度不固定 
 				 lua和C++一样 字符集分为ASCII和Unicode  UTF-8和GBK是一种UNICODE编号的编码方式
 								UTF-8不定字节编码以字节数开头,0xxxxxxx 表示一个字节  110xxxxx表示2个字节,后续字节以10开头  最多会有6个字节
-	 指针	它也是个变量,它的值是对象的地址,使用&运算符获取对象  p->等价于(&p).
+	指针	它也是个变量,它的值是对象的地址,使用&运算符获取对象  p->等价于(&p).
 			指针和引用变量赋值时必须匹配类型
-	 引用	变量换了个名字,没有内存分配,它和它引用的变量用的是一份内存
+	引用	变量换了个名字,没有内存分配,它和它引用的变量用的是一份内存
 			引用必须在声明时初始化
-	 const  C++字面字符串 文件内的常量不可以const_cast 函数内的可以
+	const  C++字面字符串 文件内的常量不可以const_cast 函数内的可以
 			C#变量必须属于类,函数内变量不能加const和static
 			顶层const：指针本身是个常量
 			底层const：指针所指的对象是个常量
-	 static	静态全局常量(文件内有效)
-	 extern 外部变量
-	 #define 宏定义 ##宏拼接 ##用于拼接变量 #宏替换 #代表后面的是个字符串
-	 typedef 类型组合定义		 
-	 lua里number统一为double类型,转为int会丢失精度并且会被限制在int范围内
-类型转换 basic-type 隐式转换	
-		static_cast 基本类型之间相互转换,可替代隐式转换
-					 类层次转换,父类到子类没有类型检查
-					 void转换
-		const_cast只能改变底层const,也就是指针所指向的对象的const
-		dynamic_cast 用于指针和引用的类层次转换
-		reinterpret_cast 用于将二进制位解释为另一种类型
-		as type.IsAssignableFrom 
-函数    引用&值参数传递 ...传递参数时只能传递基本类型
-	   数组作为参数无法拷贝,所以传递过来之后会退化为指针
-	   注意不要返回栈变量的指针,因为已经销毁了
-	   函数指针  指针指向一个函数,可以直接P()调用
-	   定义一个函数,返回函数指针 int (*f())()
-类&继承  private public protected friend class 
-		virtual vptr 重载 覆盖 vtable virtual=0 
-		每个带有虚函数的类都有一个静态的虚表,每个带有虚函数的类对象都有一个虚表指针,在构造函数内初始化
-		编译时多态性,模板,重载   运行时多态性,虚函数重写  
-		虚继承,保证基类只有一份实例virtual-base-class  如果有构造函数,那么必须在最底层派生类里实现虚基类的构造,否则会有编译错误 
-		构造初始化 拷贝赋值时指针 
-		友元函数不受访问权限影响
-		C# internal修饰程序集内部变量或者类
+	static	静态全局常量(文件内有效)
+	extern 外部变量
+	#define 宏定义 ##宏拼接 ##用于拼接变量 #宏替换 #代表后面的是个字符串
+	typedef 类型组合定义		 
+	lua里number统一为double类型,转为int会丢失精度并且会被限制在int范围内
+类型转换 
+	basic-type 隐式转换	
+	static_cast 基本类型之间相互转换,可替代隐式转换
+				 类层次转换,父类到子类没有类型检查
+				 void转换
+	const_cast只能改变底层const,也就是指针所指向的对象的const
+	dynamic_cast 用于指针和引用的类层次转换
+	reinterpret_cast 用于将二进制位解释为另一种类型
+	as type.IsAssignableFrom 
+函数    
+	引用&值参数传递 ...传递参数时只能传递基本类型
+   数组作为参数无法拷贝,所以传递过来之后会退化为指针
+   注意不要返回栈变量的指针,因为已经销毁了
+   函数指针  指针指向一个函数,可以直接P()调用
+   定义一个函数,返回函数指针 int (*f())()
+类&继承  
+	private public protected friend class 
+	virtual vptr 重载 覆盖 vtable virtual=0 
+	每个带有虚函数的类都有一个静态的虚表,每个带有虚函数的类对象都有一个虚表指针,在构造函数内初始化
+	编译时多态性,模板,重载   运行时多态性,虚函数重写  
+	虚继承,保证基类只有一份实例virtual-base-class  如果有构造函数,那么必须在最底层派生类里实现虚基类的构造,否则会有编译错误 
+	构造初始化 拷贝赋值时指针 
+	友元函数不受访问权限影响
+	C# internal修饰程序集内部变量或者类
 模板&泛型 
-		template where限定 
-		模板 template<class T> 函数定义
-		模板特例 template<> return function<int>(){}
-		lambda [捕捉列表](参数列表){函数体} =值捕捉 &引用
-		bind 参数重新排列  bind(func,placeorders::_1,_2,var);
-		function<void(int,int)>
-库&dll&依赖 __declspec(dllexport) __stdcall __cdecl
-			DLL库 
-				头文件 dlfcn.h unix可用 mac/windows需要别的API,编译时-ldl -rdynamic
-				void* dlptr = dlopen("dlname",RTLD_NOW) 
-				void* funcptr = dlsym(dlptr,"funcname")
-				int ret = dlclose(dlptr)
-			IO库 iostream 控制台读写 cin>> cout<<
-				 fstream 文件读写 成员函数 f("",ios::in|ios::out|ios:binary) 
-										   f.close() 
-										   eof()文件结尾
-										   tellg() tellp() 用于获取当前文件读取或者写入的位置
-										   seekg(offset,ios::cur) seekp() 用于移动读写指针到指定位置 ios::beg ios::cur ios::end
-										   read(buffer,size) write(buffer,size) 字节数组读写
-						C文件读写 open和write属于系统调用,低级IO无内存缓冲,不同操作系统不一样
-								  fopen "path","wrab+"
-								  fclose fp
-								  fread buffer,size,count,fp
-								  fseek fp off,seek_cur
-								  ftell fp
-				 字符串读写 strstream char*读写 istr(char*) 废弃的API,推荐使用string读写,因为char的不保证最后一个字符是'\0'
-							sstream string读写 istr(string) clear() str()
-				 IO流不能拷贝和赋值
-			顺序容器 vector 插入元素push_back insert 删除元素erase clear 
-					 list   插入元素push_back push_front insert 访问 front back 删除erase pop_front pop_back
-					 stack  push pop top empty size
-			迭代器 ::iterator iter = ww.begin() ww.end() cbegin cend rbegin rend
-			算法库  algorithm numeric
-					查找 find  find_if
-					删除 remove remove_if
-					赋值 fill fill_n
-					替换 replace replace_if
-					排序 sort
-					去重 unique
-			关联容器 map multimap  pair<>类型make_pair   添加元素insert 删除元素erase 
-			右值引用,&&引用一个即将被销毁的对象,可用于move构造和赋值
-常用基础函数 assert assert(ptr)
-			 ctype  isupper islower isdigit isalpha toupper tolower
-			 limit  最值宏定义
-			 math   常用数学函数
-			 signal 进程信号处理,signal函数用于注册信号处理函数,常见信号有
-					SIGILL 非法指令  SIGINT 输入CTRL+D SIGABRT 终止 SIGCHLD 子进程异常停止 SIGFPE 除0异常 SIGKILL 杀死进程 SIGSEGV 非法内存访问 SIGSYS 非法系统调用
-			 stddef NULL定义
-			 stdlib 内存分配 malloc free 数值与字符串转换 atoi itoa 随机数 srand(seed) rand 系统操作 system exit abort 环境变量 getenv putenv
-			 stdarg 不定长参数处理  __VA_ARGS__ va_list ap; va_start(ap,format); char buffer[512]; len = vsprintf(buffer,format,ap); va_end(ap);
-			 string strcat(dst,src) strcpy(dst,src) strlen(src) strcmp(src,dst) c_str
-			 ctime time_t time(NULL)系统时间秒 clock_t clock()运行时间毫秒 tm localtime(time_t t)具体日期
-			 基础宏定义 __LINE__ __FUNCTION__ __FILE__
+	template where限定 
+	模板 template<class T> 函数定义
+	模板特例 template<> return function<int>(){}
+	lambda [捕捉列表](参数列表){函数体} =值捕捉 &引用
+	bind 参数重新排列  bind(func,placeorders::_1,_2,var);
+	function<void(int,int)>
+库&dll&依赖 
+	DLL库 
+		__declspec(dllexport) __stdcall __cdecl
+		头文件 dlfcn.h unix可用 mac/windows需要别的API,编译时-ldl -rdynamic
+		void* dlptr = dlopen("dlname",RTLD_NOW) 
+		void* funcptr = dlsym(dlptr,"funcname")
+		int ret = dlclose(dlptr)
+	IO库 iostream 控制台读写 cin>> cout<<
+		 fstream 文件读写 成员函数 f("",ios::in|ios::out|ios:binary) 
+								   f.close() 
+								   eof()文件结尾
+								   tellg() tellp() 用于获取当前文件读取或者写入的位置
+								   seekg(offset,ios::cur) seekp() 用于移动读写指针到指定位置 ios::beg ios::cur ios::end
+								   read(buffer,size) write(buffer,size) 字节数组读写
+				C文件读写 open和write属于系统调用,低级IO无内存缓冲,不同操作系统不一样
+						  fopen "path","wrab+"
+						  fclose fp
+						  fread buffer,size,count,fp
+						  fseek fp off,seek_cur
+						  ftell fp
+		 字符串读写 strstream char*读写 istr(char*) 废弃的API,推荐使用string读写,因为char的不保证最后一个字符是'\0'
+					sstream string读写 istr(string) clear() str()
+		 IO流不能拷贝和赋值
+	顺序容器 vector 插入元素push_back insert 删除元素erase clear 
+			 list   插入元素push_back push_front insert 访问 front back 删除erase pop_front pop_back
+			 stack  push pop top empty size
+	迭代器 ::iterator iter = ww.begin() ww.end() cbegin cend rbegin rend
+	算法库  algorithm numeric
+			查找 find  find_if
+			删除 remove remove_if
+			赋值 fill fill_n
+			替换 replace replace_if
+			排序 sort
+			去重 unique
+	关联容器 map multimap  pair<>类型make_pair   添加元素insert 删除元素erase 
+	右值引用,&&引用一个即将被销毁的对象,可用于move构造和赋值
+常用基础函数 
+	assert assert(ptr)
+	ctype  isupper islower isdigit isalpha toupper tolower
+	limit  最值宏定义
+	math   常用数学函数
+	signal 进程信号处理,signal函数用于注册信号处理函数,常见信号有
+			SIGILL 非法指令  SIGINT 输入CTRL+D SIGABRT 终止 SIGCHLD 子进程异常停止 SIGFPE 除0异常 SIGKILL 杀死进程 SIGSEGV 非法内存访问 SIGSYS 非法系统调用
+	stddef NULL定义
+	stdlib 内存分配 malloc free 数值与字符串转换 atoi itoa 随机数 srand(seed) rand 系统操作 system exit abort 环境变量 getenv putenv
+	stdarg 不定长参数处理  __VA_ARGS__ va_list ap; va_start(ap,format); char buffer[512]; len = vsprintf(buffer,format,ap); va_end(ap);
+	string strcat(dst,src) strcpy(dst,src) strlen(src) strcmp(src,dst) c_str
+	ctime time_t time(NULL)系统时间秒 clock_t clock()运行时间毫秒 tm localtime(time_t t)具体日期
+	基础宏定义 __LINE__ __FUNCTION__ __FILE__
 
 EFFECTIVE C++ 
-			1.尽量使用const而不是#define, 宏定义没有类型检查
-			2.构造、析构、赋值
-			  编译期会默认生成 无参构造函数(没有构造函数时),拷贝构造函数、拷贝赋值运算符,不想要就声明为private,但不实现
-			  如果基类或者派生类会有虚函数,那么基类析构函数必须是虚函数,有虚函数就会有虚表和虚表指针,虚表为静态,类共享,虚表指针为对象私有,初始化之后不会改变
-			  析构函数要确保不能出现错误,否则会导致内存泄漏
-			  构造和析构过程中不能调用虚函数,因为这个时候基类或者子类部分已被销毁或者尚未初始化
-			  赋值运算符返回对象引用,注意自我赋值判断,注意复制指针内存
-			3.资源管理
-			  以对象的形式进行资源管理,依靠构造和析构函数来处理资源的初始化和释放
-			  智能指针不能用于数组,因为析构调用的是delete而不是delete[]
-			4.类的设计
-			  API接口要简单清晰易用,不能有二义性
-			  参数传递使用引用传递,临时对象会等引用结束后析构
-			  返回值不能返回引用,主要针对临时对象,尽量只返回基本类型
-			  成员变量私有,通过API修改其值
-			  类功能尽量单一,尽量使用非成员函数完成额外的功能
-			5.类的实现
-			  变量在使用之前在定义
-			  减少类型转换
-			  降低文件依赖关系
-			6.类的继承关系,体系结构
-			  设计模式,接口继承与实现继承
-			7.自增自减区别、
-			8.抛出异常使用函数内静态变量,利用引用捕捉,防止对象拷贝同时防止异常对象是临时对象
-			9.参数传递不能传递子类对象给基类对象,因为子类部分会被切掉,所以参数用引用比较合适
+	1.尽量使用const而不是#define, 宏定义没有类型检查
+	2.构造、析构、赋值
+	  编译期会默认生成 无参构造函数(没有构造函数时),拷贝构造函数、拷贝赋值运算符,不想要就声明为private,但不实现
+	  如果基类或者派生类会有虚函数,那么基类析构函数必须是虚函数,有虚函数就会有虚表和虚表指针,虚表为静态,类共享,虚表指针为对象私有,初始化之后不会改变
+	  析构函数要确保不能出现错误,否则会导致内存泄漏
+	  构造和析构过程中不能调用虚函数,因为这个时候基类或者子类部分已被销毁或者尚未初始化
+	  赋值运算符返回对象引用,注意自我赋值判断,注意复制指针内存
+	3.资源管理
+	  以对象的形式进行资源管理,依靠构造和析构函数来处理资源的初始化和释放
+	  智能指针不能用于数组,因为析构调用的是delete而不是delete[]
+	4.类的设计
+	  API接口要简单清晰易用,不能有二义性
+	  参数传递使用引用传递,临时对象会等引用结束后析构
+	  返回值不能返回引用,主要针对临时对象,尽量只返回基本类型
+	  成员变量私有,通过API修改其值
+	  类功能尽量单一,尽量使用非成员函数完成额外的功能
+	5.类的实现
+	  变量在使用之前在定义
+	  减少类型转换
+	  降低文件依赖关系
+	6.类的继承关系,体系结构
+	  设计模式,接口继承与实现继承
+	7.自增自减区别、
+	8.抛出异常使用函数内静态变量,利用引用捕捉,防止对象拷贝同时防止异常对象是临时对象
+	9.参数传递不能传递子类对象给基类对象,因为子类部分会被切掉,所以参数用引用比较合适
 C++对象内存布局
-			单继承  基类虚表+子类虚表,只有一个虚表,基类在前,子类在后,子类重写的在基类的对应位置
-			多继承  会有N-1个虚表,第一个基类与子类合一,子类虚函数在第一个虚表内,
-			菱形继承 这个时候要利用虚继承,这样每个子类有一个指向虚基类的指针,只有一份基类对象,该对象是由派生类初始化的(创建的哪个子类,哪个子类虚继承了父类)
-			malloc是分配一块新的内存  realloc是在原内存后加长,可能会变化地址
-编译执行  C++  GCC(LINUX) CL(WINDOWS) MINGW(WINDOWS)  
-
-逆波兰式  后缀表达式,方便堆栈操作实现任意复杂度的表达式,一次扫描即可得出结果,遇到操作数压栈,遇到运算符弹出操作数并运算
-		 波兰式即前缀表达式,对应于二叉树的前序遍历结果,逆波兰式对应于后序遍历结果
+	单继承  基类虚表+子类虚表,只有一个虚表,基类在前,子类在后,子类重写的在基类的对应位置
+	多继承  会有N-1个虚表,第一个基类与子类合一,子类虚函数在第一个虚表内,
+	菱形继承 这个时候要利用虚继承,这样每个子类有一个指向虚基类的指针,只有一份基类对象,该对象是由派生类初始化的(创建的哪个子类,哪个子类虚继承了父类)
+	malloc是分配一块新的内存  realloc是在原内存后加长,可能会变化地址
+编译执行  
+	C++  GCC(LINUX) CL(WINDOWS) MINGW(WINDOWS)  
+逆波兰式  
+	后缀表达式,方便堆栈操作实现任意复杂度的表达式,一次扫描即可得出结果,遇到操作数压栈,遇到运算符弹出操作数并运算
+	波兰式即前缀表达式,对应于二叉树的前序遍历结果,逆波兰式对应于后序遍历结果
 
 C++跳转
-		goto:函数内跳转
-		setjmp longjmp 非局部跳转
-		setjmp(jmp_buf env) 设置跳转点,保存函数上下文 直接调用返回0,跳转调用返回longjmp第二个参数
-		longjmp(jmp_buf env,int ret) 调到跳转点,恢复函数上下文
+	goto:函数内跳转
+	setjmp longjmp 非局部跳转
+	setjmp(jmp_buf env) 设置跳转点,保存函数上下文 直接调用返回0,跳转调用返回longjmp第二个参数
+	longjmp(jmp_buf env,int ret) 调到跳转点,恢复函数上下文
 C赋值	int ? = (1,2,3,4,5); 会取最后一个值
 		typedef struct 		 可以定义一个在其它地方定义的链接,相当于extern
 
-C#   托管代码会被编译为IL语言(生成的文件内包含元数据),CLR编译IL为机器语言(JIT编译)
-	  反射
-			特性,继承自System.Attribute的类,放在类上面通过构造函数初始化,可以使用GetType().GetCustomAttributes(类型,继承)获取所有特性
-			Reflection 反射程序集包含 Type 类型管理 Assembly 程序集管理
-	  DLL
-			Runtime程序集包含 InteropServices DllImport(dllName,EntryPoint,CharSet,CallVersion);  
-			Marshal类 托管与非托管之间传递数据 GetFunctionPointerForDelegate Copy(byte[],start,intptr,length) Copy(intptr,byte[],start,length);
-			unsigned char--byte  char*--string int int uint uint float float unsigned char* byte[]
-	  语言	弱引用可以用来存储对象,当其他地方没有对象值得引用时,会被GC掉,弱引用不算引用
-	        lua table里key和value都可以是弱引用
-			结构体是值类型,参数传递是值传递  ref out会进行装箱拆箱操作,会创建class,数组是引用类型
-			接口继承 : XX  interface XX  实现继承,继承class
-PInvoke方式实现静态方法调用
-			C++使用__cdecl __declspec(dllexport)导出API
-			C#使用DllImport("dll") static extern调用API
-			参数: 基本类型直接传递int float bool uint long
-				  字符串string对应char* byte[]对应unsigned char*,传递时需要使用Marshal.Copy用于在托管与非托管之间转换内存 Marshal.Copy(src, start, dst, len);  Marshal.Copy(src, dst, start, len);
-				  函数指针C#方法MonoPInvoke声明 MonoPInvokeCallback(typeof(C#CallBack))
-			      结构体和类传递需要给C#结构体或者类添加StructLayout特性,用来标记这个对象的内存布局,使得传递给C++之后,C++可以直接转换为C++对象  StructLayout(LayoutKind.Sequential),RequiredByNativeCode
-				  结构体或者类指针传递加上ref或者out标记
-[MethodImpl(MethodImplOptions.InternalCall), WrapperlessIcall] 实现类方法调用			  
-C++使用mono运行C# DLL,需要mono提供的库和头文件,注意c# dll需要使用 mono命令来生成, msc *.cs -t:library
-
+C#   
+	.NET规范
+		类似于OpenGL规范,.NET规范定义了实现这种技术需要的API集合
+		CIL CLR CLI FCL等组成,CLR是运行时,CIL是中间语言,FCL是基础类库
+		.NET2.0支持最常用的类库
+		.NET3.5支持System.Linq
+	.NET实现
+		.NET FRAMEWORK是windows平台的.NET实现
+		MONO是跨平台的.NET实现 mono2.0/.net2.0/3.5 mono2.10/.net4.0 mono3.4/.net4.5 mono4.4/.net4.6
+  	反射
+		特性,继承自System.Attribute的类,放在类上面通过构造函数初始化,可以使用GetType().GetCustomAttributes(类型,继承)获取所有特性
+		Reflection 反射程序集包含 Type 类型管理 Assembly 程序集管理
+  	DLL
+		C++使用__cdecl __declspec(dllexport)导出API
+		C#使用DllImport(dllName,EntryPoint,CharSet,CallVersion) static extern调用API
+		int float bool uint long直接对应
+	  	string对应char* 
+	  	byte[]对应unsigned char*,传递时需要使用Marshal.Copy用于在托管与非托管之间转换内存 Marshal.Copy(src, start, dst, len);  Marshal.Copy(src, dst, start, len);
+	  	function pointer对应 delegate MonoPInvokeCallback(typeof(DelegateName))
+      	StructLayout(LayoutKind.Sequential),RequiredByNativeCode
+		[MethodImpl(MethodImplOptions.InternalCall), WrapperlessIcall] 标记该方法在C++内实现		  
+		C++使用mono运行C# DLL,需要mono提供的库和头文件,注意c# dll需要使用 mono命令来生成, msc *.cs -t:library
 python 
 	   函数定义
 			def name(params):
