@@ -8,19 +8,6 @@
 				//混合
 				glEnable(GL_BLEND);
 				glBlendFunc(GL_ONE,GL_ONE); GL_ZERO GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
-		空间	GAMMA空间&LINER空间
-				现实中几乎所有图片默认都是存储为GAMMA格式,即经过0.45gamma纠正 
-			  	显示器又做了2.2的逆向纠正,使得最终结果保持一致
-			  	光照计算是线性的,因此输入图片是线性的跨平台才能更精确
-				UNITY中sRGB选项表示该图片是GAMMA图片,注意:Default格式才有这个选项
-				LINER需要OPENGLES3.0支持
-		HDR		
-				光的颜色分量是8位,最多0-255,大部分高亮的颜色都超过了255
-				人眼瞳孔会根据光线射入量进行自适应调节,太亮时缩小瞳孔减少射入量,太暗放大增加射入量
-				不开启HDR选项的摄像机拍摄的图片,亮度会被裁剪到0-255,光照强度*颜色超过255会被削减
-				从室内观察室外和从室外观察明暗变化
-				游戏中使用HDR算法模拟人眼瞳孔的自适应,根据平均亮度自动调整
-				unity开启hdr选项会增加一个hdr buffer,存储超过1的颜色
 		清理    摄像机的清理选项一般包括:天空盒、固定颜色、深度、不清理 	
 				glClearColor*() 设置摄像机的颜色缓存清理颜色值
 				glClearDepth(1);
