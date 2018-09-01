@@ -42,9 +42,7 @@
         透视除法之前的坐标系,此时还保留有深度信息
         经过透视除法转换到NDC坐标系
     设备坐标系
-        范围从-1到1,经过视口变换转换为屏幕坐标系
-        (-1,-1)->(screen.width * viewport.x,screen.height * viewport.y)
-        (1,1)->(screen.width * viewport.x + screen.width * viewport.z,screen.height * viewport.y + screen.height * viewport.w)
+        范围从-1到1,经过视口变换转换为视口坐标
     屏幕坐标系 
         unity中左下角为(0,0) 右上角为显示屏幕的(w,h)
         ngui中中心点为(0,0)
@@ -57,8 +55,14 @@
         视口是窗口的一个区域,是真正的显示当前摄像机渲染结果的区域
         xy标记起始点,wh标记宽高 xywh均是0-1的数值,是窗口大小的比例
 变换
-    窗口->视口变换
-
+    NDC->窗口->视口变换
+        (-1,-1)变换到(0,0)在变换到(vx,vy) (1,1)变换到(w,h)在变换到(vx+vw,vy+vh)
+        z值从(0,1)变换到(n,f) nf在opengl里通过设置glDepthRange(n,f)来设定
+        变换矩阵简化后如下
+        w/2  0  0        vx+w/2
+        0    h2 0        vy+h2
+        0    0  (f-n)/2  (f+n)/2
+        0    0  0 1
 
 变换 变换计算从左往右,变换顺序从右往左看
 	矩阵相乘  AmnBxy必须满足n==x,列向量表示法为左乘,行向量右乘
