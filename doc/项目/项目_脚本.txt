@@ -1,0 +1,92 @@
+lua源码分析
+    lmem 定义了几个内存分配函数
+    lstring 定义了创建和获取字符串大小的函数
+    ltable 定义了几个辅助获取设置遍历table的函数
+    lapi定义了基础函数lua_push/to* index2addr type typename 等等
+    ldebug定义了几个err函数
+    lfunc定义了函数的创建删除操作
+    ldo定义了函数调用函数
+    类型定义 lightuserdata是一个纯粹的指针,userdata是一个C#或者C++类对象,在lua内有相关元表
+        lobject.h 基本类型结构定义
+            lua_TValue包含一个联合类型Value和一个整数tt代表当前对象类型
+                Value内包括GCObject引用类型 lua_Number浮点双精度类型 int整型 p指针lightuserdata类型
+                该结构包含对应的一组ttis* *value set*value 函数作为其成员函数
+            lua_TString包含一个联合类型dummy用于字节对齐,一个结构体存储真正的字符串
+                CommonHeader用于标记GC对象 next tt mark
+                reserved标记当前字符串是第几个保留字
+                hash标记当前字符串哈希码
+                len标记使用长度
+                sizeof(ts)+1 是字符串起始地址
+                getstr svalue用于获取字符串
+            Udata包含一个联合类型dummy用于字节对齐,一个结构体存储真正的数据
+                CommonHeader用于标记GC对象 next tt mark
+                metatable标记元表
+                env标记环境
+                len标记长度
+            Proto定义了函数原型
+                CommonHeader用于标记GC对象 next tt mark maxstacksize定义了函数栈大小 upvalues存储了upvalue的名字 source标记upvalue来源
+                Instruction*code定义指令集合 Proto**p定义局部函数 LocVar定义了函数内部变量 TValue定义了内部常量
+                lineinfo是指令到源代码行数的映射 size*定义了各个数组的长度 nups numparams定义了upvalue个数和参数个数
+            LocVar UpVar双向链表存储
+            Cloure 对proto的封装,一个闭合函数包括函数原型和upvalues isC nupvalues gclist env
+            TKey是一个联合类型,可以是一个值也可以是一个链表
+            Table CommonHeader用于标记GC对象 next tt mark lsizenode标记node数组长度 sizearray标记数组长度
+                metatable元表 array数组 node链表 lastfree gclist
+        lstate.h 基本类型组合 定义了一系列gc2*获取对应类型变量
+            global_State包含str池 mem变量组 gc变量组 注册表 mainLuaState 基本类型元表
+            lua_State CommonHeader用于标记GC对象 top/base标记栈顶栈底 l_G全局状态 
+                CallInfo当前调用函数信息,包含base/top标记当前函数的栈顶栈底 nresults标记返回值个数 ntails标记尾调用个数,savedpc标记当前函数执行到的指令
+                savedpc标记当前执行到的指令
+                stack 标记栈底 栈大小 栈可用位置
+                hook 标记钩子个数 钩子数组 钩子开关 
+                l_gt全局表  openupvalues
+                errjmp errfunc标记错误跳转点和错误处理函数 
+            GCObject是lobject几种引用类型的组合,联合类型
+        ltm.h 元表定义
+            定义了基础的元表__gc __index __newindex等元表的枚举,定义了获取基本元表的函数
+            内部用过传入的变量类型switch元函数,回去全局表的元表数组里获取对应的元表
+            init函数在全局表内定义了基本类型的元表
+    指令字节码 lopcodes
+        每条指令的字节码构成 操作码(6位) 操作数A(9位) B(9位) C(9位) Bx(18位) sBx(有符号数)
+        OP_MOVE OP_ADD OP_SUB OP_FOR OP_NEWTABLE OP_CALL OP_TAILCALL等等38种指令
+    词法分析/语法分析 代码生成 llex lparser lcode     
+    虚拟机 lvm,定义了execute函数执行指令死循环直到所有指令全部执行完毕   
+    require过程:
+        栈顶参数为filepath
+        首先从注册表内取出_LOADED表,如果以filepath为key取到一个bool值,说明该文件加载过,返回该bool值
+        从当前函数环境表内获取loaders表,一般是从注册表的loaders里获取,找一个可用的loader,加载完文件使用lua_loadbuffer编译该文件
+        对_LOADED表以filepath为key设置固定的lightuserdata sentinel
+        调用编译后的chunk函数,以filepath作为参数,如果函数内使用了module,module的输入参数是...则为filepath,否则为自定义字符串
+        调用后_LOADED表内存储了module函数的设置结果,如果是自定义字符串,那么filepath对应的值没有设置过
+        如果函数有返回值且非空,则设置_LOADED表filepath做key等于该返回值
+        如果_LOADED表filepath为key等于sentinel,则设置为bool值true,标记该文件加载过但是没有设置filepath的全局变量
+    load过程:
+        luaL_loadbuffer->lua_load->luaD_protectedparser->luaD_pcall(会传入当前栈顶用于错误恢复)->f_parser->luaY_parser
+        luaX_next读取第一个token->chunk函数解析->close_func设置Proto并将其移除栈顶
+        创建LoadS结构体并初始化
+        创建ZIO结构体并初始化
+        创建Sparser结构体并初始化
+        读取第一个字符,如果是LUA_SIGNATURE则输入是字节码调用lua_undump,否则是源码调用luaY_parser
+        创建LexState、FuncState结构体并初始化,新建Proto,栈顶压入upvalue表、proto函数原型两个变量
+        调用chunk循环分析token,每个token定于不同的控制结构 for repeat while function 等等
+        调用body解析函数体,并新建函数原型,查找变量时按照局部、递归上一级函数、全局表查找
+        解析结果是一个函数原型,upvalue是其中使用的非局部变量个数,调用luaF_newLclosure创建一个闭合函数
+        函数原型存储到了全局状态内,函数原型存储了upvalue的名字、局部函数原型、指令、局部变量
+        将最终创建的闭合函数压入栈顶setclvalue(L,L->top,cl)
+    call过程:
+        luaD_call->luaD_precall->lua_execute
+        首先检测函数调用栈是否超过了上限(200)
+        检测传入栈的位置是否为函数,不是则检测其元表是否包含__call,返回__call对应的函数
+        C函数执行修改堆栈然后调用函数指针
+        新建CallInfo初始化并加入L->ci数组尾部
+        L->savedpc是当前函数的第一条指令,L->ci->savedpc是当前函数的调用指令的下一条指令
+        所有Lua函数第一条指令都是OP_CLOSURE指令和OP_MOVE OP_GETUPVAL指令
+        调用LUA函数时先创建closure,然后执行OP_MOVE OP_GETUPVAL修改闭包的upvalue表
+        循环执行当前Proto的指令,嵌套调用时只修改当前循环的下一条指令
+    newstate过程:
+        一个Lua虚拟机由一个全局状态和多个LuaState构成
+        新建LuaState,初始化其基础变量,创建字符串池,初始化元表、堆栈、全局表、注册表
+        创建完成之后所有的lua调用全部属于call过程的一部分
+    gc过程:
+        
+ToLua源码分析

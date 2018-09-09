@@ -1,0 +1,110 @@
+Tomcat  静态+动态HTTP服务,动态是通过运行JAVA应用实现
+Apache	静态HTTP服务 负载均衡,反向代理
+CGI		通用网关接口CommonGatewayInterface
+		WEB服务器只能处理静态内容,动态内容需要调用WEB应用程序执行,而WEB程序的执行是由CGI进程来完成的
+		WEB服务器与CGI进程之间交互的协议就是CGI,CGI调用对应的WEB应用程序并返回执行结果
+Nginx   负载均衡,反向代理 http tcp fastcgi
+		配置文件设置 #注释
+			全局配置:
+				指定所属用户和用户组:   user username groupname;
+				工作进程个数:			worker_processes 8;
+				进程PID存放目录:		pid  logs/nginx.pid;
+				日志文件: 				error_log logs/error.log level(debug|info|error|warn|notice);
+			事件配置:
+				event
+				{
+					接受连接互斥锁:		accept_mutex on; 默认打开
+					同时处理多个链接:	multi_accept on; 默认关闭
+					事件驱动模型:		use select|epoll|poll;
+					工作进程连接上限:   worker_connections 1024; 默认不超过ulimit -n即单个进程可以打开的描述符个数
+				}
+			服务配置:
+				http {} http负载均衡
+				stream {} TCP/UDP负载均衡
+					upstream app {} 上游服务器,具体的应用服务器
+						hash $remote_addr consistent; 主要用于缓存服务,同一个客户端的请求转向同一个缓存服务,提高缓存命中率
+						server IP:PORT weight=1 max_fails=1 fail_timeout=5s; N秒内失败N次则标记为不可用,N秒后再次检测
+					server {} 代理服务器,worker进程
+						listen PORT;	监听端口
+						proxy_pass app; 代理哪个上游服务
+						proxy_connect_timeout 1s;与上游服务器连接超时时间
+						send_timeout 1s; 发送超时时间
+						proxy_read_timeout 1s;从上游服务器接收数据超时时间
+						proxy_send_timeout 1s;向上游服务器发送数据超时时间
+						location / { proxy_pass https://app.com }
+NodeJs  基于V8的JS框架,基于NODEJS的服务器框架pomelo
+cdn     内容分发网络,分区域部署服务器,选取距离最近的服务器获取内容
+HTTP    url?arg1=&arg2=
+TCP/IP协议栈
+		应用层,自定义消息,序列化为字节数据,发给传输层,这一层是用户控制的,跟具体应用关系密切
+		传输层,TCP UDP
+		       把下层消息传递到上层进程
+			   把上层进程的消息加入端口号后传给网络层
+			   传递之前会有分组和合并的操作,确保消息完整
+			   TCP流量控制  
+			       TCP有一个接收缓冲区和发送缓冲区,三次握手时会通知其大小
+				   TCP不能发送超出该缓冲的数据,缓冲区满了以后会返回给发送方一个WINDOW大小,代表可以接收的数据大小
+				   TCP发送数据时,一次能够发送的数据有限
+			   TCP超时重传 
+			   	   socket发送数据后,收到接收方反馈确认数据被接收,否则超过一定时间重新发送,被接收之前数据会一直存放在缓冲区内
+			       心跳包,定时发送心跳数据包,用来确定连接是否断开				   
+		网络层,IP ARP&RARP
+			   IP地址分为ABCDE五类,A类0-127 0三字节主机号 B类128-191 10两字节主机号 C类192-223 110一字节主机号 .0是网络地址 255是广播地址
+			   IP地址由网络号+主机号构成
+			   子网,子网掩码用于计算两个IP地址是否属于同一个网络,
+			   IP地址与子网掩码做and运算,得出网络号		   
+			   首先计算 源IP与目的IP的网络号,相同则发送ARP请求包给子网内所有主机,目的IP主机收到后反馈RAP附带MAC地址,
+			   IP封包完成发送数据到子网内所有主机,MAC一致的主机接收IP包
+			   不相同则发送ARP请求给网关,网关反馈MAC,收到后封包发给网关,网关收到后发给路由器,
+			   路由器经过路由选择算法一跳一跳的到达目标网络主机
+			   提供服务的主机必须拥有公网IP才可以被访问			 
+			   内网机器需要设置路由端口映射,把对外网IP某个端口映射到本地主机的进程	                                  
+		接口层
+TCP连接与断开
+	三次握手  
+		client->send状态,发送syn请求连接
+		server收到syn请求,发送syn+ack,进入recv状态
+		client收到syn+ack,发送ack,进入establistened
+		server收到ack,进入establistened
+	四次挥手
+	  	client发送fin请求断开连接,表示我不会再给你发数据了进入FIN_WAIT1
+	  	server收到fin请求,返回ack给client,表示我还有数据要发送,client进入FIN_WAIT2状态,server进入close_wait
+	  	server发送fin给client,告诉它我没有数据要发送了,server进入last_wait
+	  	client返回ack给server,进入TIME_WAIT,server收到ack进入closed,client等待2MSL后进入closed
+	半关闭
+		主动断开连接的一端发送FIN之后进入半关闭状态,只能收不能发
+		一个socket文件可以通过dup2复制,close只能关闭一个,使用shutdown该链接进入半关闭
+TCP发包与收包
+	丢包 发送速度太快、缓存溢出、带宽太小
+	seq是当前数据包的编号,下一个数据包的编号是seq+data_len,也就是发送端的seq号是按照发送字节排序的
+	ack是对发送端seq的回应,其数值等于要回应的数据包编号+要回应的数据包长度
+	win是发送端剩余可接收数据的大小
+同步
+	区域同步AOI:主要是为了避免场景内对象频繁移动导致推送数据量过大,只推送给AOI半径范围内的实体
+	         	具体实现可以采用八叉树(二叉树)场景划分管理,每个结点是一个立方体的格子
+	状态同步: 
+		随机种子: 随机种子需要服务器生成返回给客户端
+	   	发送指令: 客户端发送点击指令给服务器,同时客户端开始执行表现
+		同步状态: 服务器把每个客户端的状态反馈的一定区域内的玩家
+		延迟补偿: 服务器根据传输延迟做补偿,例如服务器对技能时间补偿
+	              客户端需要对技能更新时间做补偿,因为技能每次更新的间隔不稳定、其它客户端收到状态变化有延迟
+	锁定同步: 
+		初始化帧: 所有战斗单位进入第一帧,随机种子保持一致,这样所有玩家的逻辑状态是完全一致的
+	    等待输入: 锁定同步算法会导致一人延迟卡住,其它人也跟着卡住
+		同步输入: 每一帧的逻辑时间是固定的,所以输入一致,那么所有人的逻辑状态也是一致的
+		战斗模拟: 需要实现一个与表现完全分离的战斗模拟器,服务器可以利用该模拟器进行模拟验证,客户端使用该模拟器同步逻辑状态
+	乐观同步: 
+		初始化帧: 和锁定同步一样
+		定时采集: 服务器定时采集所有客户端的输入(摇杆移动也是输入的移动指令,定时时间延迟是否会感觉到?)
+		定时发送: 服务器同步每个定时间隔内的输入给所有客户端
+		战斗模拟: 和锁定同步一样
+		网络要求: 40ms以内应该是比较流畅
+io模型
+		阻塞IO      调用系统API后  wait_data--copy_data_to_user                 copy过程是阻塞的,wait_data会阻塞直到数据到来 
+		非阻塞IO    调用系统API后  would_block--would_block--copy_data_to_user  copy过程是阻塞的,wait_data过程会直接返回,轮询
+		IO多路复用  调用系统API后  wait_data * n                                wait_data过程会阻塞到超时或者有数据到达,轮询检测
+		IO信号驱动  调用系统API后  wait_data * n                                wait_data过程会阻塞直到事件发生,不需要轮询检测
+		IO异步      调用系统API后  wait_data--copy_data_to_user                 整个过程都是非阻塞的,copy完成之后会阻塞
+		libevent 封装了IO细节,自动选择最优的socket io模型
+		
+

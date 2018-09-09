@@ -1,0 +1,41 @@
+渲染模块
+    顶点数和面数,Unity内同一个顶点不同uv会生成一个相同的顶点
+    瓶颈在于 CPU提交数据
+             DrawCall
+             GPU裁剪、光栅、后处理等
+    静态合批 一次性提交VBO给GPU,
+        SkinMeshRenderer
+          boneweight记录了每个顶点受不同骨骼位置变化的影响权值,最多4根骨骼
+          bindpose记录了每根骨骼转换到世界坐标系的矩阵
+          bones骨骼列表
+          sharedMesh当前蒙皮对象的MESH
+          合并MESH,并不会减少MESH的数量,相反会增加一倍面数,主要为了减少DC
+                首先,创建BoneWeight、BindPoses、Bones、CombineMeshInatance数组
+                然后,获取要合并的所有的对象的SkinMeshRenderer
+                1.修改BoneWeight的绑定骨骼偏移(当前已处理的骨骼总数),修改后加入到BoneWeight数组
+                2.把当前对象的Bone加入到Bones数组
+                3.计算骨骼的转换矩阵,利用bone.worldToLocal * transform.localToWorld
+                4.新建CombineInstance,主要包含sharedMesh和localToWorld
+                5.新建SkinMesh对象,赋值combinemesh、sharedmaterial、bones、boneweights、bindposes
+    DrawCall数量,动态批处理、统一缩放、静态批处理,合并贴图、合并材质
+    Triangle数量,减面、模型LOD、分块加载、FOV、远平面大小
+    Shader效果,graphics.blit次数、lod、复杂度、rendertexture使用次数及大小
+    GPU INSTANCE
+UI模块
+    UIGeometry OnFill,顶点、颜色、UV三个数组Vector3[]的动态增长
+    UIDrawCall FillDrawCall->UpdateGeometry,复制顶点、颜色、UV数组
+    UIPanel   Rebuild,任何子Widget显隐操作都会导致整个panel刷新,网格或者位置变化只会刷新自己        
+粒子模块
+    同屏粒子数、粒子材质球个数、材质球Shader复杂度、Pass个数、贴图合并减材质球
+资源导入
+    模型 
+        Model下 Read/Write Enabled 运行时修改MESH数据,会导致内存翻倍
+        AnimationType Generic会给模型添加Animator组件
+    纹理
+        Mipmap 2D不需要,3D关闭后会导致闪烁,开启会增加内存占用
+    音频
+        IOS平台mp3格式有解码支持
+        Android平台Voribs格式有解码支持
+        单声道 force to mono
+    动画
+        手机上每秒30帧就很流畅,60帧会增加内存占用,但是会使动画更平滑

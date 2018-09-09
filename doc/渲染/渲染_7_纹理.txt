@@ -1,0 +1,46 @@
+纹理贴图
+	帧缓存 
+		设置接下来要读取的缓存类型
+		glReadBuffer(GL_FRONT) 默认读取后缓存GL_BACK
+		读取缓存数据
+		glReadPixels(x,y,w,h,GL_RGBA,GL_UNSIGNED_BYTE,ptr)
+		屏蔽帧缓存
+		glColorMask(GL_FALSE,GL_FALSE,GL_FALSE,GL_FALSE) glDepthMask(GL_FALSE) glStencilMask()
+		从帧缓存拷贝图片到当前纹理
+		glCopyTexImage2D(GL_TEXTURE_2D,mipmapLevel,GL_RGBA,x,y,w,h,0);
+	纹理载入
+		从指定位置读取纹理数据到当前指定的纹理
+			创建纹理对象
+				GLuint texID;
+				glGenTexture(1,&texID);   
+			设置纹理对象类型
+			glBindTexture(GL_TEXTURE_2D,texID) 
+			设置纹理过滤类型
+			glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINER);
+			读取纹理数据
+			glTexImage2D(GL_TEXTURE_2D,mipmapLevel,GL_RGBA,宽,高,0,0,GL_RGBA,GL_UNSIGNED_BYTE,PTR);
+			替换纹理数据
+			glTexSubImage2D(GL_TEXTURE_2D,mipmapLevel,x,y,宽,高,GL_RGBA,GL_UNSIGNED_BYTE,PTR);
+			删除纹理对象
+			glDeleteTextures(1,&texID);
+		纹理过滤
+			当纹理和多边形光栅后的片段像素无法完全匹配时,纹理会被拉伸或者收缩
+			根据一个经过拉伸的贴图计算顶点颜色的过程称为纹理过滤
+			GL_TEXTURE_MAG_FILTER 指定放大时如何过滤
+			GL_TEXTURE_MIN_FILTER 指定缩小时如何过滤
+			GL_LINER 线性过滤 双线性过滤
+			GL_NEAREST 最近点过滤 各向异性过滤
+			最近点过滤 采样1次
+			双线性 采样4次
+				在同一个mipmap下采样
+			三线性 采样8次
+				在同一个mipmap下采样后再相邻的mipmap采样
+			各向异性过滤 简称AF, 4x采样32次,16x采样128次
+				贴图贴到平行于摄像机的面时各向同性,否则是各项异性
+				考虑贴图的面与屏幕的倾斜角度
+		纹理环绕
+			纹理坐标大于1或者小于0时如何采样
+			以上两种一般选取线性、重复模式
+		MipMap 
+			硬件支持生成MIPMAP
+			glGenerateMipmap(GL_TEXTURE_2D);
