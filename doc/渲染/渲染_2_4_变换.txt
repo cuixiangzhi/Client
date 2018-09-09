@@ -194,7 +194,12 @@
                 除以aspect是为了保证CVV经过视口变换后物体不变形
             深度精度
                 z-fighting问题
-                因为从投影的z值变换不是线性的,当f远大于n时,距离远裁面越近z-fighting问题越严重
+                因为从投影的z值变换不是线性的
+                距离远裁面越近z-fighting问题越严重
+                距离近裁面越近z-fighting问题越严重
+                glPolygonOffset(factor,units)可以解决z-fighting闪烁问题
+                    算法Offset=DZ*factor+r*units
+                    一般(-1,-1)表示距离摄像机更近,用来渲染前景 (1,1)表示距离摄像机更远,用来渲染背景
             透视除法
                 把坐标变换到了设备坐标系(范围是-1到1,-1到-1,-1到1之间)
                 投影变换得到的裁剪齐次坐标除以Ze得出NDC坐标
