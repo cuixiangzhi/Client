@@ -1,6 +1,7 @@
 图形学
 	图形 线框图 真实感图形 图像 图形方程 几何属性 非几何属性
 	渲染流水线->VBO/VAO->顶点着色器->图元装配->光栅->裁剪->片段着色器->像素归属测试(多窗口)->裁剪测试->Alpha测试->深度测试->模板测试->颜色混合
+	http://duriansoftware.com/joe/An-intro-to-modern-OpenGL.-Chapter-1:-The-Graphics-Pipeline.html
 	渲染指令调用顺序
 		应用程序->操作系统->驱动程序->显卡
 硬件
@@ -38,6 +39,18 @@
 	opengl是跨平台的API,windows也提供了支持
 	metal是苹果系列设备的API
 	opengles是android设备的的API
+版本对比
+    DX版本 OGL版本 ES版本   SM版本  特点    						
+    8.0    1.0	   1.0		1.0   	固定管线
+	9.0    2.0	   2.0		2.0 	可编程管线
+	9.0c   3.0	   3.0		3.0 	
+	10.0   3.3				4.0     统一渲染架构
+	10.1  					4.1
+	11.0   4.2				5.0            
+	12                      5.1     
+	SM3.0版本特性
+		32位浮点运算 MSAA抗锯齿 65535条指令上限 HDR支持
+		GPUInstance
 颜色模型
 		RGB模型,通过RGB三基色来调节颜色
 		HSV模型,通过色调、亮度、饱和度来调节颜色

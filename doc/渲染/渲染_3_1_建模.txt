@@ -29,16 +29,6 @@
 			意义:
 	MeshRender
 传输顶点
-	单个传输 glBegin glEnd之间通过glVertex*一个一个的设置
-			 效率贼低
-			 OpenGL3.0 已废弃
-	显示列表 提前设置好顶点信息,传给GPU之后无法修改
-			 应用: 矩阵操作 材质定义 纹理定义 光照定义
-			 创建显示列表 GLuint id = glGenLists(1);
-			 			  glNewList(id,GL_COMPILE);
-			 			  glEndList();
-			 绘制显示列表 glCallList(id);
-			 删除显示列表 glDeleteLists(id,1);
 	顶点数组 提前设置好顶点信息,传给GPU之后可以修改
 			 顶点数据在内存中,每次绘制时都需要传输给GPU
 			 启用/禁用数组 glEnableClientState() glDisableClientState()

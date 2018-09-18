@@ -1,0 +1,115 @@
+渲染传输
+    OGL渲染时并不是立即把渲染指令传到GPU,而是等待一定时机(例如swapBuffers)才会传输
+    二如果是渲染和写数据交替进行(使用同一个BUFFER),那么就会导致CPU阻塞传输渲染指令
+立即模式
+    使用方式
+        glBegin(GL_*)
+            glVertex*();
+            glColor*|glIndex*();
+        glEnd();
+    优缺点:
+        传输速度很慢调用次数太多(glVertex命令太多),效率很低
+        数据量大一点那么代码量变大,数据发送开销增加
+        OpenGL3.0 已废弃
+显示列表
+    使用方式:
+        GLuint id = glGenLists(1);
+        glNewList(id,GL_COMPILE);
+        glEndList();
+        glCallList(id);
+        glDeleteLists(id,1);
+    优缺点:
+        一次性把渲染命令(包含数据)传输到GPU显存,一次传输不可修改
+        适用于 材质定义 纹理定义 光照定义 静态图形
+顶点数组
+    使用方式
+        1.定义一维顶点、颜色、UV、法线的数组GLFloat v[];
+        2.启用数组glEnableClientState,包括8种GL_VERTEX_ARRAY GL_COLOR_ARRAY GL_TEXTURE_COORD_ARRAY GL_NORMAL等等
+        3.指定被启用的数组的地址及内容格式
+            glVertexPointer指定顶点在数组内的信息
+            glColor|IndexPointer指定颜色在数组内的信息
+            glTexCoordPointer指定UV在数组内的信息
+            glNormalPointer指定法线在数组内的信息
+        4.传输被启用的数组数据进行渲染
+            glDrawArrays(MODE,FIRST,COUNT)必须从起点到终点按顺序绘制
+            glDrawElements(MODE,COUNT,TYPE,indices)每次绘制多组数据,顶点顺序任意
+        5.禁用数组glDisableClientState
+    优缺点:
+        在传输之前,数据一直在应用程序内存里,很容易修改,每次渲染都要传输
+        减少了函数调用次数和冗余顶点数
+缓冲对象
+    概念:
+        VBO:显卡内的一块内存buffer,可以用来存储顶点、颜色、UV、法线等等数据
+            存储了真正的数据,不需要传输过程(只在数据修改或者初始化时传输)
+        VAO:vbo的集合,用于存储一个对象完整渲染所需的信息
+            VAO只存储了数据的指针
+        内存:
+            SystemMemory 系统内存,主内存,CPU访问速度很快
+            AGPMemory    系统内存的一部分,显卡通过特殊通道访问,访问速度介于两者之间
+            VideoMemory  显卡内存32M 64M 128M,显卡直接访问,GPU访问速度很快
+    VBO渲染流程:
+        创建及修改数据过程
+            定义顶点数组:GLfloat v[];
+            分配VBO句柄 glGenBuffer(1,vboID)
+            绑定VBO类型 glBindBuffer(GL_ARRAY_BUFFER,vboID)  顶点属性顶点颜色法线UV都使用GL_ARRAY_BUFFER,索引数据使用GL_ELEMENT_ARRAY
+            传输VBO数据 glBufferData() glBufferSubData       传输时指定数据用途GL_静态(不会改动)|动态(频繁改动)|流式(每帧都变)_绘制 读和拷贝标志仅对帧缓存有意义
+            解绑VBO     glBindBuffer(GL_ARRAY_BUFFER,0)
+            删除VBO数据 glDeleteBuffers(1,vboID)
+            映射VBO数据 glMapBuffer|glUnmapBuffer 映射模式包括只读只写读写
+        渲染过程
+            启动客户端数组 绑定对象 设置指针 绘制 解绑 禁用客户端数组
+            glEnableClientState glBindBuffer glVertexPointer glDrawElements glBindBuffer glDisableClientState
+            绑定对象 启用attribute数组 设置指针 绘制 关闭attribute数组 就出绑定
+            glEnableVertexAttribArray glVertexAttribPointer glDrawElements
+            API解释
+                glEnableVertexAttribArray(index) index是着色器变量ID,如果不启用着色器获取不到数据
+                glVertexAttribPointer CPU传输数据给GPU,并指定着色器变量ID
+        优缺点:
+            使用VBO在服务端创建缓存对象，并且提供了访问函数来解引用数组
+            VBO内存管理会根据用户提示，"target"  和"usage"模式，将缓存对象放在最佳地方
+            内存管理会通过在系统内存、AGP内存和视频卡内存(system, AGP and video memory)这3中内存见平衡来优化缓存
+            VBO中数据可以通过映射到客户端内存空间而被用户读取和更新
+            VBO的另外一个优势是它像显示列表和纹理一样，能和多个客户端共享缓存对象
+    VAO渲染流程
+        来历:
+            每次VBO渲染都要做一些通用设置,这些通用设置可以封装起来(存储了数据的位置及格式信息),即VAO
+        创建及修改数据过程
+            分配VAO句柄 glGenVertexArrays(1,vaoID)
+            绑定VAO     glBindVertexArray(vaoID)
+            针对(顶点、颜色、UV、法线、索引等)创建VBO-绑定VBO类型-传输数据-启动数组-设置指针
+            解除VAO绑定 glBindVertexArray(NULL)
+            解除VBO绑定
+        渲染过程
+            绑定vao对象,绘制,解除绑定
+            glBindVertexArray(vaoID); glDrawElements(...); glBindVertexArray(0);
+着色器
+    基础知识
+        glVertexAttribPointer指定index是着色器中的变量ID
+        着色器使用流程:创建shader->编译shader->创建shaderProgram->链接多个shader到program->启用shaderProgram
+        具体流程:shader源文件->读取shader源码->编译shader源码->链接shaderObjects->programObject
+        ShaderProgram是ShaderObject的集合,例如VertexShader、GeometryShader、FragmentShader等等
+    顶点着色器示例
+        #version 330 GLSL版本
+        layout(location = 0) in vec3 position 顶点属性索引
+        void main(){ gl_Position = vec4(position,1.0) } 输出顶点
+    片元着色器示例
+        #version 330 GLSL版本
+        out vec4 color; // 输出片元颜色
+        void main(){ color = vec4(0.8, 0.8, 0.0, 1.0); }
+    创建过程
+        顶点shader
+            创建shader对象 shaderID = glCreateShader(GL_VERTEX_SHADER); 
+            读取源代码     glShaderSource(shaderID,&shaderSource,NULL);
+            编译源代码     glCompileShader(shaderID);
+            检查编译状态   glGetShaderiv(shaderID,GL_COMPILE_STATUS,&status);
+            获取错误信息   glGetShaderiv(shaderID,GL_INFO_LOG_LENGTH,&length); glGetShaderInfoLog(shaderID,length,&length, &errLog);
+        像素shader 同上
+    链接过程
+        创建program对象  programID = glCreateProgram();
+        添加shader对象   glAttachShader(programID,shaderID)
+        链接program对象  glLinkProgram(programID)
+        检查链接状态     glGetProgramiv(programID,GL_LINK_STATUS, &status);
+        获取错误信息     glGetProgramiv(programID,GL_INFO_LOG_LENGTH, &length); glGetProgramInfoLog(programID,length,&length,&errLog);
+    释放过程
+        移除shader对象   glDetachShader(programID,shaderID)
+        删除shader对象   glDeleteShader(shaderID)
