@@ -113,3 +113,38 @@
     释放过程
         移除shader对象   glDetachShader(programID,shaderID)
         删除shader对象   glDeleteShader(shaderID)
+批处理优化
+    DC
+        一个DC就是从设置着色器程序,设置VAO,调用DrawElement的过程
+        合批是指相同着色器程序(材质球),设置好合并后的索引数组,调用DrawElement,减少了DC的次数
+    静态合批
+        对原始MESH数据修改,多个相同材质的MESH合并为一个VBO(包括顶点、颜色、索引、UV等等)
+        静态合批可以减少数据传输和DC,但是不利于遮挡剔除
+    动态合批
+        CPU动态检测相同材质的MESH,合并成一个VBO
+        合并有顶点数限制(固定的数组65535个顶点);合并的物体必须拥有一致的缩放
+    GPU INSTANCE
+        支持 DX11/DX12/GL4.1/GLES3.0/METAL
+        合并不同材质的MESH,材质的不同属性通过额外参数传递给shader
+        大量物体只提交一个原始模型给GPU,其他属性交给SHADER来处理
+        drawmesh(instanced) 代表被GPU INSTANCE
+        unity默认只对相同MESH相同材质 不同位置、缩放、旋转的物体进行GPU INSTANCE
+            受不同实时灯光或者处于不同光照贴图的也不会被合批
+            使用多个材质的无法合批
+        其他属性需要自己在shader内添加
+            C#  
+                创建实例变量
+                MaterialPropertyBlock
+            shader
+                标记编译生成实例变量
+                #pragma multi_compile_instancing 
+                定义实例ID
+                UNITY_VERTEX_INPUT_INSTANCE_ID   
+                UNITY_SETUP_INSTANCE_ID
+                UNITY_TRANSFER_INSTANCE_ID
+                定义实例变量
+                UNITY_INSTANCING_BUFFER_START(Props)
+                    UNITY_DEFINE_INSTANCED_PROP(fixed4, _Color)
+                UNITY_INSTANCING_BUFFER_END(Props)
+                获取实例变量
+                UNITY_ACCESS_INSTANCED_PROP(Props, _Color)

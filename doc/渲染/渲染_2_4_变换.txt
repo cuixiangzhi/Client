@@ -221,3 +221,11 @@
             0    h2 0        vy+h2
             0    0  (f-n)/2  (f+n)/2
             0    0  0        1
+射线
+    起点是摄像机位置,经过的点是投影面上的点,检测这条射线与所有物体的多边形相交情况
+    获取射线对象
+        ScreenPointToRay
+    获取碰撞结果
+        使用物理引擎和射线对象检测碰撞结果 
+        Physics.Raycast获取一个,Physics.RayCastAll获取多个
+        Physics.OverlapSphere 球形碰撞,可用于检测周围物体
