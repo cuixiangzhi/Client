@@ -1,0 +1,22 @@
+骨骼动画
+	基本概念
+		骨骼动画是指动画帧控制骨骼运动,MESH通过绑定骨骼(每个顶点4根骨骼)和权重计算某一帧的状态
+		关键帧控制骨骼运动、骨骼控制顶点运动
+		骨骼动画包括
+			关键帧动画(Animation,控制骨骼运动)
+			骨骼信息(skinMeshRender.bones)
+			骨骼绑定姿势(skinMeshRender.bindPose即每根骨骼的bone.worldToLocal * mesh.localToWorld)
+			MESH信息(skinMeshRender.sharedMesh 每个mesh的每个顶点都有boneWeight即绑定和权重信息) 
+	动画融合 
+		连续播放的两个动画衔接的过程
+	动画混合 
+		同时播放的两个动画衔接的过程
+	GPU蒙皮  
+		MESH顶点计算转移到shader内
+	Animation Instancing
+		减少Animator.Update开销
+		减少MeshSkining.Update开销
+		减少CPU到GPU的数据传输
+		不支持BlendTree
+		不支持IK
+		动画精确性降低

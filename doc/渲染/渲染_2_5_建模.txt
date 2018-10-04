@@ -45,12 +45,6 @@
 		sharedMesh.boneWeight 顶点绑定骨骼和变换权重,每个顶点最多4根骨骼
 	ParticleSystemRenderer
 		粒子系统渲染组件
-骨骼动画
-	基本概念
-		骨骼动画是指动画帧控制骨骼运动,MESH通过绑定骨骼(每个顶点4根骨骼)和权重计算某一帧的状态
-		关键帧控制骨骼运动、骨骼控制顶点运动
-		骨骼动画包括
-			关键帧动画(Animation,控制骨骼运动)
-			骨骼信息(skinMeshRender.bones)
-			骨骼绑定姿势(skinMeshRender.bindPose即每根骨骼的bone.worldToLocal * mesh.localToWorld)
-			MESH信息(skinMeshRender.sharedMesh 每个mesh的每个顶点都有boneWeight即绑定和权重信息) 
+	正反面
+		背面剔除是指三角面法线与摄像机朝向点乘结果大于0,则为背面,即看不见这个面
+		一般建模后的模型面都是正面,即逆时针缠绕的顶点顺序定义,这样背面剔除就是反面剔除
