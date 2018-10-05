@@ -20,3 +20,9 @@
 		不支持BlendTree
 		不支持IK
 		动画精确性降低
+引擎动画
+	Animation
+		动画数据结构,记录了一个动画的基本信息 
+	AnimationStateInfo
+		动画状态数据结构,记录了动画的播放状态信息
+	Animator

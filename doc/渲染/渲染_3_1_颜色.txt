@@ -20,3 +20,18 @@
 	乘法混合
 		正片叠底 srcColor * dstColor,暗室照明效果,白光经过两个颜色过滤,用来模拟阴影效果
 	光照贴图是加法混合,光照计算是乘法混合
+	开启blend
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+		glDisable(GL_BLEND);
+颜色缓存
+	帧缓存,存储当前帧每个像素的颜色
+	摄像机的清理选项一般包括:天空盒、固定颜色、深度、不清理 
+		glClearColor*() 设置摄像机的颜色缓存清理颜色值
+		glClearDepth(1);
+		glClearStencil(0); 
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT)	
+	透明度测试
+		glEnable(GL_ALPHA_TEST);
+		glAlphaFunc(GL_GREATER,0);
+		glDisable(GL_ALPHA_TEST);

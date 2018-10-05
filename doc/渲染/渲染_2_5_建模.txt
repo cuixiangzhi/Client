@@ -48,3 +48,8 @@
 	正反面
 		背面剔除是指三角面法线与摄像机朝向点乘结果大于0,则为背面,即看不见这个面
 		一般建模后的模型面都是正面,即逆时针缠绕的顶点顺序定义,这样背面剔除就是反面剔除
+		开启背面消隐
+			glEnable(GL_CULL_FACE);
+			glCullFace(GL_FRONT|GL_BACK|GL_FRONT_AND_BACK);
+			glDisable(GL_CULL_FACE);
+
