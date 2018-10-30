@@ -7,6 +7,9 @@
 			骨骼信息(skinMeshRender.bones)
 			骨骼绑定姿势(skinMeshRender.bindPose即每根骨骼的bone.worldToLocal * mesh.localToWorld)
 			MESH信息(skinMeshRender.sharedMesh 每个mesh的每个顶点都有boneWeight即绑定和权重信息) 
+		蒙皮计算
+			VbindPos是顶点初始位置,就是vertex信息
+			BbindPos是骨骼初始变换,就是skinMesh的bindPos
 	动画融合 
 		连续播放的两个动画衔接的过程
 	动画混合 

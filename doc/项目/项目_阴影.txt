@@ -1,0 +1,21 @@
+ShadowMap实时阴影
+    原理:1.以实时灯光位置作为视点,渲染一张深度纹理
+            生成过程: 
+                顶点shader计算深度
+                    o.pos = UnityObjectToClipPos(v.vertex);
+                    o.depth = o.pos.zw
+                像素shader记录深度(因为有差值)
+                    float depth = o.depth.x / o.depth.y
+                    fixed4 depth_color = EncodeFloatRGBA(depth)
+         2.接受阴影的物体从模型空间转换到灯光空间,和深度图作比较,大于深度图中的深度则为阴影
+            计算过程
+                顶点shader计算深度
+                    objectToLightProj = mul(worldToLightProj,unity_ObjectToWorld);
+                    o.proj = mul(objectToLightProj,v.vertex);
+                    o.depth = o.proj.zw
+                像素shader比较深度
+                    fixed4 depth_texture_color = tex2Dproj(_DepthTexture,o.proj);
+                    float depth_texture = DecodeFloatRGBA(depth_texture_color);
+                    float depth_current = o.depth.x / o.depth.y
+                    if(depth_texture < depth_current) 阴影
+
