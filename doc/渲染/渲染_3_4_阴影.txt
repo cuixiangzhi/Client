@@ -18,4 +18,15 @@ ShadowMap实时阴影
                     float depth_texture = DecodeFloatRGBA(depth_texture_color);
                     float depth_current = o.depth.x / o.depth.y
                     if(depth_texture < depth_current) 阴影
+Projector实时投影
+    原理:1.以实时灯光位置作为视点,渲染一张纹理
+            根据投射阴影的层级渲染得出一张投影纹理,该纹理的alpha值大于0表示阴影,等于0表示不是阴影
+         2.把纹理投影到场景内,类似于幻灯片投影到墙上一样
+            顶点shader计算当前顶点的投影纹理齐次坐标
+                sproj = mul(_Projector,v.vertex);
+            像素shader采样然后插值计算alpha进行混合 Blend DstColor Zero 正片叠底
+                uv齐次 = UNITY_PROJ_COORD(sproj);
+                alpha = tex2DProj(_ShadowTex,uv齐次).a
+                uv = uv齐次.xy / uv齐次.w;
+                比较当前uv和中心uv的距离,插值得出边界处的alpha
 

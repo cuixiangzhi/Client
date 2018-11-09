@@ -68,3 +68,5 @@ HDR
 		从室内观察室外和从室外观察明暗变化
 		游戏中使用HDR算法模拟人眼瞳孔的自适应,根据平均亮度自动调整
 		unity开启hdr选项会增加一个hdr buffer,存储超过1的颜色
+shader函数
+	tex2D根据UV采样纹理,tex2DProj传入齐次坐标,除以uv.w后进行采样
