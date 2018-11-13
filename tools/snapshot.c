@@ -128,7 +128,8 @@ static const char *keystring(lua_State *L, int index, char *buffer)
 	return buffer;
 }
 
-static int count_table(lua_State *L, int idx) {
+static int count_table(lua_State *L, int idx) 
+{
 	int n = 0;
 	lua_pushnil(L);
 	while (lua_next(L, idx) != 0) 
