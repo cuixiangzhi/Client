@@ -43,6 +43,7 @@
             存储了真正的数据,不需要传输过程(只在数据修改或者初始化时传输)
         VAO:vbo的集合,用于存储一个对象完整渲染所需的信息
             VAO只存储了数据的指针
+        EBO:由顶点数组索引构成的图元
         FBO:用户创建的不显示的帧缓存
         内存:
             SystemMemory 系统内存,主内存,CPU访问速度很快
@@ -71,6 +72,11 @@
             内存管理会通过在系统内存、AGP内存和视频卡内存(system, AGP and video memory)这3中内存见平衡来优化缓存
             VBO中数据可以通过映射到客户端内存空间而被用户读取和更新
             VBO的另外一个优势是它像显示列表和纹理一样，能和多个客户端共享缓存对象
+        EBO(IBO):索引类型的VBO对象
+            创建及修改数据过程:         
+                分配EBO句柄:glGenBuffers(1,&eboID);
+                绑定EBO类型:glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,eboID);
+                传输EBO数据:glBufferData(GL_ELEMENT_ARRAY_BUFFER,sizeof(indices),indices,GL_STATIC_DRAW);
     VAO渲染流程
         来历:
             每次VBO渲染都要做一些通用设置,这些通用设置可以封装起来(存储了数据的位置及格式信息),即VAO
@@ -89,6 +95,20 @@
         着色器使用流程:创建shader->编译shader->创建shaderProgram->链接多个shader到program->启用shaderProgram
         具体流程:shader源文件->读取shader源码->编译shader源码->链接shaderObjects->programObject
         ShaderProgram是ShaderObject的集合,例如VertexShader、GeometryShader、FragmentShader等等
+        变量类型 
+            int float bool vec*float向量 bvec*bool向量 ivec*int向量 mat*矩阵 sampler*D纹理
+            shader程序内可以使用struct和变量类型来定义数据结构
+        变量修饰符
+            const 编译器常量
+            attribute 随不同顶点变化的全局变量,opengl程序传递给shader,只能用在顶点shader,只读
+                    获取变量位置,只能在link shader程序之后使用 
+                    glGetAttribLocation(programID,name);
+                    glVertexAttrib*
+            uniform 随不同图元变化的全局变量,opengl程序传递给shader,顶点和像素shader都可用,只读
+                获取变量位置,只能在link shader程序之后使用 
+                    glGetUniformLocation(programID,name);
+                    glUniform*设置uniform变量属性
+            varying 顶点和像素shader传递数据的变量,顶点shader内可写,像素shader只读
     顶点着色器示例
         #version 330 GLSL版本
         layout(location = 0) in vec3 position 顶点属性索引
@@ -108,9 +128,16 @@
     链接过程
         创建program对象  programID = glCreateProgram();
         添加shader对象   glAttachShader(programID,shaderID)
+        绑定变量位置     glBindAttribLocation(programID,pos,name)
         链接program对象  glLinkProgram(programID)
         检查链接状态     glGetProgramiv(programID,GL_LINK_STATUS, &status);
         获取错误信息     glGetProgramiv(programID,GL_INFO_LOG_LENGTH, &length); glGetProgramInfoLog(programID,length,&length,&errLog);
+    启用过程
+        修改当前程序     glUseProgram(programID); glUseProgram(NULL);
+        传递程序参数 
+            uniform            
+            attribute
+            texture
     释放过程
         移除shader对象   glDetachShader(programID,shaderID)
         删除shader对象   glDeleteShader(shaderID)

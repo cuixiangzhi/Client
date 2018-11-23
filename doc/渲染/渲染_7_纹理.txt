@@ -14,15 +14,15 @@
 				GLuint texID;
 				glGenTexture(1,&texID);   
 			设置纹理对象类型
-			glBindTexture(GL_TEXTURE_2D,texID) 
+				glBindTexture(GL_TEXTURE_2D,texID) 
 			设置纹理过滤类型
-			glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINER);
+				glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINER);
 			读取纹理数据
-			glTexImage2D(GL_TEXTURE_2D,mipmapLevel,GL_RGBA,宽,高,0,0,GL_RGBA,GL_UNSIGNED_BYTE,PTR);
+				glTexImage2D(GL_TEXTURE_2D,mipmapLevel,GL_RGBA,宽,高,0,0,GL_RGBA,GL_UNSIGNED_BYTE,PTR);
 			替换纹理数据
-			glTexSubImage2D(GL_TEXTURE_2D,mipmapLevel,x,y,宽,高,GL_RGBA,GL_UNSIGNED_BYTE,PTR);
+				glTexSubImage2D(GL_TEXTURE_2D,mipmapLevel,x,y,宽,高,GL_RGBA,GL_UNSIGNED_BYTE,PTR);
 			删除纹理对象
-			glDeleteTextures(1,&texID);
+				glDeleteTextures(1,&texID);
 		纹理过滤
 			当纹理和多边形光栅后的片段像素无法完全匹配时,纹理会被拉伸或者收缩
 			根据一个经过拉伸的贴图计算顶点颜色的过程称为纹理过滤
