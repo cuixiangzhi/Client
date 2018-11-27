@@ -89,6 +89,12 @@
         渲染过程
             绑定vao对象,绘制,解除绑定
             glBindVertexArray(vaoID); glDrawElements(...); glBindVertexArray(0);
+    UBO
+        uniform buffer object,方便传递大量uniform数据给shader
+        uniform data
+        {
+            *
+        } name;
 着色器
     基础知识
         glVertexAttribPointer指定index是着色器中的变量ID
