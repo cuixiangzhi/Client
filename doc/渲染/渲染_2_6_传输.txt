@@ -1,6 +1,14 @@
 渲染传输
     OGL渲染时并不是立即把渲染指令传到GPU,而是等待一定时机(例如swapBuffers)才会传输
     二如果是渲染和写数据交替进行(使用同一个BUFFER),那么就会导致CPU阻塞传输渲染指令
+OpenGL Context
+    当前渲染状态,不同的渲染线程有不同的context
+OpenGL Object
+    vao vbo ubo ebo tbo fbo
+    存放原始数据或者中间数据
+context与object的关系
+    gen创建object bind绑定到context(此时object数据才能传输到显存里) glbufferdata传输数据
+    vao存储顶点属性的格式和地址 vbo存储顶点数据 ebo存储索引 ubo存储shader数据 tbo存储纹理数据 fbo存储帧数据
 立即模式
     使用方式
         glBegin(GL_*)
@@ -90,11 +98,21 @@
             绑定vao对象,绘制,解除绑定
             glBindVertexArray(vaoID); glDrawElements(...); glBindVertexArray(0);
     UBO
-        uniform buffer object,方便传递大量uniform数据给shader
+        uniform buffer object,方便传递大量uniform数据给vs和fs shader
         uniform data
         {
             *
-        } name;
+        } name(如果不指定,则data作为全局前缀,内部变量通过data.访问,否则通过name.访问);
+        内存布局
+            shared:保证不同程序中具有相同定义的block拥有相同布局
+            std140:指定aligment大小,添加字节保证字节对齐
+        创建UBO glGenBuffers(1,&uboID);
+        绑定UBO glBindBuffer(GL_UNIFORM_BUFFER,uboID);
+        传递数据glBufferData(GL_UNIFORM_BUFFER,size(glGetUniformBlockSize(index)),NULL,GL_DYNAMIC_DRAW);
+        传递部分glBufferSubData(GL_UNIFORM_BUFFER,offset,size,&data);
+    纹理
+        创建纹理 glGenTexture(1,&texID);
+
 着色器
     基础知识
         glVertexAttribPointer指定index是着色器中的变量ID
@@ -114,6 +132,13 @@
                 获取变量位置,只能在link shader程序之后使用 
                     glGetUniformLocation(programID,name);
                     glUniform*设置uniform变量属性
+                    glGetUniformIndices(programID,uniformCount,uniformNames,indices)
+                    glGetUniformBlockIndex(programID,"blockName");
+                    glGetUniformBlockSize(index)
+                    glGetActiveUniformsiv
+                绑定
+                    glUniformBlockBinding(programID,uniformIndex,bindPoint);
+                    glBindBufferBase(GL_UNIFORM_BUFFER,bindPoint,uboID)
             varying 顶点和像素shader传递数据的变量,顶点shader内可写,像素shader只读
     顶点着色器示例
         #version 330 GLSL版本
