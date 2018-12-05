@@ -54,10 +54,27 @@
                         切割多边形,与上述切割算法一致
                         计算切割后多边形Y方向ymin,ymax,填充x,z处的y方向体素信息(ymin到ymax之间都是实心填充,只包含一部分也算实心)
                         添加体素时计算yminymax相邻区域是否有体素,有就合并,没有则插入新的体素,每个体素包括ymin,ymax,area,next
+                    addSpan
+                        xz平面每个格子处,y方向从低到高组成一个链表
+                        添加结点时没有交叉则直接插入,否则合并当前结点和新增结点并移除当前结点,继续插入
+                        根据当前结点和合并后的结点最高点差值和合并参考值选择是否合并area标记
             过滤可行走体素,对应于RecastFilter.cpp
-                根据climbHeight计算Y方向相邻体素距离,如果上一个体素可行走并且当前体素不可行走,相邻体素smax距离小于climbHeight,则标记当前区域可行走
-                根据climbHeight计算XZ方向相邻体素距离,如果当前体素周围四个体素有大于或小于climbHeight,则标记为不可行走(悬崖边悬挂物体)
-                根据climbHeight计算Y方向相邻体素之间的空隙,如果小于agentHeight,说明该体素不可行走
+                    根据climbHeight计算Y方向相邻体素距离,如果上一个体素可行走并且当前体素不可行走,相邻体素smax距离小于climbHeight,则标记当前区域可行走
+                    for span in yspan do
+                        上一个span可行走且当前span不可行走
+                        两个span上边界距离小于climbHeight,标记当前span可行走
+                    end
+                    根据climbHeight计算XZ方向相邻体素距离,如果当前体素周围四个体素有大于或小于climbHeight,则标记为不可行走(悬崖边悬挂物体)
+                    for span in yspan do
+                        for spand in 四周 do
+                            第一个spand下边是空的,此时检查span和spand之间是否有agentHeight的间隙,有则标记span不可行走
+                            检查后续spand和span是否可以站人(agentHeight),并且下边界之差是否太大(climbHeight),太大说明是个悬崖,标记span不可行走
+                        end
+                    end
+                    根据climbHeight计算Y方向相邻体素之间的空隙,如果小于agentHeight,说明该体素不可行走
+                    for span in yspan do
+                        span->smax和span->next->smin的差是否大于agentHeight,否则标记span不可行走
+                    end
             以上操作均处于处理rcHeightField阶段,最终生成了一个rcSpan二维数组(障碍物集合),并记录了每个体素上边界是否可行走,smax,smin
             接下来要把障碍物空间转化为可行走空间,即生成Y方向相邻的两个Span下ymax上ymin构成的开放可行走Span
 
@@ -77,10 +94,10 @@
                 检查与周围8个Span的最小距离,XZ轴向距离为2,斜对面距离为3
                 最终距离小于角色半径的全部标记为不可行走
             区域标记 RecastArea.cpp
-                会检测每个Span在哪个Volume区域内,并修改其区域ID
-
+                Volume是由顶点集合和area标记构成的
+                会检测每个Span在哪个Volume区域内(这里检测的是y方向范围),并修改其区域ID
             区域分割算法 RecastRegion
-
+                
             边界追踪算法 RecastContour
 
             导航网格 RecastMesh
