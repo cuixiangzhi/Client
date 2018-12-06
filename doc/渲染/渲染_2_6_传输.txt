@@ -208,6 +208,10 @@ context与object的关系
     释放过程
         移除shader对象   glDetachShader(programID,shaderID)
         删除shader对象   glDeleteShader(shaderID)
+    绘制命令
+        glDrawElements(GL_TRIANGLES,count,GL_UNSIGNED_INT,0); 绘制整个mesh
+        glDrawElementsBaseVertex(); 绘制部分mesh
+        glDrawElementsInstanced(GL_TRIANGLES,count,GL_UNSIGNED_INT,0,instanceCount) 绘制多次同一个mesh
 批处理优化
     DC
         一个DC就是从设置着色器程序,设置VAO,调用DrawElement的过程
