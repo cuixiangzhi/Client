@@ -112,7 +112,34 @@ context与object的关系
         传递部分glBufferSubData(GL_UNIFORM_BUFFER,offset,size,&data);
     纹理
         创建纹理 glGenTexture(1,&texID);
-
+        指定纹理 glActiveTexture(GL_TEXTURE0)
+        绑定纹理 glBindTexture(GL_TEXTURE_2D,texID)
+        纹理过滤 glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINER);
+        纹理数据 glTexImage2D(GL_TEXTURE_2D,mipmapLevel,GL_RGBA,宽,高,0,0,GL_RGBA,GL_UNSIGNED_BYTE,PTR);
+                 glTexSubImage2D(GL_TEXTURE_2D,mipmapLevel,x,y,宽,高,GL_RGBA,GL_UNSIGNED_BYTE,PTR);
+        删除纹理 glDeleteTextures(1,&texID);
+        纹理过滤
+            当纹理和多边形光栅后的片段像素无法完全匹配时,纹理会被拉伸或者收缩
+            根据一个经过拉伸的贴图计算顶点颜色的过程称为纹理过滤
+            GL_TEXTURE_MAG_FILTER 指定放大时如何过滤
+            GL_TEXTURE_MIN_FILTER 指定缩小时如何过滤
+            GL_LINER 线性过滤 双线性过滤
+            GL_NEAREST 最近点过滤 各向异性过滤
+            最近点过滤 采样1次
+            双线性 采样4次
+                在同一个mipmap下采样
+            三线性 采样8次
+                在同一个mipmap下采样后再相邻的mipmap采样
+            各向异性过滤 简称AF, 4x采样32次,16x采样128次
+                贴图贴到平行于摄像机的面时各向同性,否则是各项异性
+                考虑贴图的面与屏幕的倾斜角度
+        纹理环绕
+            纹理坐标大于1或者小于0时如何采样
+            以上两种一般选取线性、重复模式
+        MipMap 
+            硬件支持生成MIPMAP
+            glGenerateMipmap(GL_TEXTURE_2D);
+            GL_<FILTER>_MIPMAP_<SELECTOR> filter标记miplevel内如何采样 selector标记如何选择miplevel
 着色器
     基础知识
         glVertexAttribPointer指定index是着色器中的变量ID
@@ -132,10 +159,13 @@ context与object的关系
                 获取变量位置,只能在link shader程序之后使用 
                     glGetUniformLocation(programID,name);
                     glUniform*设置uniform变量属性
+                    //uniform block
                     glGetUniformIndices(programID,uniformCount,uniformNames,indices)
                     glGetUniformBlockIndex(programID,"blockName");
                     glGetUniformBlockSize(index)
                     glGetActiveUniformsiv
+                    //uniform texture glActiveTexture在使用多纹理时调用,默认为GL_TEXTURE0
+                    glUniform1i(loc,texIndex)
                 绑定
                     glUniformBlockBinding(programID,uniformIndex,bindPoint);
                     glBindBufferBase(GL_UNIFORM_BUFFER,bindPoint,uboID)
@@ -143,6 +173,7 @@ context与object的关系
     顶点着色器示例
         #version 330 GLSL版本
         layout(location = 0) in vec3 position 顶点属性索引
+        uniform sampler2D _TEX;
         void main(){ gl_Position = vec4(position,1.0) } 输出顶点
     片元着色器示例
         #version 330 GLSL版本
@@ -166,9 +197,14 @@ context与object的关系
     启用过程
         修改当前程序     glUseProgram(programID); glUseProgram(NULL);
         传递程序参数 
-            uniform            
-            attribute
-            texture
+            uniform      glGetUniformLocation(programID,uniformName) 
+                         基本类型通过 glUniform*直接传递
+                         纹理数据首先 glActiveTexture->glBindTexture->glTexSubImage(内存中的纹理在创建时就传递过了,此处不需要)
+                                      glUniform1i(loc,0);
+                         uniform比较常用,一般为程序参数
+            attribute    glGetAttribLocation(programID,attrName)
+                         基本类型通过 glVertexAttrib*直接传递
+                         顶点属性数据
     释放过程
         移除shader对象   glDetachShader(programID,shaderID)
         删除shader对象   glDeleteShader(shaderID)
