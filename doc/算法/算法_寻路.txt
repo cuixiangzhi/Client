@@ -7,100 +7,119 @@
             高度场(HeightField) 根据cell(一般为0.2,0.2,0.2)大小在xyz三个方向切割,由体素构成的对象
             体素(Span) 三维空间的像素
         实现
-            加载网格信息
-                .gset类型文件是区域标记文件
-                    f
-                    filename
-                    v nverts area hmin hmax
-                    %f %f %f
-                    s 配置信息 %f %f %f %f %f %f %f %f %f %f %f %f %f %d %f %f %f %f %f %f %f
-                    c 代表Off-Mesh信息
-                .obj类型文件是MESH信息文件
-                    f代表三角面, %d %d %d
-                    v代表顶点 %f %f %f
-            初始化配置信息 
-                rcConfig
-                    地形配置
-                    bmin&bmax           根据输入的网格MESH信息计算出的AABB边界
-                    w&h                 根据边界和单位大小计算出的xz平面的单位宽度和高度(也就是xz平面有多少个体素)
-                    cs&ch               用户输入的xz平面单位大小,y方向单位大小, 一般为0.2米 0.3米,越小越精确,体素越多,生成速度越慢
-                    角色配置
-                    walkSlope           坡度大小,角色能在多陡的斜坡上行走
-                    agentRadius         角色半径,已转化为单位长度
-                    agentHeight         角色高度,已转化为单位长度
-                    agentClimbHeight    角色能爬多高的建筑物或者每一步最多跨越多高的距离
-                    多边形配置
-                    maxVertPerPoly      凸多边形最大顶点数
-                    输入网格信息
-                    ntris&tris          三角形个数&三角形数组(三个点构成一个三角形,存储了顶点起始下标)
-                    nverts&verts        顶点个数&顶点数组(三个表示一个顶点)
-            创建高度场并初始化
-                rcHeightField
-                    bmin&bmax           从配置里读取的AABB边界
-                    w&h                 从配置里读取的xz平面宽高
-                    cs&ch               从配置里读取的每个单位x、y、z方向的单位大小
-                    spans               从配置里读取宽高然后分配好的XZ平面的体素二维数组,大小为sizeof(rcSpan*) * w * h
-            标记输入三角形区域ID
-                    m_triareas          输入的三角面的区域类型,初始化为RC_NULL_AREA(不可行走)
-                    nomal               每个三角面的法线,单位化之后Y值正好等于三角面倾斜角的cos值
-                    倾斜角小于最大行走倾斜角度时标记为可行走区域 RC_WALKABLE_AREA(可行走)
-            光栅体素化所有三角面,对应于 RecastRasterlization.cpp
-                    遍历每个三角面,计算其AABB包围盒tmin,tmax(也就是三个顶点的最小xyz,最大xyz)
-                    根据包围盒计算zmin=[(tmin[2]-bmin[2])*(1/cs)],zmax=[(tmax[2]-bmin[2])*(1/cs)]
-                    for z=zmin;z<=zmax;z+=1 cz=bmin[2]+z*cs
-                        切割多边形,每次输入是N个点,输出是上下两部分多边形,最多6边形切割为7个点
-                        逆时针遍历所有边,每次把交点(di>=0!=dj>=0,s=dj/(dj-di))和i点加入到输出内,交点两个输出都加入,di大于0加入输出1,否则加入输出2
-                    for x=xmin;x<=xmax;x+=1 
-                        切割多边形,与上述切割算法一致
-                        计算切割后多边形Y方向ymin,ymax,填充x,z处的y方向体素信息(ymin到ymax之间都是实心填充,只包含一部分也算实心)
-                        添加体素时计算yminymax相邻区域是否有体素,有就合并,没有则插入新的体素,每个体素包括ymin,ymax,area,next
-                    addSpan
-                        xz平面每个格子处,y方向从低到高组成一个链表
-                        添加结点时没有交叉则直接插入,否则合并当前结点和新增结点并移除当前结点,继续插入
-                        根据当前结点和合并后的结点最高点差值和合并参考值选择是否合并area标记
-            过滤可行走体素,对应于RecastFilter.cpp
-                    根据climbHeight计算Y方向相邻体素距离,如果上一个体素可行走并且当前体素不可行走,相邻体素smax距离小于climbHeight,则标记当前区域可行走
-                    for span in yspan do
-                        上一个span可行走且当前span不可行走
-                        两个span上边界距离小于climbHeight,标记当前span可行走
-                    end
-                    根据climbHeight计算XZ方向相邻体素距离,如果当前体素周围四个体素有大于或小于climbHeight,则标记为不可行走(悬崖边悬挂物体)
-                    for span in yspan do
-                        for spand in 四周 do
-                            第一个spand下边是空的,此时检查span和spand之间是否有agentHeight的间隙,有则标记span不可行走
-                            检查后续spand和span是否可以站人(agentHeight),并且下边界之差是否太大(climbHeight),太大说明是个悬崖,标记span不可行走
+            首先根据输入文件读取场景信息和生成配置信息
+                加载网格信息
+                    .gset类型文件是区域标记文件
+                        f
+                        filename
+                        v nverts area hmin hmax
+                        %f %f %f
+                        s 配置信息 %f %f %f %f %f %f %f %f %f %f %f %f %f %d %f %f %f %f %f %f %f
+                        c 代表Off-Mesh信息
+                    .obj类型文件是MESH信息文件
+                        f代表三角面, %d %d %d
+                        v代表顶点 %f %f %f
+                初始化配置信息 
+                    rcConfig
+                        地形配置
+                        bmin&bmax           根据输入的网格MESH信息计算出的AABB边界
+                        w&h                 根据边界和单位大小计算出的xz平面的单位宽度和高度(也就是xz平面有多少个体素)
+                        cs&ch               用户输入的xz平面单位大小,y方向单位大小, 一般为0.2米 0.3米,越小越精确,体素越多,生成速度越慢
+                        角色配置
+                        walkSlope           坡度大小,角色能在多陡的斜坡上行走
+                        agentRadius         角色半径,已转化为单位长度
+                        agentHeight         角色高度,已转化为单位长度
+                        agentClimbHeight    角色能爬多高的建筑物或者每一步最多跨越多高的距离
+                        多边形配置
+                        maxVertPerPoly      凸多边形最大顶点数
+                        输入网格信息
+                        ntris&tris          三角形个数&三角形数组(三个点构成一个三角形,存储了顶点起始下标)
+                        nverts&verts        顶点个数&顶点数组(三个表示一个顶点)
+            然后创建rcHeightField,最终生成了一个rcSpan二维数组(障碍物集合),并记录了每个体素上边界是否可行走,smax,smin
+                创建高度场并初始化
+                    rcHeightField
+                        bmin&bmax           从配置里读取的AABB边界
+                        w&h                 从配置里读取的xz平面宽高
+                        cs&ch               从配置里读取的每个单位x、y、z方向的单位大小
+                        spans               从配置里读取宽高然后分配好的XZ平面的体素二维数组,大小为sizeof(rcSpan*) * w * h
+                标记输入三角形区域ID
+                        m_triareas          输入的三角面的区域类型,初始化为RC_NULL_AREA(不可行走)
+                        nomal               每个三角面的法线,单位化之后Y值正好等于三角面倾斜角的cos值
+                        倾斜角小于最大行走倾斜角度时标记为可行走区域 RC_WALKABLE_AREA(可行走)
+
+                光栅体素化所有三角面,对应于 ********************RecastRasterlization.cpp********************
+                        遍历每个三角面,计算其AABB包围盒tmin,tmax(也就是三个顶点的最小xyz,最大xyz)
+                        根据包围盒计算zmin=[(tmin[2]-bmin[2])*(1/cs)],zmax=[(tmax[2]-bmin[2])*(1/cs)]
+                        for z=zmin;z<=zmax;z+=1 cz=bmin[2]+z*cs
+                            切割多边形,每次输入是N个点,输出是上下两部分多边形,最多6边形切割为7个点
+                            逆时针遍历所有边,每次把交点(di>=0!=dj>=0,s=dj/(dj-di))和i点加入到输出内,交点两个输出都加入,di大于0加入输出1,否则加入输出2
+                        for x=xmin;x<=xmax;x+=1 
+                            切割多边形,与上述切割算法一致
+                            计算切割后多边形Y方向ymin,ymax,填充x,z处的y方向体素信息(ymin到ymax之间都是实心填充,只包含一部分也算实心)
+                            添加体素时计算yminymax相邻区域是否有体素,有就合并,没有则插入新的体素,每个体素包括ymin,ymax,area,next
+                        addSpan
+                            xz平面每个格子处,y方向从低到高组成一个链表
+                            添加结点时没有交叉则直接插入,否则合并当前结点和新增结点并移除当前结点,继续插入
+                            根据当前结点和合并后的结点最高点差值和合并参考值选择是否合并area标记
+
+                过滤可行走体素,对应于 ********************RecastFilter.cpp********************
+                        根据climbHeight计算Y方向相邻体素距离,如果上一个体素可行走并且当前体素不可行走,相邻体素smax距离小于climbHeight,则标记当前区域可行走
+                        for span in yspan do
+                            上一个span可行走且当前span不可行走
+                            两个span上边界距离小于climbHeight,标记当前span可行走
                         end
-                    end
-                    根据climbHeight计算Y方向相邻体素之间的空隙,如果小于agentHeight,说明该体素不可行走
-                    for span in yspan do
-                        span->smax和span->next->smin的差是否大于agentHeight,否则标记span不可行走
-                    end
-            以上操作均处于处理rcHeightField阶段,最终生成了一个rcSpan二维数组(障碍物集合),并记录了每个体素上边界是否可行走,smax,smin
+                        根据climbHeight计算XZ方向相邻体素距离,如果当前体素周围四个体素有大于或小于climbHeight,则标记为不可行走(悬崖边悬挂物体)
+                        for span in yspan do
+                            for spand in 四周 do
+                                第一个spand下边是空的,此时检查span和spand之间是否有agentHeight的间隙,有则标记span不可行走
+                                检查后续spand和span是否可以站人(agentHeight),并且下边界之差是否太大(climbHeight),太大说明是个悬崖,标记span不可行走
+                            end
+                        end
+                        根据climbHeight计算Y方向相邻体素之间的空隙,如果小于agentHeight,说明该体素不可行走
+                        for span in yspan do
+                            span->smax和span->next->smin的差是否大于agentHeight,否则标记span不可行走
+                        end
             接下来要把障碍物空间转化为可行走空间,即生成Y方向相邻的两个Span下ymax上ymin构成的开放可行走Span
+                创建CompactHeightfield,只记录上表面即行走面及其与上表面距离的高度场,并记录了与四周的连通性
+                    rcCompactHeightfield
+                        w&h bmin&bmax cs&ch agentHeight&agentClimbHeight bmax要加上角色高度
+                        int spanCount;              可行走Span数量,标记为RC_WALKABLE_AREA的Span个数
+                        cells;       二维数组,XZ平面格子, index第一个当前列Span,count表示Span个数,当前列span连续存储在spans内
+                        spans;       可行走Span数组,y最低的站立面纵坐标,h距离下一个Span下边界距离,con记录了四个方向邻接Span的index
+                        areas        可行走Span标记,默认为空RC_NULL_AREA不可行走
+                        dist;        到达边界的最短距离
+                    第一步,初始化rcCompactHeightfield结构体
+                    第二步,将rcHeightField内的Span修改格式后存储到rcCompactHeightfield内
+                    第三步,检测每个cell内的所有span的相邻span,测试其连通性(检查相邻Span是否可以通过一个agentHeight,并且可以一步走上去climbHeight)RC_NOT_CONNECTED
 
-            创建CompactHeightfield,只记录上表面即行走面及其与上表面距离的高度场,并记录了与四周的连通性
-                rcCompactHeightfield
-                    w&h bmin&bmax cs&ch agentHeight&agentClimbHeight bmax要加上角色高度
-                    int spanCount;              可行走Span数量,标记为RC_WALKABLE_AREA的Span个数
-                    cells;       二维数组,XZ平面格子, index第一个当前列Span,count表示Span个数
-                    spans;       可行走Span数组,y最低的站立面纵坐标,h距离下一个Span下边界距离,con记录了四个方向邻接Span的index
-                    areas        可行走Span标记,默认为空RC_NULL_AREA不可行走   
-                    dist;        到达边界的距离
-                第一步,初始化rcCompactHeightfield结构体
-                第二步,将rcHeightField内的Span修改格式后存储到rcCompactHeightfield内
-                第三步,检测每个cell内的所有span的相邻span,测试其连通性(检查相邻Span是否可以通过一个agentHeight,并且可以一步走上去climbHeight)RC_NOT_CONNECTED
-            过滤边界,距离边界太近的Span标记为不可行走 RecastArea.cpp
-                遍历spans,如果一个Span为不可行走或者相邻的Span有一个不可行走,则标记该Span到达边界的距离为0
-                检查与周围8个Span的最小距离,XZ轴向距离为2,斜对面距离为3
-                最终距离小于角色半径的全部标记为不可行走
-            区域标记 RecastArea.cpp
-                Volume是由顶点集合和area标记构成的
-                会检测每个Span在哪个Volume区域内(这里检测的是y方向范围),并修改其区域ID
-            区域分割算法 RecastRegion
-                
-            边界追踪算法 RecastContour
+                过滤边界,距离边界太近的Span标记为不可行走 *****************RecastArea.cpp********************
+                    遍历spans,如果一个Span为不可行走或者相邻的Span有一个不可行走,则标记该Span到达边界的距离为0
+                    检查与周围8个Span的最小距离,XZ轴向距离为2,斜对面距离为3
+                    最终距离小于角色半径的全部标记为不可行走
+            可选步骤,标记每个span是什么类型的地面
+                区域标记 ********************RecastArea.cpp********************
+                    Volume是由顶点集合和area标记构成的
+                    会检测每个Span在哪个Volume区域内(这里检测的是y方向范围),并修改其区域ID
+            可行走空间生成结束,接下来是区域生成阶段
+                区域生成算法 ********************RecastRegion********************
+                    Watershed partitioning
+                        经典算法,有比较好的曲面细分效果,把compactHeightField划分成没有孔洞和重叠的区域,预计算的最好选择
+                    Monotone partioning
+                        速度很快,可以保证没有孔洞和重叠,但是会产生很多细长的poly,增加寻路消耗
+                    Layer partitoining
+                        相对快速,分割成不重叠的区域,对于孔洞的处理依赖于输入数据
+                        生成结果比第二种要好,但是不如第一种,适合平铺式的navmesh
+                经典算法
+                    分水岭算法(图像分割)
+                        原理
+                            基本思想是把图像看做是3D场景,每点的灰度值代表地形高度,谷底及其影响地区称为集水盆,集水盆边界形成分水岭
+                            在谷底刺穿一个孔,水从谷底涌出,水位逐渐增高,两个相邻的谷底(区域A和区域B)水位高过中间的峰值就会汇合,汇合点即为分水岭
+                            灰度值越低,越趋向于谷底,也就是图像内部
+                        实现
+                            首先对像素灰度等级从低到高排序,然后从高到低淹没
+            边界追踪算法 ********************RecastContour********************
 
-            导航网格 RecastMesh
+            导航网格 ********************RecastMesh********************
             TODO 以下配置尚不明确具体用途
             轮廓配置
             maxEdgeLen          根据用户输入的轮廓的最大边长计算出的最大边长单位
