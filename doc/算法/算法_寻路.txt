@@ -84,7 +84,7 @@
                     rcCompactHeightfield
                         w&h bmin&bmax cs&ch agentHeight&agentClimbHeight bmax要加上角色高度
                         int spanCount;              可行走Span数量,标记为RC_WALKABLE_AREA的Span个数
-                        cells;       二维数组,XZ平面格子, index第一个当前列Span,count表示Span个数,当前列span连续存储在spans内
+                        cells;       二维数组,XZ平面格子, index第一个当前列Span,count表示Span个数,当前列span连续存储在spans内,所属区域记录在reg内(0位空区域)
                         spans;       可行走Span数组,y最低的站立面纵坐标,h距离下一个Span下边界距离,con记录了四个方向邻接Span的index
                         areas        可行走Span标记,默认为空RC_NULL_AREA不可行走
                         dist;        到达边界的最短距离,用于分水岭算法
@@ -120,8 +120,18 @@
                     高度图生成
                         边界标记,dist为0
                             遍历每个cell的spans,检查四邻域是否连通,不连通则标记为边界
-                        循环1,从左下角开始计算边界距离,计算左侧四邻域dist,得出距离坐下侧的距离信息
-                        循环2,从右上角开始计算边界距离,计算右侧四邻域dist,得出最终距离信息
+                        高度生成
+                            循环1,从左下角开始计算边界距离,计算左侧四邻域dist,得出距离坐下侧的距离信息
+                            循环2,从右上角开始计算边界距离,计算右侧四邻域dist,得出最终距离信息
+                        均值滤波(图像降噪处理,会变模糊并丢失细节,但是能够很好地保留边缘信息,用于图像分割、特征提取)
+                            针对距离边界距离大于某个阈值的cell执行八邻域加权平均
+                            一个邻域连通则2cd,非连通邻域直接加,次邻域连通加cd,非连通直接加
+                    区域生成
+                        非空区域被认为是连在一起的,非重叠可行走Span构成一个SimpleContour,Contours构成SimplePolygon
+                        minRegionArea某个区域面积小于该值则会被标记为空的区域
+                        mergeRegionArea某个区域面积小于该值则会被合并为一个区域
+                        maxRegions表示最大区域ID
+                        maxDistance表示到达边界最大距离
 
             边界追踪算法 ********************RecastContour********************
 
