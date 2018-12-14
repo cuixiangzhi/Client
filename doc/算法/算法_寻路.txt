@@ -87,7 +87,7 @@
                         cells;       二维数组,XZ平面格子, index第一个当前列Span,count表示Span个数,当前列span连续存储在spans内
                         spans;       可行走Span数组,y最低的站立面纵坐标,h距离下一个Span下边界距离,con记录了四个方向邻接Span的index
                         areas        可行走Span标记,默认为空RC_NULL_AREA不可行走
-                        dist;        到达边界的最短距离
+                        dist;        到达边界的最短距离,用于分水岭算法
                     第一步,初始化rcCompactHeightfield结构体
                     第二步,将rcHeightField内的Span修改格式后存储到rcCompactHeightfield内
                     第三步,检测每个cell内的所有span的相邻span,测试其连通性(检查相邻Span是否可以通过一个agentHeight,并且可以一步走上去climbHeight)RC_NOT_CONNECTED
@@ -117,6 +117,12 @@
                             灰度值越低,越趋向于谷底,也就是图像内部
                         实现
                             首先对像素灰度等级从低到高排序,然后从高到低淹没
+                    高度图生成
+                        边界标记,dist为0
+                            遍历每个cell的spans,检查四邻域是否连通,不连通则标记为边界
+                        循环1,从左下角开始计算边界距离,计算左侧四邻域dist,得出距离坐下侧的距离信息
+                        循环2,从右上角开始计算边界距离,计算右侧四邻域dist,得出最终距离信息
+
             边界追踪算法 ********************RecastContour********************
 
             导航网格 ********************RecastMesh********************
