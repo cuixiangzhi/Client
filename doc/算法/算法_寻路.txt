@@ -126,13 +126,13 @@
                         均值滤波(图像降噪处理,会变模糊并丢失细节,但是能够很好地保留边缘信息,用于图像分割、特征提取)
                             针对距离边界距离大于某个阈值的cell执行八邻域加权平均
                             一个邻域连通则2cd,非连通邻域直接加,次邻域连通加cd,非连通直接加
+                            对距离图进行过滤方便执行分水岭算法的淹没过程
                     区域生成
-                        非空区域被认为是连在一起的,非重叠可行走Span构成一个SimpleContour,Contours构成SimplePolygon
-                        minRegionArea某个区域面积小于该值则会被标记为空的区域
-                        mergeRegionArea某个区域面积小于该值则会被合并为一个区域
-                        maxRegions表示最大区域ID
-                        maxDistance表示到达边界最大距离
-
+                        region project on plane is a simple polygon
+                        whtershed isn't perfect,some algorithm is applied to cleanup things up
+                            1. island region too small is discarded
+                            2. small region unnecessarily are merged into larger region
+                            3. null region broken into two regions
             边界追踪算法 ********************RecastContour********************
 
             导航网格 ********************RecastMesh********************
