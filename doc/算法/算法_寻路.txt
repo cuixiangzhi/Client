@@ -116,7 +116,8 @@
                             在谷底刺穿一个孔,水从谷底涌出,水位逐渐增高,两个相邻的谷底(区域A和区域B)水位高过中间的峰值就会汇合,汇合点即为分水岭
                             灰度值越低,越趋向于谷底,也就是图像内部
                         实现
-                            首先对像素灰度等级从低到高排序,然后从高到低淹没
+                            分水岭计算分为两个步骤,一个是排序过程,一个是淹没过程
+                            首先对像素灰度等级从低到高排序,然后在从低到高的淹没过程中,对每一个局部极值在H阶的影响域采用FIFO的方式标注
                     高度图生成
                         边界标记,dist为0
                             遍历每个cell的spans,检查四邻域是否连通,不连通则标记为边界
@@ -133,6 +134,14 @@
                             1. island region too small is discarded
                             2. small region unnecessarily are merged into larger region
                             3. null region broken into two regions
+                        循环(level > 0) 
+                            level是灰度值,初始值为灰度最大值(maxDistance+1)&(~1)_偶数,每次递减2个单位
+                            每次处理的灰度范围是
+                            排序:
+                                已经标记过的span不参与reg标记
+                                当前灰度等级为level>>1(灰度每次处理范围为level/2),span灰度等级为dist>>1
+                                如果一个span level差超过栈数量(距离极值太远),则跳过不处理
+                                将span所在x,y,i加入到对应level差的栈内
             边界追踪算法 ********************RecastContour********************
 
             导航网格 ********************RecastMesh********************
