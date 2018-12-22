@@ -136,12 +136,16 @@
                             3. null region broken into two regions
                         循环(level > 0) 
                             level是灰度值,初始值为灰度最大值(maxDistance+1)&(~1)_偶数,每次递减2个单位
-                            每次处理的灰度范围是
+                            当前处理栈为sID
                             排序:
                                 已经标记过的span不参与reg标记
                                 当前灰度等级为level>>1(灰度每次处理范围为level/2),span灰度等级为dist>>1
                                 如果一个span level差超过栈数量(距离极值太远),则跳过不处理
                                 将span所在x,y,i加入到对应level差的栈内
+                            展开:分为涌出和扩展两种方式,涌出是新建区域淹没相邻span,扩展是对已有span按照距离扩展
+                                遍历当前sID栈上span,清空它的reg标记,每个span只标记一次
+                                span所属区域趋向于最近的连通区域中心
+                                新建区域只处理两个level和level-2内的
             边界追踪算法 ********************RecastContour********************
 
             导航网格 ********************RecastMesh********************
