@@ -148,10 +148,16 @@
                                 新建区域只处理两个level和level-2内的
                             过滤:遍历span(x,z,h),向上逐个检查
                                 重叠区域,加入到当前span所属区域的floors内
-                                connections非空则表示轮廓已找到,不再处理,否则从该span沿着reg交接的边界过滤并记录
+                                connections非空则表示轮廓已找到,不再处理,否则找出与reg相邻的区域信息
                                 某个region的span数量低于minRegionArea并且不是边界区域则删除该区域,边界tile
                                 合并太小的region,重新生成区域ID               
+
             轮廓生成 ********************RecastContour********************
+                轮廓是指由体素构成的Span的边界信息,边界分为内边界和外边界,外边界是区域边界
+                轮廓是由折线(XZ平面)构成的封闭的多边形
+                rcContourSet是轮廓的集合,NAVMESH生成的当前阶段结构,包含基本的cs.ch.width.height.aabb.borderSize
+                rcContour是轮廓信息,包含简化后的verts nverts和原始的rverts rnverts以及区域IDreg和区域类型area 
+                maxError表示简化轮廓时的最大边界误差
                 
             导航网格 ********************RecastMesh********************
             TODO 以下配置尚不明确具体用途
