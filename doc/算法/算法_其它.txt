@@ -84,6 +84,8 @@
       叉乘运算
           axb=(aybz-azby,azbx-axbz,axby - aybx)
           叉乘结果ab两个向量所在平面的法线向量
+          叉乘结果的Y值绝对值的1/2等于三角形面积
+          顺时针方向三角形面积为正数,逆时针三角形面积为负数
       点乘运算
           a*b=axbx+ayby+azbz=|a||b|cos0
       旋转运算
@@ -91,6 +93,9 @@
           四元数乘以向量得出向量旋转后的向量
             self.forward = rotation * Vector3.forward
             self.right = rotation * Vector3.right
+      多边形面积
+          凸多边形:以某个顶点为作为公共顶点剖分多边形,按顺序分别计算三角形面积,利用向量叉乘,不带符号
+          凹多边形:计算方式一样,只不过面积会带正负,最终计算结果是多边形面积
 运动方程
     匀速:f=vt
     匀加速s=0.5at^2+vt
