@@ -140,6 +140,16 @@ context与object的关系
             硬件支持生成MIPMAP
             glGenerateMipmap(GL_TEXTURE_2D);
             GL_<FILTER>_MIPMAP_<SELECTOR> filter标记miplevel内如何采样 selector标记如何选择miplevel
+        纹理压缩
+            文件存储压缩格式,基于整幅图片进行压缩,不支持分块解压,无法利用GPU并行功能
+                psd tga bmp png jpg gif
+                png32支持24位颜色和8位透明度,支持256色透明度
+            内存存储压缩格式,基于BLOCK进行压缩,不需要再CPU内解压,可以被GPU直接解压采样读取
+                etc pvrtc dxt astc
+                DXT算法对每个4*4block进行压缩,只保留两个颜色,其他颜色值这两个颜色之间的插值,PC标准压缩算法,0.6
+                ETC,安卓常用压缩算法,ETC1不支持ALPHA通道,4*4块压缩,0.125/0.25
+                PVR,IOS常用压缩算法,压缩分块时会考虑部分块之间的关联性,PVRTC2是8*4压缩,PVRTC4是4*4压缩,0.125/0.25
+                ASTC,IOS6以后支持的压缩算法,不需要POT支持,压缩质量也更高,压缩比变大0.25
 着色器
     基础知识
         glVertexAttribPointer指定index是着色器中的变量ID
