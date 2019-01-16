@@ -19,15 +19,23 @@
                     通过shader.globalMaximumLODLevel设置当前渲染质量,低于该值的shader的pass才会被使用
                     通过shader.maximumLodLevel设置特定shader的渲染质量
         CULL
-            根据是否在视椎体内直接控制显示隐藏
-            根据四叉树计算是否在视野内,远处的物体使用天空盒
-            优点:占用内存小 缺点:远处的物体直接被隐藏
     SHADER
-        由于宏定义太多导致shader变体很多,甚至会有几百万变体
-        变体会根据Shader.EnableKeywords开启全局key,Material.EnableKeywords开启单个key,keywords最多256个,#ifdef #endif宏来使用
-        使用#pragma shader_feature|multi_compile定义,shader_feature定义的没用到不会被编译
-        不仅增加了build时间,运行时也会由于变体太多增加加载时间并增加内存占用
-        build时间优化:
+        变体
+            使用#pragma shader_feature或者#pragma multi_compile来定义变体宏
+                shader_feature定义的变体没有使用到不会被编译
+                multi_compile定义的变体都会编译
+                shader变体keyword最多256个,超过这个值会报错
+                宏定义太多导致shader变体很多,甚至会有几百万变体,不仅增加了build时间,运行时由于变体太多增加加载时间并增加内存占用
+                判断是否被使用:
+                    shader如果单独打包,此时shader不会编译生成任何变体
+                    shader和材质打包,shader会根据材质的keyword信息编译生成对应的变体
+                强制生成变体:
+                    1.把shader放在always include shaders
+                    2.把shader放在resources内
+                    3.增加多余的材质,定义对应的变体keyword
+                    4.5.0以后版本提供的shader_variant_collection,针对每个shader指定要使用哪些keyword,把collection放在preload或者和shader打包在一起
+            使用Shader.EnableKeywords开启全局宏定义
+            使用Material.EnableKeywords开启单个材质宏定义
     场景
     角色
     动画
