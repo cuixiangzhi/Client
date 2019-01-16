@@ -196,14 +196,21 @@
                 2.每个轮廓都是不相关的,这里要把它们合并为一个MESH
                 3.轮廓在2D平面是一个简单多边形,包含凸多边形和凹多边形,没有自相交的情况,凹多边形不支持寻路,会被拆分
                 4.通过边界的连接信息获取多边形的边的相邻多边形
+                rcPolyMesh
+                    verts polys regs flags areas 顶点、多边形、多边形所属区域、多边形用户类型、区域标志
+                    nverts npolys maxpolys nvp 顶点、多边形数量、分配的多边形数量、每个多边形最大顶点数
+                    bmin&bmax AABB cs ch 宽高 borderSize指定边界
+                    polys存储凸多边形顶点下标
+                三角剖分
+                    遍历轮廓,每三个顶点一组,检查是否能够成一个内部三角形
+                    分析所有的分割情况,选取分割边长度最短的,把拆分后的三角形记录下来
+                    对剩余的顶点重复这个过程
+                    所需临时变量 
+                        tris(maxVertsPerCont*3,每个顶点都要作为起点生成一个三角形,记录了剖分结果)
+                        indices(maxVertPerCont,标记每个顶点是否生成过三角形)
+                        cont&cont.nverts&cont.verts(要处理的轮廓&顶点数&顶点数组)
             TODO 以下配置尚不明确具体用途
             轮廓配置
-            maxEdgeLen          根据用户输入的轮廓的最大边长计算出的最大边长单位
-            maxSimpleError      用户输入的简化后的轮廓需要分割的最大长度
-            detailSampleDist    采样距离
-            detailSampleMaxError采样最大值
-            tileSize
-            borderSize
     寻路相关算法
         寻找最近的多边形
             遍历所有的多边形,判断点是否在多边形内部(pnpoly算法)并计算与每条边的距离
