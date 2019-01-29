@@ -371,5 +371,10 @@ NGUI源码分析
         由于自适应操作UI的高度范围可能会缩放
         因此需要delta.y * (activeHeight / Screen.height)来计算真正的y偏移
 UGUI源码分析
+    事件系统
+        基础流程
+            EventSystem.Update->(TouchInputModule|StandaloneInputModule).Process->ProcessTouchEvents|ProcessMouseEvents->EventSystem.RaycastAll->PointerEventData
+            通过之前的流程获取到eventdata(和NGUI的MouseOrTouch结构相似的数据),然后检测应该触发什么事件->ExecuteEvents.Execute
+
 ANDROID界面
 IOS界面
