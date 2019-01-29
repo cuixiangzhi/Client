@@ -244,6 +244,16 @@
                 3.从路径搜索的角度来说,高度细节不是必要的,凸多边形是寻路算法的唯一输入,PolyMesh已经有足够的信息用于搜索
                   高度细节一般用在需要把角色放在NAVMESH上,实际上Detour库只使用PolyMesh用于寻路
                     高度细节太多会占用较多的搜索时间和内存
+                4.为了添加高度细节,我们需要计算出多边形是否和原始高度场体素偏移太远,HeightPatch因此而来
+                    HeightPatch只包含一个简单多边形的AABB的高度信息
+                    HeightPatch只包含每个gridlocation的最低高度
+                    HeightPatch每一个gridlocation只有一个高度,没有重叠
+                5.主要步骤有3
+                    1.生成HeightPatch
+                    2.采样多边形边界添加顶点,根据height patch data得出的距离超过contourMaxDeviation的地方
+                    3.对多边形执行Delaunay三角剖分
+                    4.采样多边形内部添加顶点,根据height patch data得出的距离超过contourMaxDeviation的地方,新增顶点需要重新剖分
+                rcPol
     寻路相关算法
         寻找最近的多边形
             遍历所有的多边形,判断点是否在多边形内部(pnpoly算法)并计算与每条边的距离
