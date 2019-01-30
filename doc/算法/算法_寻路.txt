@@ -244,16 +244,30 @@
                 3.从路径搜索的角度来说,高度细节不是必要的,凸多边形是寻路算法的唯一输入,PolyMesh已经有足够的信息用于搜索
                   高度细节一般用在需要把角色放在NAVMESH上,实际上Detour库只使用PolyMesh用于寻路
                     高度细节太多会占用较多的搜索时间和内存
-                4.为了添加高度细节,我们需要计算出多边形是否和原始高度场体素偏移太远,HeightPatch因此而来
-                    HeightPatch只包含一个简单多边形的AABB的高度信息
-                    HeightPatch只包含每个gridlocation的最低高度
-                    HeightPatch每一个gridlocation只有一个高度,没有重叠
-                5.主要步骤有3
+                5.主要步骤有3          
+                    rcPolyMeshDetail
+                        meshes&&nmeshs  细节多边形及个数信息,一般是三角形
+                        verts&&nverts   新增顶点信息及个数
+                        tris&&ntris     三角形顶点索引及个数
                     1.生成HeightPatch
+                        遍历每一个凸多边形,生成bounds信息(xmin,xmax,zmin,zmax),也就是凸多边形的XZ平面AABB
+                        同时计算出凸多边形在XZ平面的XZ范围,也就是xmax-xmin和zmax-zmin的最大值
+                        hp.data = new data[dx*dz]; hp.xmin=xmin; hp.zmax=zmax;  hp.width=xmax-xmin; hp.height=zmax-zmin;
+                        遍历AABB范围内的CompactCell的每个体素,获取相同区域的最大高度并填充hp.data对应位置
+                        queue保存已设置高度的cell,遍历queue检查四邻域cell是否设置过高度,没有设置过说明区域ID不相同,根据连接的cell设置高度
                     2.采样多边形边界添加顶点,根据height patch data得出的距离超过contourMaxDeviation的地方
-                    3.对多边形执行Delaunay三角剖分
+                        detailSampleDist控制采样间隔  detailSampleMaxError控制高度阈值
+                        把每条边分成N个采样点,在每个采样点处通过hp的高度得出一系列新点,如果新点的高度和原始边高度差超过阈值,则这个点作为这条边的新增点
+                        对分割后的边重复这个过程直到每个采样点的高度误差低于阈值
+                    3.对多边形执行三角剖分
+                        先执行三角剖分,从一个三角形边长最小的三角形开始分割,左右逐渐递增,检查左侧和右侧递增后的三角形边长,选最小的生成
+                        剖分结果可能类似于一条折线
                     4.采样多边形内部添加顶点,根据height patch data得出的距离超过contourMaxDeviation的地方,新增顶点需要重新剖分
-                rcPol
+                        sampleMaxError控制采样误差
+                        首先根据采样间隔在AABB内找出所有有效的采样点
+                        然后遍历所有采样点
+                            找出距离三角网格大于误差的点,加入到点集内,如果没有超过误差的点,则退出循环
+                            对点集执行Delaunay三角剖分,首先把多边形边界边加入到边集内
     寻路相关算法
         寻找最近的多边形
             遍历所有的多边形,判断点是否在多边形内部(pnpoly算法)并计算与每条边的距离
