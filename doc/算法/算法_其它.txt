@@ -49,6 +49,7 @@
         三角形面积s^2 = p(p-a)(p-b)(p-c)
     质心坐标 
         线段AB和顶点P,如果P在AB上,那么顶点P的质心坐标为(u,v) P=uA+vB u+v=1
+        三角形ABC和顶点P,如果P在ABC内,那么顶点P的质心坐标为(u,v) (P-A)=u(B-A)+v(C-A)
     切线和法线
         切线和法线相互垂直,相乘结果为-1
         曲线的切线可以利用偏导数 求出各个轴向的偏导数之和乘以单位向量(x,y均为正向)结果就是法线
@@ -57,6 +58,9 @@
         cos(a-b)=cosa*cosb+sina*sinb
         sin(a+b)=sina*cosb+cosa*sinb
         sin(a-b)=sina*cosb-cosa*sinb
+    三角形外接圆半径
+        r = (a*b*c)/(4*s) r为半径,abc为三边长度,s为三角形面积
+        圆心坐标,外接圆圆心是三边垂直平分线的交点,圆心到三个顶点的距离相等
   高等数学
     定积分   
         ∫(a→b)f(x)dx  
