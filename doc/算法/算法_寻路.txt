@@ -272,6 +272,67 @@
                                 首先对点集建立一个凸包(Graham扫描算法极值点极角排序),也就是建立一个多边形把点都包围起来
                                 然后插入一个新点,该点与包围它的多边形每个顶点相连,逐个检查空外接圆性质,并进行局部LOP,通过交换对角线优化最小角
                                 空圆特性检查,首先遍历每条边,然后针对每个顶点建立三角形,计算外接圆圆心和半径,再和其它顶点比较
+                                圆外的点忽略,圆内的点需要重新计算外接圆,圆上的点,首先检查是否与端点重合,是则跳过,否则重新计算外接圆
+                                每条边都有两个连接的三角面,不同方向面ID不同
+                    5.相对坐标转换
+                        把原始MESH的verts和DetailMESH的verts顶点的相对坐标加上原点偏移得出世界坐标
+                        把verts从临时数组拷贝到dmesh.verts;把tris从临时数组拷贝到dmesh.tris
+                        dmesh.meshes存储了每个多边形的顶点数和三角形个数
+                6.遍历多边形,检查area标记,修改area和flag类型,area可行走则标记为GROUND;公路草地等flag改为WALK,水的flag改为SWIM,门的flag改为DOOR|WALK
+            寻路图生成************************DetourNavMeshBuilder*****************************************
+                1.参数信息填充
+                    dtNavMeshCreateParams
+                    verts&vertCount&polys&polyAreas&polyFlags&polyCount&nvp 2D顶点和多边形信息
+                    detailVerts&detailVertsCount&detailTris&detailPolys     高度细节顶点和多边形信息
+                    offMeshConVerts&&offMeshConRad&&offMeshConDir&&offMeshConAreas&&offMeshConFlags&&offMeshConUserID&&offMeshConCount
+                    walkableHeight&&walkableRadius&&walkableClimb&&cs&&ch&&AABB 角色宽高步长及NAVMESHAABB信息
+                2.填充BUFFER,写入文件
+                    1.计算数据大小(每一部分都是四字节对齐)
+                        headerSize  文件头大小           dtAlign4(sizeof(dtMeshHeader))
+                        vertsSize   原始顶点数据大小     dtAlign4(sizeof(float)*3*totVertCount) params.vertCount
+                        polysSize   原始多边形数据大小   dtAlign4(sizeof(dtPoly)*totPolyCount)  params.polyCount
+                        linksSize   原始多边形链接信息   dtAlign4(sizeof(dtLink)*maxLinkCount)
+                        detailMeshesSize 细节多边形信息  dtAlign4(sizeof(dtPolyDetail)*params->polyCount)
+                        detailVertsSize  细节多边形非重复顶点 dtAlign4(sizeof(float)*3*uniqueDetailVertCount) 每个细节多边形独立顶点的总数
+                        detailTrisSize   细节多边形三角形     dtAlign4(sizeof(unsigned char)*4*detailTriCount)
+                        bvTreeSize       AABB包围盒树         dtAlign4(sizeof(dtBVNode)*params->polyCount*2)
+                        offMeshConsSize
+                    2.文件头填充
+                        当前tile的坐标和层级以及用户自定义ID
+                        magic&version&tileX&tileY&tileLayer&userId 
+                        当前tile的各项数据大下信息
+                        vertCount&polyCount&maxLinkCount&bmin&bmax&detailMeshCount&detailVertCount&detailTriCount
+                        当前tile的OffMesh信息
+                        offMeshBase&offMeshConCount
+                        当前tile的AABB信息
+                        bvQuantFactor&bvNodeCount
+                        当前tile的角色参考信息
+                        walkableHeight&walkableRadius&walkableClimb
+                    3.数据填充
+                        把原始顶点的体素坐标转换为世界坐标 bmin+pos*cs|ch
+                        把原始多边形的area和flag设置好,遍历每个顶点,检查邻接信息,设置neis信息
+                        把OffMesh信息转换为poly,每个OffMesh由两个顶点组成
+                        把细节多边形的顶点和三角形填充到大数组尾部
+                        构建AABB包围盒
+                        把OffMesh的连接信息加入
+                3.创建NavMesh运行时数据
+                    dtNavMesh
+                        m_tileWidth&m_tileHeight&m_maxTiles tile宽高和数量
+                        m_posLookup&m_tileLutSize&m_tileLutMask tile哈希查询表
+                        m_nextFree&m_tiles tile链表和空闲链表
+                    dtMeshTile
+                        header&polys&verts&links            原始简单多边形及其顶点和链接信息
+                        detailMeshes&detailVerts&detailTris 细节高度多边形及其顶点信息
+                        bvTree&offMeshCons                  AABB包围盒及OffMesh信息
+                        next                                tile是一个链表保存的最后一个tile指向free(NULL)
+                    dtTileRef&&dtPolyRef
+                        tile通过x,y计算哈希值保存在lookup表中,相同xy的tile以链表保存
+                        tileRef是一个id,有三个位段,salt+it+ip it占用m_tileBits位,ip占用m_polyBits位,salt占用剩余位
+                        如果id使用64位,这几个位段长度固定,否则根据tile数量和多边形数量来计算
+                    addTile操作
+                        1.检查版本号和坐标是否合法,分配一个新的tile或者修复已有的某个tile(这个会在tile形式的生成中用到)
+                        2.除去链接信息之外的顶点和多边形直接引用数据内的
+
     寻路相关算法
         寻找最近的多边形
             遍历所有的多边形,判断点是否在多边形内部(pnpoly算法)并计算与每条边的距离
