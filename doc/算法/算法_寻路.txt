@@ -332,7 +332,21 @@
                     addTile操作
                         1.检查版本号和坐标是否合法,分配一个新的tile或者修复已有的某个tile(这个会在tile形式的生成中用到)
                         2.除去链接信息之外的顶点和多边形直接引用数据内的
-
+                        3.生成链接信息(每条边的链接多边形ID)
+                            dtLink ref(邻接多边形ID) egde(第几条边) side(哪个方向) bmin&bmax(与邻接tile的链接边大小(百分比))
+                            内部链接:tile内的多边形链接,polyID从1开始,0表示tile本身
+                            外部链接:tile之间的链接,首先生成xy相同layer不同的链接,再生成四周的链接
+                                首先对每个多边形找出链接标记为DT_EXT_LINK的边(dir标记了链接的五个方向)
+                                然后赋值链接多边形和链接边及方向,然后计算和邻接tile链接的边的大小
+                                tile之间是互相链接a<->b,tile之间的链接包含8邻域和上下邻域
+                            OffMesh链接:手动添加的远程链接,可以是tile内部也可以是tile和tile之间
+        Tile区别
+            1.根据cellSize计算体素数量,每个tile的大小是通过体素个数定义的正方形
+            2.遍历每一个tile,执行buildTileMesh,然后移除目标位置上旧的tile，添加新的tile
+            3.buildTileMesh流程
+                根据tile找出足够把tile包围的mesh(通过borderSize计算),AABB相比Tile本身的AABB会被扩大
+                光栅化是根据AABB做碰撞检测找出的
+                其它流程和solo模式一致,只不过会传入borderSize做外部区域标记,buildMesh时边界外的会通过移除顶点给Remove掉
     寻路相关算法
         寻找最近的多边形
             遍历所有的多边形,判断点是否在多边形内部(pnpoly算法)并计算与每条边的距离
