@@ -161,7 +161,6 @@
                                 connections非空则表示轮廓已找到,不再处理,否则找出与reg相邻的区域信息
                                 某个region的span数量低于minRegionArea并且不是边界区域则删除该区域,边界tile
                                 合并太小的region,重新生成区域ID               
-
             轮廓生成 ********************RecastContour********************
                 轮廓是指由体素构成的Span的边界信息,边界分为内边界和外边界,外边界是区域边界
                 轮廓是由折线(XZ平面)构成的封闭的多边形
@@ -347,6 +346,29 @@
                 根据tile找出足够把tile包围的mesh(通过borderSize计算),AABB相比Tile本身的AABB会被扩大
                 光栅化是根据AABB做碰撞检测找出的
                 其它流程和solo模式一致,只不过会传入borderSize做外部区域标记,buildMesh时边界外的会通过移除顶点给Remove掉
+        代码分类
+            体素:
+                rcHeightField                   Recast.h
+                rcCreateHeightField             Recast.cpp
+                rcMarkWalkableTriangles         Recast.cpp
+                rcRasterizeTriangles            RecastRasterization.cpp
+                rcFilterLedgeSpans              RecastFilter.cpp
+                rcFilterWalkableLowHeightSpans  RecastFilter.cpp
+            区域:
+                rcCompactHeightField            Recast.h
+                rcBuildCompactHeightField       Recast.cpp
+                rcBuildDistanceField            RecastRegion.cpp
+                rcBuildRegions                  RecastRegion.cpp
+            轮廓:
+                rcContourSet                    Recast.h
+                rcBuildContours                 RecastContour.cpp
+                walkContour
+                simplifyContour
+            网格:
+                rcPolyMesh                      Recast.h
+                rcBuildPolyMesh                 RecastMesh.cpp
+                rcPolyMeshDetail                Recast.h
+                rcBuildPolyMeshDetail           RecastMeshDetail.cpp
     寻路相关算法
         寻找最近的多边形
             遍历所有的多边形,判断点是否在多边形内部(pnpoly算法)并计算与每条边的距离
