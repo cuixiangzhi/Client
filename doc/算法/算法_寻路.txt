@@ -339,6 +339,11 @@
                                 然后赋值链接多边形和链接边及方向,然后计算和邻接tile链接的边的大小
                                 tile之间是互相链接a<->b,tile之间的链接包含8邻域和上下邻域
                             OffMesh链接:手动添加的远程链接,可以是tile内部也可以是tile和tile之间
+            包围盒树**************************DetourNavMeshBuilder*****************************************
+                1.首先对每一个多边形生成BVItem,即AABB信息(以体素为单位),然后开始创建BVNode
+                2.对多边形数组执行二分法排序,首先计算数组AABB哪个轴最长,对数组item执行快排算法(按照最长的轴数值从小到大)
+                3.分别对排序后的数组左右两部分执行二分法排序(左闭右开),结束条件:剩余两个元素,分别赋值node.bmin&bmax&i  
+                4.叶字结点i记录了是哪个多边形,非叶子结点记录了子结点数量和子结点最大的AABB
         Tile区别
             1.根据cellSize计算体素数量,每个tile的大小是通过体素个数定义的正方形
             2.遍历每一个tile,执行buildTileMesh,然后移除目标位置上旧的tile，添加新的tile
@@ -370,10 +375,29 @@
                 rcPolyMeshDetail                Recast.h
                 rcBuildPolyMeshDetail           RecastMeshDetail.cpp
     寻路相关算法
-        寻找最近的多边形
-            遍历所有的多边形,判断点是否在多边形内部(pnpoly算法)并计算与每条边的距离
-            点在多边形内部则计算其高度,利用向量加法AP = u * AB + v * BC)
-            不在多边形内部则返回目标点
+        点到多边形的最近的点
+            首先根据多边形ID找出tile和poly,再根据poly偏移找出detailMesh
+            根据点到线段距离算法和pnpoly算法判断点到多边形每条边的距离以及点是否在多边形内部
+            在内部: 不需要处理,点已经在内部了
+            在外部: 遍历找出距离最近的边,把点坐标限制到边上(多边形内部)
+            遍历detailMesh的三角形,根据质心坐标算法求出高度(解方程简化) AP = u * AB + v * BC)
+            该功能可以拆分为两部分 获取不带高度的距离多边形最近的点和获取多边形内部某点的高度
+            OffMesh是两个点构成的poly,在poly内部也就是在线段上
+        距离点最近的多边形
+            根据中心点和搜索范围查找距离最近的最多128个多边形
+                首先:根据中心点和搜索范围得出一个AABB,然后根据AABB计算搜索范围内tile的个数(bminx|y-ox|y)/tw|th (bmaxx|y-ox|y)/tw|th
+                然后:遍历所有范围内的tile,遍历这个tile位置处所有layer的tile,在tile内部根据AABB和过滤器查找多边形
+                最后:
+            根据AABB在tile内部查找多边形
+                有包围盒二叉树:
+                    首先根据TILE的AABB和搜索AABB,计算有效的搜索AABB,bvQuantFactor是体素大小的倒数,因为AABB树是以体素格子为单位
+                    根据tile计算出polyIDBase(也就是tile_salt+tile_tile+0)
+                    搜索BV二叉树
+                        如果当前结点是叶子结点并且被搜索AABB覆盖,则检测该多边形是否通过filter测试,是则加入结果列表
+                        如果被AABB覆盖或者当前结点是叶子结点,那么node结点加1,否则跳过该子树(node.i存储了该子树有多少结点(以负数存储),node+node.i就是右子树)
+                无包围盒二叉树:
+                    首先根据tile计算出polyIDBase(也就是tile_salt+tile_tile+0)
+                    然后遍历tile内的所有多边形,针对每个多边形执行filter测试然后计算其AABB是否被搜索AABB覆盖,是则加入结果列表
         启发式搜索算法A*
             1.建立OPEN表(有序队列),和CLOSE表,OPEN表插入初始结点
             2.循环.
