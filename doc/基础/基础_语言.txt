@@ -345,7 +345,29 @@ ShaderForUnity
 	} 
 Shader&库
 
-
+OC: 面向对象的语言
+	基础函数类库 
+		#import <Foundation/Foundation.h>
+		日志打印:NSLog
+		字符串:NSString
+	类声明
+		声明类以@interface开头,@end结尾 
+	类实现
+		实现类以@implementation开头,以@end结尾
+		@interface cls : NSObject
+		{
+			大括号内部是成员变量
+		}
+		@end
+	类函数:
+		-(void)name:(bool)param;  减号表示函数开始,加号定义的是静态函数,冒号前面是函数名字和返回值,类型用括号括起来
+	类对象:
+		创建
+			cls* ptr = [[cls alloc] init];
+			类对象创建使用中括号,前面是类名,后面是分配函数,在后面是初始化函数
+		释放
+			[cls release:1];
+			OC不支持垃圾回收,用完需要释放,参数用冒号表示开始
 			  
 
 
