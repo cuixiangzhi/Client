@@ -375,7 +375,7 @@
                 rcPolyMeshDetail                Recast.h
                 rcBuildPolyMeshDetail           RecastMeshDetail.cpp
     寻路相关算法
-        点到多边形的最近的点
+        距离点最近的多边形内的点
             首先根据多边形ID找出tile和poly,再根据poly偏移找出detailMesh
             根据点到线段距离算法和pnpoly算法判断点到多边形每条边的距离以及点是否在多边形内部
             在内部: 不需要处理,点已经在内部了
@@ -387,7 +387,10 @@
             根据中心点和搜索范围查找距离最近的最多128个多边形
                 首先:根据中心点和搜索范围得出一个AABB,然后根据AABB计算搜索范围内tile的个数(bminx|y-ox|y)/tw|th (bmaxx|y-ox|y)/tw|th
                 然后:遍历所有范围内的tile,遍历这个tile位置处所有layer的tile,在tile内部根据AABB和过滤器查找多边形
-                最后:
+                最后:遍历搜索AABB过滤出的所有多边形,计算距离点最近的多边形内的点
+                    如果点在多边形内(XZ平面),则计算高度距离d(在多边形下面则距离为0,在上面d等于点距离减去stepHeight)
+                    不在多边形内则距离d为两点直线距离
+                    找出距离值d最小的多边形和点
             根据AABB在tile内部查找多边形
                 有包围盒二叉树:
                     首先根据TILE的AABB和搜索AABB,计算有效的搜索AABB,bvQuantFactor是体素大小的倒数,因为AABB树是以体素格子为单位
@@ -399,11 +402,27 @@
                     首先根据tile计算出polyIDBase(也就是tile_salt+tile_tile+0)
                     然后遍历tile内的所有多边形,针对每个多边形执行filter测试然后计算其AABB是否被搜索AABB覆盖,是则加入结果列表
         启发式搜索算法A*
+            数据结构
+                open
+                    node指针构成的数组(以堆排序算法有序),node数据通过指针来引用,open表不存储数据
+                堆排序算法:
+                    向上调整:因为二叉有序堆父结点一定小于子结点(左右子结点大小无序),因此向上调整只需要判断i和(i-1)/2大小后父结点数据下调即可
+                    向下调整:检查左右子结点2i+1和2i+2,选择较小的交换
+                node:
+                    pos cost total 坐标点 当前消耗 总消耗
+                    pidx 父结点idx state结点状态 flags结点标志 id所属多边形ID
+                pool:
+                    nodes数组 next链表(存储每个哈希位置处的结点链表next) first(哈希表,存储一个bucket内的链表头结点)
+                    getNode:首先对polyID进行hash得出bucket,然后在bucket内查找对应的结点,如果没有那么就新增一个结点
+                query:
+                    startPoly endPoly startPos endPos 起始点和多边形
+                    filter过滤器通过area和flag来检测多边形是否合法
+                    bestNode bestNodeCost 搜索过程中的当前最优结点
             1.建立OPEN表(有序队列),和CLOSE表,OPEN表插入初始结点
             2.循环.
                 弹出OPEN表头结点,插入CLOSED表
                 当前结点是目标结点?结束循环
-                遍历当前结点子结点
+                遍历当前结点子结点(首先根据当前结点的polyID找出poly和tile)
                     计算到目标点消耗
                     已在OPEN表或者CLOSED表并且消耗大于结点消耗?检查下一个结点
                     新的结点或者是消耗变的更小了,从CLOSED表移除,插入OPEN表,排序,修改其父结点
