@@ -432,10 +432,30 @@
                 当前结点是目标结点?结束循环
                 遍历当前结点的链接结点(首先根据当前结点的polyID找出poly和tile以及它的父结点)
                     检查当前链接多边形是否是目标类型的多边形,不是则跳过
+                    从结点数组内找出对应的结点并计算链接边出口点坐标
+                        入口点坐标计算
+                            首先找出两个多边形的链接信息
+                            如果是OFFMESHLINK,那么链接边左右点相同
+                            否则检查链接是否是内部链接,是则返回边的左右两端点,否则返回外部链接计算的conarea范围的左右两个端点
+                            计算两个端点构成的边的中点作为入口点赋值给node.pos
                     计算到目标点消耗
-                    已在OPEN表或者CLOSED表并且消耗大于结点消耗?检查下一个结点
-                    新的结点或者是消耗变的更小了,从CLOSED表移除,插入OPEN表,排序,修改其父结点
-            3.已找到目标结点?反向遍历父结点,找出正序结点路径
+                        如果当前多边形是目标多边形
+                            g=curNode.cost+distance(curNode.pos,neiboNode.pos)*filter.getCost(curPoly.area)+distance(neiboNode.pos,dstPos)*filter.getCost(neiboPoly.area);
+                            h=0 f=g+h
+                        如果不是目标多边形
+                            g=curNode.cost+distance(curNode.pos,neiboNode.pos)*filter.getCost(curPoly.area)
+                            因为没到目标多边形,所以朝向当前多边形链接边的中点移动,检测消耗
+                            h=distance(neiboNode.pos,dstPos)*H_SCALE
+                    如果当前邻接点已在OPEN表或者CLOSED表
+                        新计算消耗大于当前消耗
+                            跳过处理下一个链接点
+                    修改当前链接点的消耗和父结点
+                        在OPEN表内
+                            修改消耗并排序
+                        在CLOSED表内
+                            从closed表移除,插入open表
+                    根据h值修改当前最近结点,可以根据该结点检查是不是直接到达了目标点,否则是只走了一部分路径
+            3.根据查找出的路径点的父结点标记反向找出路径多边形列表
         Dijkstra算法
             1.建立二维数组V2,存储当前源点到其他点直接距离,不相邻为无穷大
             2.建立数组V1,存储源点到其他点的最短距离,长度为顶点数(多边形数),每个数组对象存储当前最短距离的父结点ID
