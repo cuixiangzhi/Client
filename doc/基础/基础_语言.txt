@@ -174,6 +174,8 @@ C++对象内存布局
 	malloc是分配一块新的内存  realloc是在原内存后加长,可能会变化地址
 编译执行  
 	C++  GCC(LINUX) CL(WINDOWS) MINGW(WINDOWS)  
+	JIT 即时编译,在运行时将频繁执行的方法编译成本地机器代码,需要可执行内存支持
+	AOT 提前编译,运行前编译
 逆波兰式  
 	后缀表达式,方便堆栈操作实现任意复杂度的表达式,一次扫描即可得出结果,遇到操作数压栈,遇到运算符弹出操作数并运算
 	波兰式即前缀表达式,对应于二叉树的前序遍历结果,逆波兰式对应于后序遍历结果
@@ -381,6 +383,26 @@ OC: 面向对象的语言
 		释放
 			[cls release:1];
 			OC不支持垃圾回收,用完需要释放,参数用冒号表示开始
+
+Java:
+	JDK分类
+		J2ME J2SE J2EE分别是针对移动平台和嵌入式、PC平台、企业版设计的JDK
+		JDK是Java开发工具包,包括了开发环境JRE、Java编译运行工具、一些基础类库
+		JRE是Java的运行环境,包括了JVM虚拟机和核心类库
+	JDK工具
+		javac 编译工具,把.java编译为.class字节码
+		jar 打包工具,把.class文件打包在一起
+		java 运行工具,运行.class后缀的java程序
+		javap 反编译
+	类库
+		java.lang 系统基础库,不引入就可以使用的包
+		java.io   IO相关类库
+		java.nio  非阻塞IO相关类库
+		java.net  网络相关类库
+		java.util STL相关类库
+		java.sql  数据库操作类库
+		
+
 			  
 
 

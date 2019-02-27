@@ -22,6 +22,7 @@
                     .gset类型文件是区域标记文件
                         f
                         filename
+
                         v nverts area hmin hmax
                         %f %f %f
                         s 配置信息 %f %f %f %f %f %f %f %f %f %f %f %f %f %d %f %f %f %f %f %f %f
@@ -475,3 +476,15 @@
             2.通过穿出边找出下一个多边形,继续上述判断,直到碰到不可穿出区域或者到达目标区域
             3.计算和多边形相交时会返回两条相交结果,如果是一个,那么这个多边形就是最终的多边形
             4.需要记录与各个多边形的相交点,因为如果按照这个路径移动,需要多边形的area信息来处理移动行为
+        多层NAVMESH寻路高度
+            首先使用findPath找出起始点到目标点的多边形路径
+            然后使用findStraightPath找出起始点到目标点的拐点路径(此时记录了每个拐点属于哪个多边形,边界点属于下一个多边形)
+            然后在移动时通过getPolyHeight获取XZ单次移动之后在当前多边形上的高度
+        静态阻挡实现
+            方法1,在生成NAVMESH的时候导出.gset,标记三角形网格的区域类型
+                area类型包括 POLYAREA_GROUND(地面) POLYAREA_GRASS(草地) POLYAREA_ROAD(公路) POLYAREA_WATER(水) POLYAREA_DOOR(门)
+                flag类型包括 POLYFLAGS_WALK(行走) POLYFLAGS_SWIM(游泳) POLYFLAGS_DOOR(门)
+                flag和area可以扩展,但是flag最多有16位(ushort类型)
+                在寻路时通过dtQueryFilter的includeFlag和excludeFlag来过滤掉不可行走的区域
+            方法2,对生成的NAVMESH进行裁剪
+                
