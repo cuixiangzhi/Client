@@ -1,7 +1,9 @@
 图形学
 	图形 线框图 真实感图形 图像 图形方程 几何属性 非几何属性
-	渲染流水线->VBO/VAO->顶点着色器->细分曲面->几何着色器->图元装配->光栅->裁剪->片段着色器->像素归属测试(多窗口)->裁剪测试->Alpha测试->深度测试->模板测试->颜色混合
-	http://duriansoftware.com/joe/An-intro-to-modern-OpenGL.-Chapter-1:-The-Graphics-Pipeline.html
+	渲染流水线
+		主循环->逻辑循环->renderOneFrame->renderTarget(window|texture)->camera->scene->renderqueue->不透明物体(VBO/VAO/EBO)->半透明物体(VBO/VAO/EBO)
+		顶点着色器(MVP变换)->细分曲面着色器->几何着色器->图元装配->裁剪->透视除法->视口变换->光栅化
+		片段着色器->像素归属测试->裁剪测试->Alpha测试->深度测试->模板测试->颜色混合
 	渲染指令调用顺序
 		应用程序->操作系统->驱动程序->显卡
 硬件
