@@ -29,4 +29,7 @@ Projector实时投影
                 alpha = tex2DProj(_ShadowTex,uv齐次).a
                 uv = uv齐次.xy / uv齐次.w;
                 比较当前uv和中心uv的距离,插值得出边界处的alpha
-
+昼夜
+雾气
+透明
+水波
