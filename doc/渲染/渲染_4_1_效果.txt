@@ -1,34 +1,49 @@
-ShadowMap实时阴影
-    原理:1.以实时灯光位置作为视点,渲染一张深度纹理
-            生成过程: 
-                顶点shader计算深度
-                    o.pos = UnityObjectToClipPos(v.vertex);
-                    o.depth = o.pos.zw
-                像素shader记录深度(因为有差值)
-                    float depth = o.depth.x / o.depth.y
-                    fixed4 depth_color = EncodeFloatRGBA(depth)
-         2.接受阴影的物体从模型空间转换到灯光空间,和深度图作比较,大于深度图中的深度则为阴影
-            计算过程
-                顶点shader计算深度
-                    objectToLightProj = mul(worldToLightProj,unity_ObjectToWorld);
-                    o.proj = mul(objectToLightProj,v.vertex);
-                    o.depth = o.proj.zw
-                像素shader比较深度
-                    fixed4 depth_texture_color = tex2Dproj(_DepthTexture,o.proj);
-                    float depth_texture = DecodeFloatRGBA(depth_texture_color);
-                    float depth_current = o.depth.x / o.depth.y
-                    if(depth_texture < depth_current) 阴影
-Projector实时投影
-    原理:1.以实时灯光位置作为视点,渲染一张纹理
-            根据投射阴影的层级渲染得出一张投影纹理,该纹理的alpha值大于0表示阴影,等于0表示不是阴影
-         2.把纹理投影到场景内,类似于幻灯片投影到墙上一样
-            顶点shader计算当前顶点的投影纹理齐次坐标
-                sproj = mul(_Projector,v.vertex);
-            像素shader采样然后插值计算alpha进行混合 Blend DstColor Zero 正片叠底
-                uv齐次 = UNITY_PROJ_COORD(sproj);
-                alpha = tex2DProj(_ShadowTex,uv齐次).a
-                uv = uv齐次.xy / uv齐次.w;
-                比较当前uv和中心uv的距离,插值得出边界处的alpha
+实时阴影
+    ShadowMap实时阴影
+        原理:1.以实时灯光位置作为视点,渲染一张深度纹理
+                生成过程: 
+                    顶点shader计算深度
+                        o.pos = UnityObjectToClipPos(v.vertex);
+                        o.depth = o.pos.zw
+                    像素shader记录深度(因为有差值)
+                        float depth = o.depth.x / o.depth.y
+                        fixed4 depth_color = EncodeFloatRGBA(depth)
+             2.接受阴影的物体从模型空间转换到灯光空间,和深度图作比较,大于深度图中的深度则为阴影
+                计算过程
+                    顶点shader计算深度
+                        objectToLightProj = mul(worldToLightProj,unity_ObjectToWorld);
+                        o.proj = mul(objectToLightProj,v.vertex);
+                        o.depth = o.proj.zw
+                    像素shader比较深度
+                        fixed4 depth_texture_color = tex2Dproj(_DepthTexture,o.proj);
+                        float depth_texture = DecodeFloatRGBA(depth_texture_color);
+                        float depth_current = o.depth.x / o.depth.y
+                        if(depth_texture < depth_current) 阴影
+    Projector实时投影
+        原理:1.以实时灯光位置作为视点,渲染一张透明纹理
+                生成过程:
+                    顶点shader只计算坐标
+                    像素shader直接返回不透明颜色
+                    生成的纹理的alpha值大于0表示阴影,等于0表示不是阴影
+             2.把纹理投影到场景内,类似于幻灯片投影到墙上一样
+                计算过程:
+                    顶点shader计算当前顶点的投影纹理齐次坐标
+                        sproj = mul(_Projector,v.vertex);
+                    像素shader采样然后插值计算alpha进行混合 Blend DstColor Zero 正片叠底
+                        uv齐次 = UNITY_PROJ_COORD(sproj);
+                        alpha = tex2DProj(_ShadowTex,uv齐次).a
+                        uv = uv齐次.xy / uv齐次.w;
+                        float2 factor = abs(uv4.xy / uv4.w - float2(0.5,0.5));
+                        if(factor.x <= 0.5 && factor.y <= 0.5)
+                        {
+                            //首先把阴影的范围限制在投影纹理UV之内,然后计算UV和边界的距离插值处理渐变效果(用距离边界最小的值算)
+                            float minFactorDis = 0.5 - max(factor.x,factor.y)
+                            float dist = 1 - clamp((_ShadowGradient - minFactorDis),0,_ShadowGradient) / _ShadowGradient;
+                            color *= (1 - _ShadowFactor * alpha * dist);
+                        }
+屏幕后处理
+    水波效果
+
 昼夜
 雾气
 透明
