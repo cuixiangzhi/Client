@@ -108,6 +108,15 @@
 			  		映射到内存,内存修改不会写入文件
 		内存权限
 				mprotect(ADDR,LEN,PROT_READ | PROT_WRITE | PROT_EXEC);
+		RingBuffer
+				环形缓冲区
+					一个size大小的buffer,head指向第一个可读的位置,tail指向第一个可写的位置
+					buffer判空 head==tail
+					buffer空闲 head大于tail则left=head-tail-1 head小于tail则left=total-tail-1+head
+					buffer有效 head大于tail则left=total-head+tail head小于tail则left=tail-head
+				无锁逻辑
+					读操作只修改head的值,读取之前先把tail值缓存下来,避免读的过程中被修改,读完之后在修改head的值
+					写操作只修改tail的值,写入之前先把tail值缓存下来,写完之后在修改
 进程管理
 		进程关系
 			父子进程: fork创建进程,pid为0是子进程,大于0是父进程

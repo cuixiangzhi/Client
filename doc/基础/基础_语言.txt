@@ -91,6 +91,9 @@ January February March April May June July August Spetember October November Dec
 	lambda [捕捉列表](参数列表){函数体} =值捕捉 &引用
 	bind 参数重新排列  bind(func,placeorders::_1,_2,var);
 	function<void(int,int)>
+多线程
+	RingBuffer无锁环形缓冲区,适用于命令队列
+	atomic标记,原子类型,加减操作是原子操作,不可再分 例如atomic<int>
 库&dll&依赖 
 	DLL库 
 		__declspec(dllexport) __stdcall __cdecl
