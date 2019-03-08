@@ -10,6 +10,15 @@
 		不透明物体从前往后渲染,利用EarlyZ技术减少OverDraw的像素shader计算
 		半透明物体从后向前渲染,半透明物体不写入深度,执行AlphaBlend操作,EZ在这里也可以用
 		AlphaTest无法使用EZ技术,因为AlphaTest是在深度写入之前的,因此无法使用EZ技术提前写入深度
+	多线程渲染
+		逻辑线程和渲染线程分离,采样CommandBuffer队列
+		逻辑线程更新帧N,渲染线程渲染帧N-1,逻辑帧N结束后等待渲染帧结束再开始下一帧计算
+		使用环形BUFFER产生和消耗渲染命令
+	渲染管线
+		ForwardShading前向渲染
+			DepthTexture->DepthNormalTexture->OpaqueObjects->OpaqueImageEffects->SkyBox->Transparent->ImageEffects
+		DeferredShading延迟渲染
+			G-Buffer->Lighting->OpaqueImageEffects->SkyBox->Transparent->ImageEffects
 硬件
 	显卡分类
 		独立显卡 集成显卡 核心显卡
