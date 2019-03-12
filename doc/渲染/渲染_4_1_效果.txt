@@ -41,14 +41,35 @@
                             float dist = 1 - clamp((_ShadowGradient - minFactorDis),0,_ShadowGradient) / _ShadowGradient;
                             color *= (1 - _ShadowFactor * alpha * dist);
                         }
+天空盒
+    原理
+        实时渲染中非常远的物体,大小几乎不会随着摄像机的移动而变化
+        天空盒是一个由六个面的纹理构成的一个立方体即CubeMap,上下左右前后分别对应一张纹理
+        摄像机始终处于立方体中心
+        生成一个与远平面大小相同的MESH,渲染这个MESH时根据中心点指向顶点的向量计算出与CudeMap的交点,取出纹理像素值
+        纹理映射
+            第一步:根据最大维确定纹理图
+            第二步:其它两个维度除以最大维度,缩放到[-1,1]
+            第三步:把纹理坐标映射到[0,1]之内
+    实现
+        o.pos = mul(UNITY_MATRIX_MVP,v.vertex);
+        o.pos.z = o.pos.w 让顶点始终处于远平面
+        o.texcoord = o.pos.xyz
+        color = texCUBE(_SKYTEX,o.texcoord)
 屏幕后处理
     水波荡漾效果
-        原理:屏幕每个像素的UV坐标以中心点为圆心,向圆外偏移,根据距离中心点的距离和偏移的时间计算偏移程度
+        原理:UV动画,屏幕每个像素的UV坐标以中心点为圆心,向圆外偏移,根据距离中心点的距离和偏移的时间计算偏移程度
         顶点shader: 
             啥都不做,只有普通的vertex变换和uv赋值
         像素shader:
             首先计算出圆心指向当前UV的向量 dv = i.uv - fixed2(0.5,0.5)
+
 昼夜
-雾气
 透明
-水波
+雾
+水
+云
+草
+树
+角色
+特效

@@ -164,34 +164,29 @@
                 齐次坐标为(nx,ny,az+b,-z)
                 转换为普通坐标除以-z即透视除法
             投影矩阵
-                |n 0 0  0||x|
-                |0 n 0  0||y|
+                |e 0 0  0||x|
+                |0 f 0  0||y|
                 |0 0 a  b||z|
                 |0 0 -1 0||1|
                 求解出a和b那么投影矩阵就计算完成了
             联立方程
                 由于CVV是规则立方体(方便裁剪),坐标范围是(-1,1)
-                因此当z=-n即处于近裁面时,齐次普通坐标z值为-1,z=-f是处于远裁面,齐次普通z值为1
-                解得 a = -(f+n)/(f-n) b = (-2fn)/(f-n)
-                解出a、b之后得出的投影矩阵,z值已经处于CVV内,但是xy仍处于视角与近裁面构成的范围内
-            线性映射
-                -nx/z从(left,right)映射到(-1,1)
-                -ny/z从(bottom,top)映射到(-1,1)
-                联立方程解得 x=(2nx/-z)/(right-left)-(right+left)/(right-left)
-                             y=(2ny/-z)/(top-bottom)-(top+bottom)/(top-bottom)
-            最终矩阵
-                |a 0 b 0||x|
-                |0 c d 0||y|
-                |0 0 e f||z|
-                |0 0 g 0||1|
-                a=(2n)/(right-left) b=(right+left)/(right-left)
-                c=(2n)/(top-bottom) d=(top+bottom)/(top-bottom)
-                e=-(f+n)/(f-n) f=(-2fn)/(f-n)
-                g=-1
-            投影矩阵公式用到的变量分别为left right top bottom n f
-                right left是根据n和fov计算出的 right=n*tan(fov/2) left=-right
-                top bottom是根据n和fov、aspect计算出的,即top=right/aspect bottom=left/aspect
-                除以aspect是为了保证CVV经过视口变换后物体不变形
+                Z方向
+                    映射到CVV范围内是[-N,-F]->[-1,1]
+                    a = (f+n)/(n-f) b = (2fn)/(n-f)
+                X方向
+                    映射到CVV范围内是[-W/2,W/2]->[-1,1]
+                    W = 2*N*tan(fov/2)
+                    e = n/(W/2)=2n/(W)=2n/(2*N*tan(fov/2))=1/tan(fov/2)
+                Y方向
+                    映射到CVV范围内是[-H/2,H/2]->[-1,1]
+                    H = W / aspect
+                    f = n/(H/2)=n/(W/aspect/2)=2naspect/W=aspect/tan(fov/2)
+            投影矩阵
+                |1/tan(fov/2) 0                 0            0          ||x|
+                |0            aspect/tan(fov/2) 0            0          ||y|
+                |0            0                 (f+n)/(n-f)  (2fn)/(n-f)||z|
+                |0            0                 -1           0          ||1|
             深度精度
                 z-fighting问题
                 因为从投影的z值变换不是线性的
