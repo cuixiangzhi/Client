@@ -1,26 +1,25 @@
 项目优化
-    基础
-        LOD
-            层次细节,根据物体所处的位置显示不同精度的模型或者使用不同的渲染策略
-            MESH_LOAD
-                使用方式:
-                    添加LODGroup组件,增加LOD,摄像机图标拖拽可以查看具体LOD效果
-                    每个LOD设置Renderer列表
-                    每个LOD左侧标识的百分比代表物体在屏幕空间占屏比低于该值时使用这个LOD的策略
-                    物体占屏比是通过当前屏幕空间AABB和近平面时物体的AABB的比例值来计算
-                    LOD支持淡入淡出,通过uniform变量unity_LODFade.x来获取blendfactor,LOD_FADE_PERCENTAGE|LOD_FADE_CROSSFADE
-                全局配置
-                    Unity->Edit->QualitySetting
-                    MaximumLODLevel控制使用的最大LOD级别,超过这个值不会被编译
-                    LODBias控制在两个LOD之间的如何使用,0到1越接近1越靠前
-            SHADER_LOD
-                使用方式:
-                    给每个shader的pass增加 LOD 限定值
-                    通过shader.globalMaximumLODLevel设置当前渲染质量,低于该值的shader的pass才会被使用
-                    通过shader.maximumLodLevel设置特定shader的渲染质量
+    lod
+        层次细节,根据物体所处的位置显示不同精度的模型或者使用不同的渲染策略
+        MESH_LOAD
+            使用方式:
+                添加LODGroup组件,增加LOD,摄像机图标拖拽可以查看具体LOD效果
+                每个LOD设置Renderer列表
+                每个LOD左侧标识的百分比代表物体在屏幕空间占屏比低于该值时使用这个LOD的策略
+                物体占屏比是通过当前屏幕空间AABB和近平面时物体的AABB的比例值来计算
+                LOD支持淡入淡出,通过uniform变量unity_LODFade.x来获取blendfactor,LOD_FADE_PERCENTAGE|LOD_FADE_CROSSFADE
+            全局配置
+                Unity->Edit->QualitySetting
+                MaximumLODLevel控制使用的最大LOD级别,超过这个值不会被编译
+                LODBias控制在两个LOD之间的如何使用,0到1越接近1越靠前
+        SHADER_LOD
+            使用方式:
+                给每个shader的pass增加 LOD 限定值
+                通过shader.globalMaximumLODLevel设置当前渲染质量,低于该值的shader的pass才会被使用
+                通过shader.maximumLodLevel设置特定shader的渲染质量
         CULL
-    SHADER
-        变体
+            自己实现四叉树或者八叉树动态分块加载,执行遮挡剔除
+    variants
             使用#pragma shader_feature或者#pragma multi_compile来定义变体宏
                 shader_feature定义的变体没有使用到不会被编译
                 multi_compile定义的变体都会编译
@@ -36,6 +35,18 @@
                     4.5.0以后版本提供的shader_variant_collection,针对每个shader指定要使用哪些keyword,把collection放在preload或者和shader打包在一起
             使用Shader.EnableKeywords开启全局宏定义
             使用Material.EnableKeywords开启单个材质宏定义
+    mesh
+        PlayerSettings
+            DynamicBatching     300顶点以下的MESH无论是否开启R/W,内存都会翻倍
+            OptimizeMeshData    用来在打bundle时剔除shader没有使用到的顶点属性,可以减小包体
+            VertexCompression   降低顶点属性的精度
+                                该选项是否生效包含以下几种条件
+                                    1.是否开启了DynamicBatching,开启后300顶点以下的MESH不会执行顶点压缩
+                                    2.是否开启了R/W,开启后不会执行顶点压缩
+                                    3.是否开启了MeshCompression,开启后会覆盖掉顶点压缩配置
+        ModelImporter
+            Read/Write Enabled  开启会在多一份内存
+            MeshCompression     使用压缩算法减少硬盘空间占用,默认关闭
     场景
     角色
     动画
