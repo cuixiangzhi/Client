@@ -1,4 +1,4 @@
-窗口
+窗口glut
 	去除CMD窗口 #pragma comment(linker,"/subsystem:\"windows\" /entry:\"mainCRTStartup\"")
 	获取屏幕   glutGet(GLUT_SCREEN_WIDTH) GLUT_SCREEN_HEIGHT
 	创建父窗口 glutCreateWindow(name) glutInitWindowSize(); glutInitWindowPosition();
@@ -13,3 +13,4 @@
 			   glutMotionFunc(void (*func)(int x, int y));  按下移动
 			   glutPassiveMotionFunc(void (*func)(int x, int y)); 普通移动
 			   glutEntryFunc(void (*func) (int state)); 鼠标进出窗口
+窗口glfw

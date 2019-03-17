@@ -75,7 +75,42 @@
             波动的比例 factor = factor * offsetFactor
         最后计算扩散后的UV坐标 uv = uv + dv * factor
 描边效果
-    原理:使用两个Pass,一个渲染正面,一个渲染背面,背面的顶点沿着法线方向偏移一定距离
+    法线外扩方案
+        原理:使用两个Pass,一个渲染正面,一个渲染背面,背面的顶点沿着法线方向偏移一定距离
+        缺点:如果边缘有比较明显的棱角,描边会不连贯
+        背面Pass
+            Cull Off
+            ZWrite Off
+            顶点shader
+                常规MVP变换 o.vertex = mul(UNITY_MATRIX_MVP,v.vertex)
+                法线转换到投影空间 float2 pnormal = mul(UNITY_MATRIX_P,mul(UNITY_MATRIX_IT_MV,v.normal))
+                顶点坐标在CVV中沿着法线方向扩大 o.vertex.xy = o.vertex.xy + pnormal * outline_l
+            像素shader
+                返回描边颜色即可,因为内部会被正面PASS覆盖
+        正面PASS 正常渲染即可
+    后处理方案
+        原理:通过RT生成描边图,然后叠加到正常渲染的图上去
+            1.生成纯色图片
+            2.模糊算法对纯色图片进行模糊
+            3.模糊图片减去纯色可得到边缘色的图片
+            4.叠加到正常的图上
+        实现
+            OnPreRender渲染纯色图片
+                camera.cullingmask = outline_mask
+                camera.targetTexture = render_texture
+                camera.renderwithshader(outline_shader_pre,"")
+                shader直接返回纯色
+            OnRenderImage模糊纯色图片
+                首先模糊纯色图片
+                    Graphics.Blit(render_texture,temp1)
+                    Graphics.Blit(temp1,temp2,outline_shader,0) 水平模糊
+                    Graphics.Blit(temp2,temp1,outline_shader,1) 垂直模糊
+                此时原图为render_texture,模糊图片为temp1
+                    Graphics.Blit(source,destination,outline_shader,2) 模糊颜色减去纯色
+                shader分为3个pass
+                    pass0和pass1使用高斯模糊算法,加权平均得出颜色
+                    pass2执行相减和叠加操作
+                    tex2D(MAIN,o.uv)+saturate(tex2D(BLUR)-tex2D(SRC))
 昼夜
 透明
 雾

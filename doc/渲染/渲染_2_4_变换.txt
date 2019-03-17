@@ -31,7 +31,10 @@
         w值不唯一 w=1为规格化坐标,此时(x,y,z)是普通坐标系下的坐标  w=0表示无穷远的点
         主要用于统一矩阵运算,便于变换的合成,便于硬件实现
     法线变换
-        MV矩阵的逆转置矩阵 UNITY_MATRIX_IT_MV 是法线从模型空间变换到观察空间的变换矩阵
+        由于缩放变换可能不是等比缩放,因此MV矩阵变换之后法线可能不正确
+        因此法线的MVP变换矩阵是 MV的逆转置矩阵把法线变换到视图空间,然后用从视图空间变换到CVV
+        float3x3 vnormal = mul(UNITY_MATRIX_IT_MV,v.normal)
+        float2x2 pnormal = mul(UNITY_MATRIX_P,vnormal)
         transpose函数用于计算转置矩阵
 坐标系
     模型坐标系
