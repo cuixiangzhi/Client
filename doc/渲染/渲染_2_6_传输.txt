@@ -182,6 +182,7 @@ context与object的关系
                     glUniformBlockBinding(programID,uniformIndex,bindPoint);
                     glBindBufferBase(GL_UNIFORM_BUFFER,bindPoint,uboID)
             varying 顶点和像素shader传递数据的变量,顶点shader内可写,像素shader只读
+            lowp highp(默认) mediump 精度限制
     顶点着色器示例
         #version 330 GLSL版本
         layout(location = 0) in vec3 position 顶点属性索引

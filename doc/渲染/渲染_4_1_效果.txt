@@ -79,15 +79,21 @@
         原理:使用两个Pass,一个渲染正面,一个渲染背面,背面的顶点沿着法线方向偏移一定距离
         缺点:如果边缘有比较明显的棱角,描边会不连贯
         背面Pass
-            Cull Off
+            Cull Front
             ZWrite Off
             顶点shader
-                常规MVP变换 o.vertex = mul(UNITY_MATRIX_MVP,v.vertex)
-                法线转换到投影空间 float2 pnormal = mul(UNITY_MATRIX_P,mul(UNITY_MATRIX_IT_MV,v.normal))
-                顶点坐标在CVV中沿着法线方向扩大 o.vertex.xy = o.vertex.xy + pnormal * outline_l
+                在模型空间和世界空间进行变换会沿着各个方向扩大一圈
+                在视图空间下可以控制顶点沿着XY方向扩大
+                法线变换矩阵是顶点变换矩阵的逆转置矩阵
+                o.vertex = mul(UNITY_MATRIX_MV,v.vertex)
+                float3x3 normal = mul((float3x3)UNITY_MATRIX_IT_MV,v.normal)
+                o.vertex.xy = o.vertex.xy + normal * outline
+                o.vertex = mul(UNITY_MATRIX_P,o.vertex)
             像素shader
                 返回描边颜色即可,因为内部会被正面PASS覆盖
-        正面PASS 正常渲染即可
+        正面PASS
+            Cull Back
+            正常渲染即可
     后处理方案
         原理:通过RT生成描边图,然后叠加到正常渲染的图上去
             1.生成纯色图片

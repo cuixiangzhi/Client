@@ -20,6 +20,10 @@
 		DeferredShading延迟渲染
 			G-Buffer->Lighting->OpaqueImageEffects->SkyBox->Transparent->ImageEffects
 硬件
+	概念
+		显卡即显示适配器是一个硬件,显示芯片即GPU是一个芯片
+		显示芯片是安装在显卡上的,显卡用来接收数字信号,显示芯片则负责将数字信号转化为图形信号,并由显卡输出到显示器上
+		CPU->GPU->显存->RAMDAC->Display 
 	显卡分类
 		独立显卡 集成显卡 核心显卡
 	显卡型号
