@@ -198,6 +198,10 @@
 					   	linger l; l.l_onoff = 1; l.l_linger = 0;
 					   	g/setsockopt(sock,SOL_SOCKET,SO_LINGER,&L,sizeof(linger)) 设置关闭时是否发送缓冲区数据和超时时间
 					   	g/setsockopt(sock,SOL_SOCKET,SO_REUSEADDR,1,sizeof(INT)) 启动服务器时保证端口可被多个IP重用
+					   	SOCKET保持存活
+					   	SO_KEEPALIVE选项默认在2小时内C/S端没有数据交换,会发送探测分节
+					   	返回RST表示对端已经崩溃或者重启,错误标志会被置为ECONNRESET,套接字本身会被关闭
+					   	不返回任何信息,表示网络不通,错误标志会被置为ETIMEOUT,套接字本身会被关闭
 				多路复用
 						select FD_SETSIZE是单线程最大连接数
 							//创建轮询数组
@@ -220,3 +224,6 @@
 							等待事件发生
 										epoll_event events[size];
 										epoll_wait(ed,events,max_events,timeout);
+				半开连接
+						网线断开、电源断电、进程崩溃等异常情况下,select和epoll收不到断开或错误事件
+						这种情况下服务器连接会被一直占用,可以通过心跳检测来处理
