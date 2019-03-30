@@ -79,32 +79,96 @@ TCP发包与收包
 	seq是当前数据包的编号,下一个数据包的编号是seq+data_len,也就是发送端的seq号是按照发送字节排序的
 	ack是对发送端seq的回应,其数值等于要回应的数据包编号+要回应的数据包长度
 	win是发送端剩余可接收数据的大小
-同步
-	区域同步AOI:主要是为了避免场景内对象频繁移动导致推送数据量过大,只推送给AOI半径范围内的实体
-	         	具体实现可以采用八叉树(二叉树)场景划分管理,每个结点是一个立方体的格子
-	状态同步: 
-		随机种子: 随机种子需要服务器生成返回给客户端
-	   	发送指令: 客户端发送点击指令给服务器,同时客户端开始执行表现
-		同步状态: 服务器把每个客户端的状态反馈的一定区域内的玩家
-		延迟补偿: 服务器根据传输延迟做补偿,例如服务器对技能时间补偿
-	              客户端需要对技能更新时间做补偿,因为技能每次更新的间隔不稳定、其它客户端收到状态变化有延迟
-	锁定同步: 
-		初始化帧: 所有战斗单位进入第一帧,随机种子保持一致,这样所有玩家的逻辑状态是完全一致的
-	    等待输入: 锁定同步算法会导致一人延迟卡住,其它人也跟着卡住
-		同步输入: 每一帧的逻辑时间是固定的,所以输入一致,那么所有人的逻辑状态也是一致的
-		战斗模拟: 需要实现一个与表现完全分离的战斗模拟器,服务器可以利用该模拟器进行模拟验证,客户端使用该模拟器同步逻辑状态
-	乐观同步: 
-		初始化帧: 和锁定同步一样
-		定时采集: 服务器定时采集所有客户端的输入(摇杆移动也是输入的移动指令,定时时间延迟是否会感觉到?)
-		定时发送: 服务器同步每个定时间隔内的输入给所有客户端
-		战斗模拟: 和锁定同步一样
-		网络要求: 40ms以内应该是比较流畅
-io模型
+IO模型
 		阻塞IO      调用系统API后  wait_data--copy_data_to_user                 copy过程是阻塞的,wait_data会阻塞直到数据到来 
 		非阻塞IO    调用系统API后  would_block--would_block--copy_data_to_user  copy过程是阻塞的,wait_data过程会直接返回,轮询
 		IO多路复用  调用系统API后  wait_data * n                                wait_data过程会阻塞到超时或者有数据到达,轮询检测
 		IO信号驱动  调用系统API后  wait_data * n                                wait_data过程会阻塞直到事件发生,不需要轮询检测
 		IO异步      调用系统API后  wait_data--copy_data_to_user                 整个过程都是非阻塞的,copy完成之后会阻塞
 		libevent 封装了IO细节,自动选择最优的socket io模型
-		
+网络通信
+		sys/socket arpa/inet netinet/in
+		winsock2 comment(lib,"ws2_2.lib")
+		INVALID_SOCKET SOCKET_ERROR INADDR_ANY
+		关注要点
+				每一个socket函数执行之前都要等待发送缓冲区数据发送完毕,等待中网络断开则触发SOCKET_ERROR
+				对端接收缓冲区一直未处理,则发送端发送缓冲区会处于可用空间为0的状态,也就是数据无法发送
+		创建连接
+				int sock = socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);
+				地址
+					sockaddr_in addr;
+					addr.sin_family = AF_INET;
+					addr.sin_addr.s_addr = inet_addr(host); ntoa(); htonl();
+					addr.sin_port = htons(port); ntohs();
+					客户端不需要绑定
+					bind(sock,(sockaddr*)&addr,sizeof(sockaddr));
+				连接						
+					connect(sock,(sockaddr*)&addr,sizeof(sockaddr));
+				监听
+					listen(sock,5);
+		接受连接
+				accept阻塞模式下没有连接到来时会进入挂起状态
+				clientsock->id = accept(sock,(sockaddr*)&clientsock->addr,&size);
+				clientsock->port = ntohs(clientsock->addr.sin_port);
+				strncpy(clientsock->host,inet_ntoa(clientsock->addr.sin_addr),SIZE);
+		收发数据
+				send阻塞模式下
+					首先执行通用的发送缓冲区检查并在网络断开后返回SOCKET_ERROR
+					然后把数据拷贝到发送缓冲区,如果缓冲区不足则会一直等待,否则返回拷贝字节大小
+				send非阻塞模式下
+					首先执行通用的发送缓冲区检查并在网络断开后返回SOCKET_ERROR
+					然后尽可能把数据拷贝到发送缓冲区并会返回拷贝字节大小
+				recv阻塞模式下
+					首先执行通用的发送缓冲区检查并在网络断开后返回SOCKET_ERROR
+					然后检查接收缓冲区是否有数据,阻塞等待协议接收数据,接收完会拷贝到BUFFER并返回拷贝字节大小
+				recv非阻塞模式下
+					首先执行通用的发送缓冲区检查并在网络断开后返回SOCKET_ERROR
+					然后检查接收缓冲区是否有数据,有则拷贝,没有直接返回,返回值为拷贝字节大小
+				send(sock,buff,size,0);
+				recv(sock,buff,size,0);
+				sendto(sock,buff,size,0,(sockaddr*)&addr,sizeof(addr));
+				recvfrom(sock,buff,size,0,(sockaddr*)&addr,sizeof(addr));
+		断开连接
+				closesocket(sock);
+		连接状态
+				SOCKET收发缓冲区
+			   	g/setsockopt(sock,SOL_SOCKET,SO_RCVBUF,&size,sizeof(UINT))   设置接收缓冲区大小
+			   	g/setsockopt(sock,SOL_SOCKET,SO_SNDBUF,&size,sizeof(UINT))   设置发送缓冲区大小
+			   	g/setsockopt(sock,SOL_SOCKET,SO_RCVTIMEO,&timeout,sizeof(INT)) 设置接收超时时间
+			   	SOCKET阻塞非阻塞
+			   	ioctlsocket(sock,FIONBIO,0)
+			   	fcntl(sock,F_GETFL,O_NONBLOCK)
+			   	SOCKET关闭行为
+			   	linger l; l.l_onoff = 1; l.l_linger = 0;
+			   	g/setsockopt(sock,SOL_SOCKET,SO_LINGER,&L,sizeof(linger)) 设置关闭时是否发送缓冲区数据和超时时间
+			   	g/setsockopt(sock,SOL_SOCKET,SO_REUSEADDR,1,sizeof(INT)) 启动服务器时保证端口可被多个IP重用
+			   	SOCKET保持存活
+			   	SO_KEEPALIVE选项默认在2小时内C/S端没有数据交换,会发送探测分节
+			   	返回RST表示对端已经崩溃或者重启,错误标志会被置为ECONNRESET,套接字本身会被关闭
+			   	不返回任何信息,表示网络不通,错误标志会被置为ETIMEOUT,套接字本身会被关闭
+		多路复用
+				select FD_SETSIZE是单线程最大连接数
+					//创建轮询数组
+					fd_set; FD_ZERO(&fds); FD_SET(fd,&fds); FD_CLR(fd,&fds);
+					//阻塞等待数据
+					select(max_fd_no + 1,&read_fds,&write_fds,&exception_fds,&timeout);
+					//遍历检查FD_ISSET(fd,&fds); 
+					空闲FD比较多的时候遍历消耗,尤其是有上千个FD的时候
+				epoll ulimit -n是最大描述符个数
+					创建epoll文件 
+								int ed = epoll_create(size);
+					添加事件监听 
+								epoll_event event; 
+								event.events = EPOLLIN | EPOLLET; 读和边缘触发
+								event.data.fd = fd;
+								epoll_ctl(ed,EPOLL_CTL_ADD,fd,event); 
+								事件可以是EPOLL_CTL_ADD添加 EPOLL_CTL_MOD修改 EPOLL_CTL_DEL删除
+								ET模式只有状态发生变化才有通知,数据未读完不会有通知
+								LT模式只要有数据就一直有通知
+					等待事件发生
+								epoll_event events[size];
+								epoll_wait(ed,events,max_events,timeout);
+		半开连接
+				网线断开、电源断电、进程崩溃等异常情况下,select和epoll收不到断开或错误事件
+				这种情况下服务器连接会被一直占用,可以通过心跳检测来处理
 
