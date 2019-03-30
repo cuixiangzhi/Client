@@ -31,18 +31,27 @@ January February March April May June July August Spetember October November Dec
 				 C# char代表一个字符或者一个中文符号,长度不固定 
 				 lua和C++一样 字符集分为ASCII和Unicode  UTF-8和GBK是一种UNICODE编号的编码方式
 								UTF-8不定字节编码以字节数开头,0xxxxxxx 表示一个字节  110xxxxx表示2个字节,后续字节以10开头  最多会有6个字节
-	指针	它也是个变量,它的值是对象的地址,使用&运算符获取对象  p->等价于(&p).
-			指针和引用变量赋值时必须匹配类型
-	引用	变量换了个名字,没有内存分配,它和它引用的变量用的是一份内存
-			引用必须在声明时初始化
-	const  C++字面字符串 文件内的常量不可以const_cast 函数内的可以
-			C#变量必须属于类,函数内变量不能加const和static
-			顶层const：指针本身是个常量
-			底层const：指针所指的对象是个常量
-	static	静态全局常量(文件内有效)
-	extern 外部变量
-	#define 宏定义 ##宏拼接 ##用于拼接变量 #宏替换 #代表后面的是个字符串
-	typedef 类型组合定义		 
+	tag
+		一个tag由序号+类型构成,写入到BUFFER时,每7位作为一个字节,小于0x80的字节是最后一个字节
+	指针	
+		它也是个变量,它的值是对象的地址,使用&运算符获取对象  p->等价于(&p).
+		指针和引用变量赋值时必须匹配类型
+	引用	
+		变量换了个名字,没有内存分配,它和它引用的变量用的是一份内存
+		引用必须在声明时初始化
+	const  
+		C++字面字符串 文件内的常量不可以const_cast 函数内的可以
+		C#变量必须属于类,函数内变量不能加const和static
+		顶层const：指针本身是个常量
+		底层const：指针所指的对象是个常量
+	static	
+		静态全局常量(文件内有效)
+	extern 
+		外部变量
+	#define 
+		宏定义 ##宏拼接 ##用于拼接变量 #宏替换 #代表后面的是个字符串
+	typedef 
+		类型组合定义		 
 	lua里number统一为double类型,转为int会丢失精度并且会被限制在int范围内
 字节对齐
 	硬件支持
