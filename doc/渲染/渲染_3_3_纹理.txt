@@ -1,10 +1,10 @@
 颜色变量
-    albedo:反射率
-    ambient:环境光
+    albedo:反射率,主颜色
+    ambient:环境光 UNITY_LIGHTMODEL_AMBIENT
     emission:自发光
     diffuse:漫反射
     specular:高光
-    gloss:高光
+    gloss:高光指数,数值越大亮点越集中
 法线贴图
     原理
         T:切线 B:副切线 N:法线

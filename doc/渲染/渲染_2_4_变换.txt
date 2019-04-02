@@ -38,6 +38,8 @@
         float3x3 vnormal = mul(UNITY_MATRIX_IT_MV,v.normal)
         float2x2 pnormal = mul(UNITY_MATRIX_P,vnormal)
         transpose函数用于计算转置矩阵
+    基变换
+        相当于计算向量在目标坐标系各个轴上的投影长度,每个轴的结果都是点乘计算
 坐标系
     切线坐标系
         UV坐标是定义于切线坐标系下的

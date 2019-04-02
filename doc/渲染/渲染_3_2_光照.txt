@@ -38,13 +38,13 @@
 	LightMode
 			在Lighting On的情况下,如果不设置,就会使用上一个对象使用过的光照模式
 			vertex模式支持8个点光源,按照亮度排序,位置颜色信息存储在上述数组内
-				MESH->VS(光照计算)->GS->FS->FRAME_BUFFER
+				MESH->VS(光照计算)->FS->FRAME_BUFFER
 			Forward
 				根据配置的逐像素光源个数,提取最亮的几个光源计算光照,其余的光源都以球谐函数
-				MESH->VS->GS->FS(光照计算)->FRAME_BUFFER
-			Deferred模式是屏幕空间着色
-				光照计算是在渲染完整个场景之后,也就是第一次渲染针对全场景,并将最终显示在屏幕上的像素的坐标、法线、纹理坐标、反射系数等等存在G-BUFFER
+				MESH->VS->FS(光照计算)->FRAME_BUFFER
+				ForwardBase:计算环境光、主平行光、光照贴图
+				ForwardAdd:计算额外的逐像素光源,每个PASS对应一个光源,N个物体M个逐像素光源需要执行N*M个PASS
+			Deferred
+				第一次渲染针对全场景,并将最终显示在屏幕上的像素的坐标、法线、纹理坐标、反射系数等等存在G-BUFFER
 				第二步根据配置的逐像素光源个数,提取最亮的几个光源计算光照
-				不支持MSAA,不支持半透,需要显卡支持MRT,SM3.0
-				性能只受光源数量影响
-				MESH->VS->GS->FS(无光)->MRT(深度、法线、颜色三个BUFFER存储光照所需信息)->FRAME_BUFFER
+				MESH->VS->FS(无光)->MRT(深度、法线、颜色三个BUFFER存储光照所需信息)->FRAME_BUFFER
