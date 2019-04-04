@@ -57,6 +57,12 @@ context与object的关系
             SystemMemory 系统内存,主内存,CPU访问速度很快
             AGPMemory    系统内存的一部分,显卡通过特殊通道访问,访问速度介于两者之间
             VideoMemory  显卡内存32M 64M 128M,显卡直接访问,GPU访问速度很快
+        bind:
+            指定当前状态机内指定的目标使用的是哪个对象
+            例如:
+                指定纹理单元0使用的是texID这个纹理对象
+                glActiveTexture(GL_TEXTURE0) 
+                glBindTexture(GL_TEXTURE_2D,texID) 
     VBO渲染流程:
         创建及修改数据过程
             定义顶点数组:GLfloat v[];
@@ -110,7 +116,7 @@ context与object的关系
         绑定UBO glBindBuffer(GL_UNIFORM_BUFFER,uboID);
         传递数据glBufferData(GL_UNIFORM_BUFFER,size(glGetUniformBlockSize(index)),NULL,GL_DYNAMIC_DRAW);
         传递部分glBufferSubData(GL_UNIFORM_BUFFER,offset,size,&data);
-    纹理
+    TBO
         创建纹理 glGenTexture(1,&texID);
         指定纹理 glActiveTexture(GL_TEXTURE0)
         绑定纹理 glBindTexture(GL_TEXTURE_2D,texID)
@@ -152,6 +158,19 @@ context与object的关系
                 ETC,安卓常用压缩算法,ETC1不支持ALPHA通道,4*4块压缩,0.125/0.25
                 PVR,IOS常用压缩算法,压缩分块时会考虑部分块之间的关联性,PVRTC2是8*4压缩,PVRTC4是4*4压缩,0.125/0.25
                 ASTC,IOS6以后支持的压缩算法,不需要POT支持,压缩质量也更高,压缩比变大0.25
+    FBO
+        创建缓冲区对象 glGenFrameBuffers(1,&fboID)
+        绑定缓冲区对象 glBindFrameBuffer(GL_FRAMEBUFFER,fboID)
+        每个FBO都有多个绑定点,用于和真实的渲染目标关联起来,包括多个颜色绑定点(MRT支持)、一个深度、一个模板绑定点
+        FBO不能单独使用,必须把渲染目标关联到FBO的绑定点才可以
+        离屏渲染
+            创建渲染目标 glGenRenderBuffer(1,&rboID)
+            绑定渲染目标 glBindRenderBuffer(GL_RENDERBUFFER,rboID)
+            分配显存空间 glRenderBufferStorage
+            关联绑定点   glFramebufferRenderbuffer(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_RENDERBUFFER,&rboID)
+        渲染到纹理
+            创建纹理&绑定纹理&分配纹理内存
+            关联绑定点   glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D,&tboID)
 着色器
     基础知识
         glVertexAttribPointer指定index是着色器中的变量ID

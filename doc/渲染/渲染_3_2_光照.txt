@@ -42,9 +42,17 @@
 			Forward
 				根据配置的逐像素光源个数,提取最亮的几个光源计算光照,其余的光源都以球谐函数
 				MESH->VS->FS(光照计算)->FRAME_BUFFER
-				ForwardBase:计算环境光、主平行光、光照贴图
-				ForwardAdd:计算额外的逐像素光源,每个PASS对应一个光源,N个物体M个逐像素光源需要执行N*M个PASS
+				ForwardBase: 
+					#pragma multi_compile_fwdbase
+					计算自发光、环境光、主平行光、光照贴图、阴影
+				ForwardAdd:  
+					Blend One One 
+					#pragma multi_compile_fwdadd
+					计算额外的逐像素光源,AddPASS会根据照亮该物体的光源数量被执行多次
+					照亮每个物体的逐像素光源个数有限制,Unity会根据光源的类型及对物体的影响程度(距离、强度、类型等)进行排序
+					_LightColor0和_WorldSpaceLightPos0存储当前逐像素光源的颜色和位置
 			Deferred
-				第一次渲染针对全场景,并将最终显示在屏幕上的像素的坐标、法线、纹理坐标、反射系数等等存在G-BUFFER
-				第二步根据配置的逐像素光源个数,提取最亮的几个光源计算光照
+				第一次渲染时不计算光照信息,只进行深度测试,通过了就把光照相关数据写入G-BUFFER(坐标、法线、UV、反射系数等等)
+				第二次渲染遍历屏幕像素,针对有效的像素点读取G-BUFFER数据进行光照计算,更新颜色缓冲区
 				MESH->VS->FS(无光)->MRT(深度、法线、颜色三个BUFFER存储光照所需信息)->FRAME_BUFFER
+				延迟渲染不支持半透,阴影处理
