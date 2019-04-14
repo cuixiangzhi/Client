@@ -56,3 +56,29 @@
 				第二次渲染遍历屏幕像素,针对有效的像素点读取G-BUFFER数据进行光照计算,更新颜色缓冲区
 				MESH->VS->FS(无光)->MRT(深度、法线、颜色三个BUFFER存储光照所需信息)->FRAME_BUFFER
 				延迟渲染不支持半透,阴影处理
+			ShadowCaster
+				渲染阴影映射纹理时调用该shader,没有会调用Fallback的对应shader,否则不产生阴影
+光照计算
+	位置&方向
+		如果是平行光,那么方向是固定的,UNITY通过USING_DIRECTIONAL_LIGHT来区分是不是平行光
+		#ifdef USING_DIRECTIONAL_LIGHT
+			worldLightDir = normalize(_WorldSpaceLightPos0.xyz)
+		#else
+			worldLightDir = normalize(_WorldSpaceLightPos.xyz-i.worldPos.xyz)
+		#endif
+	颜色&强度
+		_LightColor0是经过乘法计算后的颜色值
+	衰减&阴影
+		平行光衰减值为1
+		非平行光需要公式计算衰减,UNITY把衰减值存储到了一张纹理内 
+			_LightTexture0存储了每个点的衰减值
+			首先计算光源空间下坐标
+				lightSpacePos = mul(_LightMatrix0,i.worldPos).xyz
+			然后根据距离平方采样得出衰减值
+				atten = tex2D(_LightTexture0,dot(lightSpacePos,lightSpacePos).xx).UNITY_ATTEN_CHANNEL;
+		计算阴影纹理坐标
+			定义 SHADOW_COORDS(idx1) unityShadowCoord3 _ShadowCoord : TEXCOORD##idx1;
+			计算 TRANSFER_SHADOW(a) a._ShadowCoord.xyz = mul(unity_ObjectToWorld, v.vertex).xyz - _LightPositionRange.xyz; 点光源
+			读取 SHADOW_ATTENUATION(a) UnitySampleShadowmap(a._ShadowCoord); _ShadowMapTexture
+		统一计算阴影*衰减
+			UNITY_LIGHT_ATTENUATION(atten,i,i.worldPos)

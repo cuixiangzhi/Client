@@ -5,7 +5,7 @@
     diffuse:漫反射
     specular:高光
     gloss:高光指数,数值越大亮点越集中
-法线贴图
+NormalMap
     原理
         T:切线 B:副切线 N:法线
         1.光照计算时需要用法线来体现出物体表面的凹凸感
@@ -15,12 +15,5 @@
         4.法线贴图存储的RGB范围是[0,1],而法线范围是[-1,1],因此存储法线和解析法线需要一个转换公式 
           rgb=normal*0.5+0.5 normal=rgb*2-1 法线贴图法线不会偏移Z轴太远,因此法线贴图都是偏蓝色的
           对应CGINC内的UnpackNormal函数
-场景纹理
-    LightMap
-    ShadowMask
-角色纹理
+CubeMap
     
-界面纹理
-    Atlas
-    Texture
-特效纹理
