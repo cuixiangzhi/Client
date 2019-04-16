@@ -82,6 +82,10 @@
             G(l,v)未被遮挡比例,GAF(几何衰减因子)函数描述某个入射方向未被遮挡反射到指定V方向的比例
         反射比例
             F(l,h)反射比例,光学平面并不会把所有光学都反射掉,反射比例符合菲涅尔方程
+            Schlick菲涅尔近似等式
+                F(v,n)=F0+(1-F0)(1-v点乘n)^5 v是入射方向
+            Empricial菲涅尔近似等式
+                F(v,n)=max(0,min(1,bias,scale叉乘(1-v点乘n)^power))
         高光BRDF方程(Cook Torrance)
             f(l,v)=F(l,h)G(l,v)D(h)/4(n*l)(n*v)
 

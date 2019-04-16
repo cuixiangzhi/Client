@@ -16,4 +16,9 @@ NormalMap
           rgb=normal*0.5+0.5 normal=rgb*2-1 法线贴图法线不会偏移Z轴太远,因此法线贴图都是偏蓝色的
           对应CGINC内的UnpackNormal函数
 CubeMap
-    
+    原理
+        1.由六个面组成的立方体纹理,分别表示六个方向的观察结果
+        2.根据视点方向和法线求出反射方向reflect,通过反射向量在纹理中采样得出反射结果
+        3.根据视点方向和法线求出折射方向refract,通过折射向量在纹理中采样得出折射结果
+GrabScreen
+    通过 GrabPass {"_Texture"} 可以获取当前屏幕的渲染结果并保存到_Texture内

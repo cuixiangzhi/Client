@@ -379,9 +379,11 @@ OC: 面向对象的语言
 		字符串:NSString
 	类声明
 		声明类以@interface开头,@end结尾 
+		@interface cls : NSObject
+		@end
 	类实现
 		实现类以@implementation开头,以@end结尾
-		@interface cls : NSObject
+		@implementation cls
 		{
 			大括号内部是成员变量
 		}
@@ -395,7 +397,6 @@ OC: 面向对象的语言
 		释放
 			[cls release:1];
 			OC不支持垃圾回收,用完需要释放,参数用冒号表示开始
-
 Java:
 	JDK分类
 		J2ME J2SE J2EE分别是针对移动平台和嵌入式、PC平台、企业版设计的JDK
