@@ -133,6 +133,11 @@
                         pass0和pass1使用高斯模糊算法,加权平均得出颜色
                         pass2执行相减和叠加操作
                         tex2D(MAIN,o.uv)+saturate(tex2D(BLUR)-tex2D(SRC))
+    头发
+    身体
+    眼睛
+    脸部
+    武器
 特效
     广告牌
 后期
@@ -142,3 +147,5 @@
     景深
     Bloom
     屏幕水波
+卡通
+半透

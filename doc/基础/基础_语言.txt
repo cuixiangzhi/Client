@@ -323,6 +323,9 @@ ShaderForUnity
 			然后在判断shader代码指令是否和当前GPU兼容
 			SubShader 
 			{
+				3.SubShader&shader_feature&multi_compile
+					shader_feature相当于一个全局bool变量(会生成N*N个变体),通过shader.EnableKeyword来开启这个特性
+					multi_compile相当于宏定义
 				3.SubShader&Tags 
 					Queue包括BackGround背景天空盒1000 Geometry不透明2000 AlphaTest2450 2500以下属于不透明物体 Transparent半透明3000 Overlay4000
 					RenderType包括Opaque Transparent
@@ -338,7 +341,7 @@ ShaderForUnity
 					Lighting On/Off 是否计算光照			
 					Fog On/Off 是否计算雾效果
 					Blend One/One SrcAlpha/OneMinusSrcAlpha 颜色混合方式,src是指当前颜色,dst是指颜色缓冲区内的颜色
-				Pass
+				5.Pass
 				{	
 					Name "PassName" 定义Pass名字
 					UsePass "Shader/PassName 插入在其他位置定义的Pass代码
@@ -366,6 +369,11 @@ ShaderForUnity
 					8.Pass&#include "xx.cginc"
 
 					ENDCG
+				}
+				6.surf
+				{
+					定义
+					#pragma surface surf LightMode 
 				}
 			}
 			Fallback ""
