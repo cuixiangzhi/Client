@@ -170,26 +170,25 @@
         投影变换把坐标变换到了裁剪坐标系(CVV)(-1,1) DX(0,1)
         透视投影 fov(视角) aspect(屏幕宽高比) n(近裁面到原点距离) f(远裁面到原点距离)
             投影坐标
-                顶点v(x,y,z),投影后坐标为(-nx/z,-ny/z,-(az+b)/z)
-            投影矩阵
-                |e 0 0  0||x|
-                |0 f 0  0||y|
-                |0 0 a  b||z|
-                |0 0 -1 0||1|
-                求解出a和b那么投影矩阵就计算完成了
-            联立方程
-                由于CVV是规则立方体(方便裁剪),因此透视除法之后的坐标范围是(-1,1)
+                顶点坐标v=(x,y,z)
+                投影坐标v'=(-nx/z,-ny/z,-(az+b)/z)
                 X方向
-                    映射到CVV范围内是 [-W/2,W/2]->[-1,1]
-                    W = H*aspect = 2n*tan(fov/2)*aspect
-                    e = 2n/W = cot(fov/2) / aspect
+                    映射到CVV范围内是从[-w/2,w/2]->[-1,1]
+                    -nx/z的范围是[-w/2,w/2] w = h*aspect = 2n*tan(fov/2)*aspect
+                    变换系数为 (-n/z)/(w/2) = cot(fov/2) / aspect / -z
+                    齐次坐标系数为 cot(fov/2) / aspect
                 Y方向
-                    映射到CVV范围内是 [-H/2,H/2]->[-1,1]
-                    H = 2n*tan(fov/2)
-                    f = n/(H/2)= 2n/H = cot(fov/2)
+                    映射到CVV范围内是[-h/2,h/2]->[-1,1]
+                    -ny/z的范围是[-h/2,h/2] h = 2n*tan(fov/2)
+                    变换系数为 (-n/z)/(h/2)= cot(fov/2) / -z
+                    齐次坐标系数为 cot(fov/2)
                 Z方向
-                    映射到CVV范围内是[N,F]->[-1,1]
-                    a = (f+n)/(n-f) b = (2fn)/(n-f)
+                    映射到CVV范围内是[-N,-F]->[-1,1]
+                    z=-N时-(az+b)/z=-1 z=-F时-(az+b)/z=1
+                    联立方程得出变换系数
+                      a = (f+n)/(n-f) 
+                      b = (2fn)/(n-f)
+                    齐次坐标系数不变
             投影矩阵
                 |cot(fov/2)/aspect 0                 0            0          ||x|
                 |0                 cot(fov/2)        0            0          ||y|
