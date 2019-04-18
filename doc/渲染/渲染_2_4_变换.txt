@@ -194,6 +194,11 @@
                 |0                 cot(fov/2)        0            0          ||y|
                 |0                 0                 (f+n)/(n-f)  (2fn)/(n-f)||z|
                 |0                 0                 -1           0          ||1|
+            裁剪
+                投影后齐次坐标x满足-w<x'<w,y满足-w<y'<w,z满足-w<z'<w
+            透视除法
+                把坐标变换到了设备坐标系(范围是-1到1,-1到-1,-1到1之间)
+                投影变换得到的齐次坐标除以w得出NDC坐标,w为0会发生除0异常,因此近裁面限制大于0,UNITY最小为0.01
             深度精度
                 z-fighting问题
                 因为从投影的z值变换不是线性的
@@ -208,27 +213,24 @@
                     glDepthMask(value);
                     glDepthFunc(GL_LESS|GL_GREATER|GL_LEQUAL);
                     glDisable(GL_DEPTH_TEST);
-            透视除法
-                把坐标变换到了设备坐标系(范围是-1到1,-1到-1,-1到1之间)
-                投影变换得到的裁剪齐次坐标除以Ze得出NDC坐标
-                最终需要计算出NDC坐标,(Xn,Yn,Zn) = (Xp/Zcamera,Yp/Zcamera,Zp/Zcamera)
         正交投影 left right bottom top near far
             投影矩阵
-                |a 0 0 0||x|
-                |0 b 0 0||y|
-                |0 0 c d||z|
-                |0 0 0 1||1|
-                a=1/r b=1/t c=(-2)/(f-n) d=-(f+n)/(f-n)
-                t是摄像机的size大小,r=t*aspect f远裁面 n近裁面
+                |1/(size*aspect) 0      0       0          ||x|
+                |0               1/size 0       0          ||y|
+                |0               0      2/(n-f) (f+n)/(n-f)||z|
+                |0               0      0       1          ||1|
+            裁剪
+                投影后齐次坐标x满足-1<x'<1,y满足-1<y'<1,z满足-1<z'<1
+                因为w分量为1,不需要透视除法
     视口变换
         NDC->屏幕
-        (-1,-1),(1,1)变换到(0,0),(w,h) 如果有viewport变化,那么屏幕坐标系要计算上viewport偏移大小
-        z值从(0,1)变换到(n,f) ,nf在opengl里通过设置glDepthRange(n,f)来设定
+        宽度从[-1,1]变换到[ws,we] 高度从[-1,1]变换到[hs,he] 变换的范围是通过viewPortRect来指定的相对于屏幕的范围
+        深度值从[-1,1]变换到(n,f),nf在opengl里通过设置glDepthRange(n,f)来设定
         变换矩阵
-            w/2  0  0        vx+w/2
-            0    h2 0        vy+h2
-            0    0  (f-n)/2  (f+n)/2
-            0    0  0        1
+            we/2  0     0        ws+we/2
+            0     he/2  0        hs+he/2
+            0     0     (f-n)/2  (f+n)/2
+            0     0     0        1
 射线
     起点是摄像机位置,经过的点是投影面上的点,检测这条射线与所有物体的多边形相交情况
     获取射线对象
