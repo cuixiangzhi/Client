@@ -18,7 +18,7 @@ namespace LuaInterface
         public override LuaByteBuffer ReadFile(string fileName)
         {
             string fullName = string.Format("{0}{1}", fileName, fileName.EndsWith(".lua") ? "" : ".lua");
-            return GameCore.ResMgr.Instance.LoadBytes(fullName);
+            return null;//GameCore.ResMgr.Instance.LoadBytes(fullName);
         }
 
         public override string FindFileError(string fileName)
@@ -134,8 +134,8 @@ namespace GameCore
 
         private void OpenLog()
         {
-            LuaDLL.tolua_pushcfunction(mLuaState.L, Print_Error);
-            LuaDLL.lua_setglobal(mLuaState.L, "print_error");
+            //LuaDLL.tolua_pushcfunction(mLuaState.L, Print_Error);
+            //LuaDLL.lua_setglobal(mLuaState.L, "print_error");
         }
 
         public override void Init(GameObject owner)

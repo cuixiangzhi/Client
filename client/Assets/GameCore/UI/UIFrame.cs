@@ -59,7 +59,7 @@ namespace GameCore
                 if (mState != UIState.Loading)
                 {
                     mState = UIState.Loading;
-                    mLoadIndex = ResMgr.Instance.LoadInstantiateObjectAsync(mResID, false, 1, OnLoad);
+                    mLoadIndex = -1;//ResMgr.Instance.LoadInstantiateObjectAsync(mResID, false, 1, OnLoad);
                 }
             }
         }
@@ -70,7 +70,7 @@ namespace GameCore
             if (mState == UIState.Loading)
             {
                 mState = UIState.None;
-                ResMgr.Instance.StopLoading(mLoadIndex);
+                //ResMgr.Instance.StopLoading(mLoadIndex);
             }
             else
             {
@@ -206,7 +206,7 @@ namespace GameCore
             return mRootTrans.Find(childPath);
         }
 
-        public Component FindComponent(string comType, string comPath)
+        public UnityEngine.Component FindComponent(string comType, string comPath)
         {
             Transform trans = mRootTrans.Find(comPath);
             if (trans == null) return null;

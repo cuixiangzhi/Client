@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using cyou.ldj.sdk;
 
 namespace GameCore
 {
@@ -11,7 +10,7 @@ namespace GameCore
         {
             mGo = gameObject;
             DontDestroyOnLoad(mGo);
-            ResMgr.Instance.Init(mGo);
+            //ResMgr.Instance.Init(mGo);
             LuaMgr.Instance.Init(mGo);
             NetMgr.Instance.Init(mGo);
             LuaMgr.Instance.DoFile("GameStart.lua");
@@ -20,21 +19,21 @@ namespace GameCore
 
         private void Update()
         {
-            ResMgr.Instance.Update();
+            //ResMgr.Instance.Update();
             LuaMgr.Instance.Update();
             NetMgr.Instance.Update();
         }
 
         private void LateUpdate()
         {
-            ResMgr.Instance.LateUpdate();
+            //ResMgr.Instance.LateUpdate();
             LuaMgr.Instance.LateUpdate();
             NetMgr.Instance.LateUpdate();
         }
 
         private void FixedUpdate()
         {
-            ResMgr.Instance.FixedUpdate();
+            //ResMgr.Instance.FixedUpdate();
             LuaMgr.Instance.FixedUpdate();
             NetMgr.Instance.FixedUpdate();
         }
@@ -52,7 +51,7 @@ namespace GameCore
         private void OnApplicationQuit()
         {
             LuaMgr.Instance.CallLuaFunc("StopGame");
-            ResMgr.Instance.Exit();
+            //ResMgr.Instance.Exit();
             LuaMgr.Instance.Exit();
         }
     }

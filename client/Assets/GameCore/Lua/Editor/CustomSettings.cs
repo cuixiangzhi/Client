@@ -46,7 +46,7 @@ public static class CustomSettings
         _GT(typeof(List<LuaValueInfo>)),
         //工具    
         //资源管理
-        _GT(typeof(GameCore.ResMgr)), 
+        //_GT(typeof(GameCore.ResMgr)), 
         #endregion
 
         #region 逻辑
