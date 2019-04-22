@@ -22,3 +22,5 @@ CubeMap
         3.根据视点方向和法线求出折射方向refract,通过折射向量在纹理中采样得出折射结果
 GrabScreen
     通过 GrabPass {"_Texture"} 可以获取当前屏幕的渲染结果并保存到_Texture内
+RenderTexture
+    程序纹理,包含一个ColorBuffer和一个DepthBuffer,DepthBuffer包含16位depth和8位stencil
