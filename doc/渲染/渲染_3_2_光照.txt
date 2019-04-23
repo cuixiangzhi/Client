@@ -32,8 +32,6 @@
 		BRDF光照模型:
 			BRDFDiffuse:
 			BRDFSpecular
-光照贴图
-光线跟踪
 渲染路径
 	LightMode
 			在Lighting On的情况下,如果不设置,就会使用上一个对象使用过的光照模式
@@ -82,3 +80,5 @@
 			读取 SHADOW_ATTENUATION(a) UnitySampleShadowmap(a._ShadowCoord); _ShadowMapTexture
 		统一计算阴影*衰减
 			UNITY_LIGHT_ATTENUATION(atten,i,i.worldPos)
+光照贴图
+光线跟踪
