@@ -137,20 +137,33 @@
 		线程创建   				  
 			pthread_create(pthread_t &pid,NULL,void* loopfunc,this);
 			CreateThread(NULL,0,DWORD WINAPI loopfunc,this,DWORD &pid)
-			
 			pthread_self()获取线程ID
-			pthread_exit(NULL);退出当前线程
 		线程同步
-			pthread_mutex_init(&mid)
-			pthread_mutex_lock(&mid);
-			pthread_mutex_unlock(&mid);
-			pthread_rwlock_init(&rwid);
-			pthread_rwlock_rdlock(&rwid);
-			pthread_rwlock_rdunlock(&rwid);
+			共享锁和互斥锁
+				pthread_mutex_init(&mid)
+				pthread_mutex_lock(&mid);
+				pthread_mutex_unlock(&mid);
+				pthread_rwlock_init(&rwid);
+				pthread_rwlock_rdlock(&rwid);
+				pthread_rwlock_rdunlock(&rwid);
+			等待指定线程结束,会进入阻塞状态,该函数返回之后目标线程才会被释放掉,一个线程如果没有被join,结束后成了僵尸线程
+				pthread_join(pid)
+		线程退出
+			pthread_cancel();
+			pthread_exit(NULL);
+		线程状态
+			不同的操作系统有不同的线程模型,同时对于了不同的线程状态
+			通用状态
+				就绪: 参与调度,等待被执行
+				运行: 占用CPU,正在执行
+				阻塞: 暂不参与调度,等待事件发生
+				终止: 已经运行完毕,等待回收线程资源
 		线程资源
-			pthread_exit return pthread_cancel后线程退出,资源释放有两种方式
 			默认创建的线程处于joinable(可以通过设置pthread_attr来改变)状态,需要调用pthread_join(只有一个调用者)之后才会回收已退出的线程的资源
 			分离状态,调用pthread_detach后线程处于游离状态,由操作系统来回收资源
+		线程进程
+			进程的创建需要分配独立的地址空间,代码段、数据段、堆栈段
+			线程的创建只需要很小的空间,比进程消耗小很多,线程切换比进程切换速度快
 进程通信
 		本地通信
 				mmap shm filemap
