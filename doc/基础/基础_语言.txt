@@ -321,6 +321,7 @@ lua
 				suspended 挂起状态,创建create或者yield之后处于这个状态
 				running 运行状态,resume之后处于这个状态
 				dead 死亡状态,没有遇到yield或者yield结束了,表示协程执行结束了
+				normal 正常状态,协程套协程,执行到另一个协程去了
 			协程操作
 				status 获取协程状态
 				create 传入一个执行函数,类似于UNITY的StartCoroutine
@@ -329,7 +330,7 @@ lua
 					   resume可以在第一次启动时传递参数
 					   resume可以传递参数作为初始化参数或者yield的返回值
 				yield 只会出现在协程函数内部,yield可以传参数作为resume的返回值
-
+				running 当前正在执行的协同程序
 ShaderForUnity
 	定义shader名字,用于Shader.Find
 	Shader "" 
