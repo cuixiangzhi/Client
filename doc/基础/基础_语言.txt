@@ -397,6 +397,10 @@ ShaderForUnity
 			}
 			Fallback ""
 	} 
+ShaderForOgre
+	.cg文件用来写vert和frag相关函数
+	.program文件用来定义shader名字、源码、入口函数、版本
+	.material文件用来定义pass,pass内定义shader初始参数
 Shader&库
 
 OC: 面向对象的语言

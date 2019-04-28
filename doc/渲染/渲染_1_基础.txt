@@ -19,6 +19,9 @@
 			DepthTexture->DepthNormalTexture->OpaqueObjects->OpaqueImageEffects->SkyBox->Transparent->ImageEffects
 		DeferredShading延迟渲染
 			G-Buffer->Lighting->OpaqueImageEffects->SkyBox->Transparent->ImageEffects
+	渲染批次
+		批次计算公式NVIDIA
+			25K*GHz*Percentage/Framerate
 硬件
 	概念
 		显卡即显示适配器是一个硬件,显示芯片即GPU是一个芯片

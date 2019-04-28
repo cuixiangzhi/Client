@@ -52,4 +52,16 @@
 			glEnable(GL_CULL_FACE);
 			glCullFace(GL_FRONT|GL_BACK|GL_FRONT_AND_BACK);
 			glDisable(GL_CULL_FACE);
+实体模型
+	每一个对象都是一个Entity
+	Entity组织结构
+		1.Mesh组件,主网格
+		2.SubEntity组件,子网格
+	SubEntity组织结构
+		1.SubMesh组件
+	Mesh组织结构
+		1.SubMesh组件,包含了组成这个Mesh的所有子网格
+	SubMesh组织结构
+		1.Material组件,包含了渲染该网格所需的材质信息
+		2.VertexData组件,包含了顶点的所有数据
 

@@ -23,4 +23,4 @@ CubeMap
 GrabScreen
     通过 GrabPass {"_Texture"} 可以获取当前屏幕的渲染结果并保存到_Texture内
 RenderTexture
-    程序纹理,包含一个ColorBuffer和一个DepthBuffer,DepthBuffer包含16位depth和8位stencil
+    渲染纹理,包含一个ColorBuffer和一个DepthBuffer,DepthBuffer包含16位depth和8位stencil
