@@ -58,7 +58,7 @@
             o.texcoord = o.pos.xyz
             color = texCUBE(_SKYTEX,o.texcoord)
     昼夜
-    河流
+    水面
         波纹
             原理:UV动画,屏幕每个像素的UV坐标以中心点为圆心,向圆外偏移,根据距离中心点的距离和偏移的时间计算偏移程度
             顶点shader: 

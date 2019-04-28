@@ -399,8 +399,11 @@ ShaderForUnity
 	} 
 ShaderForOgre
 	.cg文件用来写vert和frag相关函数
-	.program文件用来定义shader名字、源码、入口函数、版本
-	.material文件用来定义pass,pass内定义shader初始参数
+	.program文件用来定义shader程序的名字、源码、入口函数、版本
+	.material文件用来定义使用哪种方式渲染
+		material定义不同的材质
+		technique定义显卡适配参数
+		pass内定义shader初始参数,使用哪个shader程序
 Shader&库
 
 OC: 面向对象的语言
