@@ -66,17 +66,17 @@
         单位时间内通过表面或者空间区域的能量,单位是瓦特(W=J/s),用φ表示
     辐射强度(光强度):
         通过单位立体角的辐射通量,瓦特/球面度,I=dφ/dw
-    辐射照度(光照度):
+    辐射照度(光照度):Irradiance
         通过单位面积的辐射通量,瓦特/单位面元,E=dφ/dA
-    辐射亮度(光亮度):
+    辐射亮度(光亮度):Radiance
         通过单位面积单位立体角的辐射通量,瓦特/(平方米*球面度),L=dφ/dwdA'
         dA'是指微表面面积dA在入射方向的投影面积 dA'=dAcos0
     BRDF:
         参考
-            https://www.cnblogs.com/herenzhiming/articles/5789043.html
-            https://blog.csdn.net/qwertyu1234/article/details/54095832
-            https://blog.csdn.net/github_34181815/article/details/68196357
-            f(l,v)=dL(v)/dE(l) dL(v)=f(l,v)*L(l)(n*l)dw
+            BRDF介绍
+                https://zhuanlan.zhihu.com/p/21376124
+            BRDF简化
+                https://chengkehan.github.io/PunctualLightSource.html
         法线分布
             对于观察方向V,只有入射方向和观察方向的半角向量H与法线N相同时,反射光才能被观察到
             D(h)法线分布函数用来描述物体表面一点半角向量朝向是H的微表面的比例
@@ -87,7 +87,16 @@
             光学平面并不会把所有光学都反射掉,反射比例符合菲涅尔方程
             F(l,h)函数用来表示光线被反射的比例
         高光BRDF方程(Cook Torrance)
-            f(l,v)=F(l,h)G(l,v)D(h)/4(n*l)(n*v)
+            1.f(l,v)=dL(v)/dE(l)
+            2.dL(v)=f(l,v)*L(l)(n*l)dw
+            3.f(l,v)=F(l,h)G(l,v)D(h)/4(n*l)(n*v)
+        精确光源
+            光源的颜色
+                垂直照射反射率为1的lambert表面时的反射亮度
+                lambert表面BRDF公式为f(l,v)=1/π
+                光源颜色c=1/π*半球积分L(l)dw
+            来自精确光源的反射亮度
+                L(v)=f(l,v)*(n*l)*半球积分L(l)dw=f(l,v)*(n*l)*πc
 光照方程
     经验模型
         Phong反射模型
@@ -98,6 +107,8 @@
             Phone模型在反射方向和观察方向夹角超过90度,也就是观察方向趋向平行表面时,Phong会发生突变,BlinnPhong更接近真实情况
             pow(dot(n,h),α),h是l和v的半角向量,v在趋向于平行表面过程中h与n的夹角始终在90度之内,也就是边缘有一个渐变过程
     物理模型
-
+        Lambert反射模型
+            BRDF公式为 f(l,v)=Albedo/PI
+            https://www.cnblogs.com/wantnon/p/6954428.html
 
 
