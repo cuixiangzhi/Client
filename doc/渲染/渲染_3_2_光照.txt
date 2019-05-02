@@ -126,7 +126,7 @@
         高光
             光线照射到物体表面,镜面反射出的能量,反射能量与反射方向和观察角度有关
 光源类型
-	平行光 点光源 聚光灯 环境光 面光源 反射探针 光照探针
+	平行光 点光源 聚光灯 面光源 反射探针 光照探针
 渲染路径
 	Vertex
 		支持8个点光源,按照亮度排序,位置颜色信息存储在指定数组内
@@ -143,6 +143,20 @@
 			计算额外的逐像素光源,AddPASS会根据照亮该物体的光源数量被执行多次
 			照亮每个物体的逐像素光源个数有限制,Unity会根据光源的类型及对物体的影响程度(距离、强度、类型等)进行排序
 			_LightColor0和_WorldSpaceLightPos0存储当前逐像素光源的颜色和位置
+		光源信息
+			Unity会根据当前光源类型为PASS的执行设置对应的光源属性 位置、颜色、衰减纹理、变换矩阵
+			获取光的方向 
+				UnityWorldSpaceLightDir(i.worldPos)
+			获取光的颜色 
+				_LightColor0
+			获取光的衰减 
+				平行光为 atten=1
+				其它类型 
+						lightSpacePos=mul(_LightMatrix0,i.worldPos).xyz	
+						attenUV=dot(lightSpacePos,lightSpacePos).xx
+						atten=tex2D(_LightTexture0,attenUV).UNITY_ATTEN_CHANNEL;
+				直接获取 
+						UNITY_LIGHT_ATTENUATION(atten,i,i.worldPos)
 	Deferred
 		第一次渲染时不计算光照信息,只进行深度测试,通过了就把光照相关数据写入G-BUFFER(坐标、法线、UV、反射系数等等)
 		第二次渲染遍历屏幕像素,针对有效的像素点读取G-BUFFER数据进行光照计算,更新颜色缓冲区
@@ -151,23 +165,7 @@
 	ShadowCaster
 		渲染阴影映射纹理时调用该shader,没有会调用Fallback的对应shader,否则不产生阴影
 光照计算
-	位置&方向
-		如果是平行光,那么方向是固定的,UNITY通过USING_DIRECTIONAL_LIGHT来区分是不是平行光
-		#ifdef USING_DIRECTIONAL_LIGHT
-			worldLightDir = normalize(_WorldSpaceLightPos0.xyz)
-		#else
-			worldLightDir = normalize(_WorldSpaceLightPos.xyz-i.worldPos.xyz)
-		#endif
-	颜色&强度
-		_LightColor0是经过乘法计算后的颜色值
 	衰减&阴影
-		平行光衰减值为1
-		非平行光需要公式计算衰减,UNITY把衰减值存储到了一张纹理内 
-			_LightTexture0存储了每个点的衰减值
-			首先计算光源空间下坐标
-				lightSpacePos = mul(_LightMatrix0,i.worldPos).xyz
-			然后根据距离平方采样得出衰减值
-				atten = tex2D(_LightTexture0,dot(lightSpacePos,lightSpacePos).xx).UNITY_ATTEN_CHANNEL;
 		计算阴影纹理坐标
 			定义 SHADOW_COORDS(idx1) unityShadowCoord3 _ShadowCoord : TEXCOORD##idx1;
 			计算 TRANSFER_SHADOW(a) a._ShadowCoord.xyz = mul(unity_ObjectToWorld, v.vertex).xyz - _LightPositionRange.xyz; 点光源
