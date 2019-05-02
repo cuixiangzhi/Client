@@ -158,10 +158,18 @@
 				直接获取 
 						UNITY_LIGHT_ATTENUATION(atten,i,i.worldPos)
 	Deferred
-		第一次渲染时不计算光照信息,只进行深度测试,通过了就把光照相关数据写入G-BUFFER(坐标、法线、UV、反射系数等等)
-		第二次渲染遍历屏幕像素,针对有效的像素点读取G-BUFFER数据进行光照计算,更新颜色缓冲区
-		MESH->VS->FS(无光)->MRT(深度、法线、颜色三个BUFFER存储光照所需信息)->FRAME_BUFFER
-		延迟渲染不支持半透,阴影处理
+		第一次渲染
+			不计算光照信息,只进行深度测试,光照相关数据写入G-BUFFER(坐标、法线、UV、反射系数等等)
+		第二次渲染
+			遍历屏幕像素,针对有效的像素点读取G-BUFFER数据进行光照计算,更新颜色缓冲区
+			Unity默认使用Standard光照模型来计算,Internal-DeferrredShading.shader
+		计算流程
+			MESH->VS->FS(无光)->MRT(深度、法线、颜色三个BUFFER存储光照所需信息)->FRAME_BUFFER
+		GBuffer信息
+			RT0,存储漫反射颜色,A通道未使用
+			RT1,存储高光反射颜色,A通道存储高光指数
+			RT2,存储法线方向,A通道未使用
+			RT3,存储自发光+光照贴图+反射探针
 	ShadowCaster
 		渲染阴影映射纹理时调用该shader,没有会调用Fallback的对应shader,否则不产生阴影
 光照计算
