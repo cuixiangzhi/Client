@@ -66,50 +66,51 @@
         单位时间内通过表面或者空间区域的能量,单位是瓦特(W=J/s),用φ表示
     辐射强度(光强度):
         通过单位立体角的辐射通量,瓦特/球面度,I=dφ/dw
+        一般用来衡量光源发出的光通量
     辐射照度(光照度):Irradiance
         通过单位面积的辐射通量,瓦特/单位面元,E=dφ/dA
+        一般用来衡量进入表面的光通量
     辐射亮度(光亮度):Radiance
         通过单位面积单位立体角的辐射通量,瓦特/(平方米*球面度),L=dφ/dwdA'
         dA'是指微表面面积dA在入射方向的投影面积 dA'=dAcos0
+        一般用来衡量离开表面的光通量
+    法线分布
+        对于观察方向V,只有入射方向和观察方向的半角向量H与法线N相同时,反射光才能被观察到
+        D(h)法线分布函数用来描述物体表面一点半角向量朝向是H的微表面的比例
+    遮挡比例
+        微表面的入射光线被遮挡称为Shadowing,微表面的反射光线被遮挡称为Masking
+        G(l,v)函数描述某个入射方向未被遮挡反射到指定V方向的比例
+    反射比例
+        光学平面并不会把所有光学都反射掉,反射比例符合菲涅尔方程
+        F(l,h)函数用来表示光线被反射的比例
 光照方程
-    BRDF:
-        参考
-            BRDF介绍
-                https://zhuanlan.zhihu.com/p/21376124
-            BRDF简化
-                https://chengkehan.github.io/PunctualLightSource.html
-        法线分布
-            对于观察方向V,只有入射方向和观察方向的半角向量H与法线N相同时,反射光才能被观察到
-            D(h)法线分布函数用来描述物体表面一点半角向量朝向是H的微表面的比例
-        遮挡比例
-            微表面的入射光线被遮挡称为Shadowing,微表面的反射光线被遮挡称为Masking
-            G(l,v)函数描述某个入射方向未被遮挡反射到指定V方向的比例
-        反射比例
-            光学平面并不会把所有光学都反射掉,反射比例符合菲涅尔方程
-            F(l,h)函数用来表示光线被反射的比例
-        高光BRDF方程(Cook Torrance)
-            1.f(l,v)=dL(v)/dE(l)
-            2.dL(v)=f(l,v)*L(l)(n*l)dw
-            3.f(l,v)=F(l,h)G(l,v)D(h)/4(n*l)(n*v)
-        精确光源
-            光源的颜色
-                垂直照射反射率为1的lambert表面时的反射亮度
-                lambert表面BRDF公式为f(l,v)=1/π
-                光源颜色c=1/π*半球积分L(l)dw
-            来自精确光源的反射亮度
-                L(v)=f(l,v)*(n*l)*半球积分L(l)dw=f(l,v)*(n*l)*πc
     经验模型
-        Phong反射模型
+        Phong
             I = 环境光 + 漫反射光 + 高光
             I = KaIa + KdId*dot(n,l) + KsIs*pow(max(0,dot(r,v)),α)
             K是反射系数,I是光照强度,n是法线方向,l是入射方向,v是视线方向,r是反射方向 α是表面粗糙度,α越小越粗糙
-        BlinnPhone反射模型
+        BlinnPhone
             Phone模型在反射方向和观察方向夹角超过90度,也就是观察方向趋向平行表面时,Phong会发生突变,BlinnPhong更接近真实情况
             pow(dot(n,h),α),h是l和v的半角向量,v在趋向于平行表面过程中h与n的夹角始终在90度之内,也就是边缘有一个渐变过程
     物理模型
-        Lambert反射模型
-            BRDF公式为 f(l,v)=Albedo/PI
-            https://www.cnblogs.com/wantnon/p/6954428.html
+	    BRDF:
+            https://zhuanlan.zhihu.com/p/21376124
+            https://chengkehan.github.io/PunctualLightSource.html
+        CookTorranceBRDF
+        	I=Idiff+Ispec=Idiff+KsIsRs
+        	Rs=f(l,v)=FDG/4(nl)(nv)
+        	F公式
+        		菲涅尔反射公式 F=f0+(1-f0)(1-v*h)^5 F0是入射角接近0时的F反射系数
+        	D公式
+        		微平面法线分布函数 e^a/b
+        		a= c/d  c=dot(n,h)^2-1 	d=m^2*dot(n,h)^2
+        		b= f*g  f=m^2 			g=dot(n,h)^4
+        		m是表面粗糙度,m越大越粗糙,越小越光滑
+        	G公式
+        		几何衰减函数 G=min(1,G1,G2)
+        		G1=2dot(n,h)dot(n,l)/dot(v,h)
+        		G2=2dot(n,h)dot(n,v)/dot(v,h)
+        BankBRDF
     局部光照
         只考虑光源的直接照射
     全局光照
