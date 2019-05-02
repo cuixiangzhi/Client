@@ -116,7 +116,7 @@
         除了光源的直接照射,还加入对光源多次反射的计算,也就是直接光+间接光
     光照类型
         环境光
-            在局部光照模型中用来模拟所有的间接光,是一个常量
+            在局部光照模型中用来模拟所有的间接光,是一个常量 UNITY_LIGHTMODEL_AMBIENT
         自发光
             物体本身在给定方向上辐射多少能量,它不会照亮其他物体,只是本身会变亮
             局部光照中自发光只是物体本身发光,不会照亮周围的物体
@@ -124,33 +124,31 @@
             光线照射到物体表面,在各个方向反射多少能量,反射能量大小和入射角度有关,和观察角度无关
         高光
             光线照射到物体表面,镜面反射出的能量,反射能量与反射方向和观察角度有关
-
 光源类型
 	平行光 点光源 聚光灯 环境光 面光源 反射探针 光照探针
 渲染路径
-	LightMode
-			在Lighting On的情况下,如果不设置,就会使用上一个对象使用过的光照模式
-			vertex模式支持8个点光源,按照亮度排序,位置颜色信息存储在上述数组内
-				MESH->VS(光照计算)->FS->FRAME_BUFFER
-			Forward
-				根据配置的逐像素光源个数,提取最亮的几个光源计算光照,其余的光源都以球谐函数
-				MESH->VS->FS(光照计算)->FRAME_BUFFER
-				ForwardBase: 
-					#pragma multi_compile_fwdbase
-					计算自发光、环境光、主平行光、光照贴图、阴影
-				ForwardAdd:  
-					Blend One One 
-					#pragma multi_compile_fwdadd
-					计算额外的逐像素光源,AddPASS会根据照亮该物体的光源数量被执行多次
-					照亮每个物体的逐像素光源个数有限制,Unity会根据光源的类型及对物体的影响程度(距离、强度、类型等)进行排序
-					_LightColor0和_WorldSpaceLightPos0存储当前逐像素光源的颜色和位置
-			Deferred
-				第一次渲染时不计算光照信息,只进行深度测试,通过了就把光照相关数据写入G-BUFFER(坐标、法线、UV、反射系数等等)
-				第二次渲染遍历屏幕像素,针对有效的像素点读取G-BUFFER数据进行光照计算,更新颜色缓冲区
-				MESH->VS->FS(无光)->MRT(深度、法线、颜色三个BUFFER存储光照所需信息)->FRAME_BUFFER
-				延迟渲染不支持半透,阴影处理
-			ShadowCaster
-				渲染阴影映射纹理时调用该shader,没有会调用Fallback的对应shader,否则不产生阴影
+	Vertex
+		支持8个点光源,按照亮度排序,位置颜色信息存储在指定数组内
+		MESH->VS(光照计算)->FS->FRAME_BUFFER
+	Forward
+		根据配置的逐像素光源个数,提取最亮的几个光源计算光照,其余的光源都以球谐函数
+		MESH->VS->FS(光照计算)->FRAME_BUFFER
+		ForwardBase: 
+			#pragma multi_compile_fwdbase
+			计算自发光、环境光、主平行光、光照贴图、阴影
+		ForwardAdd:  
+			Blend One One 
+			#pragma multi_compile_fwdadd
+			计算额外的逐像素光源,AddPASS会根据照亮该物体的光源数量被执行多次
+			照亮每个物体的逐像素光源个数有限制,Unity会根据光源的类型及对物体的影响程度(距离、强度、类型等)进行排序
+			_LightColor0和_WorldSpaceLightPos0存储当前逐像素光源的颜色和位置
+	Deferred
+		第一次渲染时不计算光照信息,只进行深度测试,通过了就把光照相关数据写入G-BUFFER(坐标、法线、UV、反射系数等等)
+		第二次渲染遍历屏幕像素,针对有效的像素点读取G-BUFFER数据进行光照计算,更新颜色缓冲区
+		MESH->VS->FS(无光)->MRT(深度、法线、颜色三个BUFFER存储光照所需信息)->FRAME_BUFFER
+		延迟渲染不支持半透,阴影处理
+	ShadowCaster
+		渲染阴影映射纹理时调用该shader,没有会调用Fallback的对应shader,否则不产生阴影
 光照计算
 	位置&方向
 		如果是平行光,那么方向是固定的,UNITY通过USING_DIRECTIONAL_LIGHT来区分是不是平行光
