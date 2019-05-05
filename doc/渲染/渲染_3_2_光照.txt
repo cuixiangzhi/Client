@@ -113,25 +113,68 @@
             https://zhuanlan.zhihu.com/p/21376124
             https://chengkehan.github.io/PunctualLightSource.html
             https://www.cnblogs.com/luxishi/p/6409716.html
+            http://www.voidcn.com/article/p-uamrlclq-brb.html
         	通用公式
         		Lo(r)=Le(r)+半球积分*F(l,v)*Li(l)*cos0*dw
         	单一光源
         		单一光源只会有一条入射光线,公式可以简化为 
         			Lo(r)=Le(r)+F(l,r)Li(l)cos0
         		一般会把该简化公式分解为漫反射和高光两部分
-        			Lo(r)=Le(r)+Idiff+Fs(l,r)Li(l)cos0
+        			Lo(r)=Le(r)+kdFd+ksFs(l,r)Li(l)cos0
         CookTorranceBRDF
-        	F公式
-        		菲涅尔反射公式 F=f0+(1-f0)(1-v*h)^5 F0是入射角接近0时的F反射系数
-        	D公式
-        		微平面法线分布函数 e^a/b
-        		a= c/d  c=dot(n,h)^2-1 	d=m^2*dot(n,h)^2
-        		b= f*g  f=m^2 			g=dot(n,h)^4
-        		m是表面粗糙度,m越大越粗糙,越小越光滑
-        	G公式
-        		几何衰减函数 G=min(1,G1,G2)
-        		G1=2dot(n,h)dot(n,l)/dot(v,h)
-        		G2=2dot(n,h)dot(n,v)/dot(v,h)
+        	D公式 
+        		微平面法线分布函数 Trowbridge-Reitz GGX
+	        		D=m^2/[π*[dot(n,h)^2*(m^2-1)+1]^2]
+        			m是表面粗糙度roughness
+        	F公式 
+        		菲涅尔反射公式
+	        		F=f0+(1-f0)(1-n*v)^5 
+	        		F0是垂直表面时的基础高光反射率
+	        		非金属F0值一般在0.17以下,而且RGB分量一致,金属一般在0.5-1.0之间,RGB分量不一致
+	        		F0=mix(F0,albedo,metalness)
+        	G公式 
+        		几何衰减函数
+	        		SchilckGGX
+		        		G=dot(n,v)/[dot(n,v)(1-k)+k] k=(m+1)^2/8
+        				m是表面粗糙度roughness
+	        		Smith考虑观察方向和入射方向
+	        			G = G(n,v,k)G(n,l,k)
+            积分公式
+                Lo(r)=环境光La(r)+自发光Le(r)+半球积分*{ [漫反射kd*albedo/π+高光ksDFG/4dot(n,v)dot(n,l)] * Li(l)dot(n,l)dw
+            简化公式
+                一般用lightColor来代替辐射率L,入射辐射率为Li=lightColor*attenuation
+                foreach light in lights do
+                    Lo += [kd*albedo/π + ks*DFG/4dot(n,v)dot(n,l)] * Li * dot(n,l)
+                end
+                再加上环境光 c = Lo + albedo*ao
+            UNITY公式
+                漫反射(Disney)
+                    albedo/π * (1 + (Fd-1)(1-dot(n,l))^5 * (1 + (Fd-1)(1-dot(n,v))^5))
+                高光反射
+                    GGX模型和BlinPhong模型
+        UnityPBR工作流
+            工作流区别
+                不同的工作流参数不同,但是可以实现相同的效果
+            金属工作流
+                输入结构体->顶点着色器->输出结构体->片元着色器->
+                UnityStandardInput.VertexInput->UnityStandardCore.vertForwardBase->UnityStandardCore.VertexOutputForwardBase->UnityStandardCore.fragForwardBase
+                vert:计算VertexOutputForwardBase各个变量值
+                frag:
+                    1.使用MetallicSetup设置BRDF输入结构体FragmentCommonData
+                    2.计算主光、阴影、遮挡、全局光照
+                    3.调用UNITY_BRDF_PBS计算基于物理的渲染结果
+                    4.调用UNITY_BRDF_GI添加全局光照的渲染结果
+                    5.添加自发光效果
+                    6.添加雾效模拟
+                Albedo
+                    视觉上认为的物体颜色,非金属一般在50-243之间,金属一般在186-255之间
+                Metallic
+                    金属度,数值范围从0到1,越大越像金属,R通道存储金属度
+                Smoothness
+                    光滑度,数值范围从0到1,越大越光滑,A通道存储光滑度
+            高光反射工作流
+                Albedo代表漫反射强度,对于金属仍然表示视觉上认为的物体颜色,对于金属非常接近黑色
+                Specular选项代替金属度,对于非金属一般在0-55之间,对于金属一般用视觉上认为的颜色
 渲染路径
 	Vertex
 		支持8个点光源,按照亮度排序,位置颜色信息存储在指定数组内
@@ -180,13 +223,5 @@
 			RT3,存储自发光+光照贴图+反射探针
 	ShadowCaster
 		渲染阴影映射纹理时调用该shader,没有会调用Fallback的对应shader,否则不产生阴影
-光照计算
-	衰减&阴影
-		计算阴影纹理坐标
-			定义 SHADOW_COORDS(idx1) unityShadowCoord3 _ShadowCoord : TEXCOORD##idx1;
-			计算 TRANSFER_SHADOW(a) a._ShadowCoord.xyz = mul(unity_ObjectToWorld, v.vertex).xyz - _LightPositionRange.xyz; 点光源
-			读取 SHADOW_ATTENUATION(a) UnitySampleShadowmap(a._ShadowCoord); _ShadowMapTexture
-		统一计算阴影*衰减
-			UNITY_LIGHT_ATTENUATION(atten,i,i.worldPos)
 光照贴图
 光线跟踪
