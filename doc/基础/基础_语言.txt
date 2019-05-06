@@ -2,9 +2,9 @@ Monday Tuesday Wednesday Thursday Friday Saturday SunDay
 January February March April May June July August Spetember October November December
 基础知识
 	数值存储
-		计算机只有加法运算器, 负数是以补码形式存在,符号位不变,其余位取反加1  正数补码与原码一致 (+0原码与-0补码一致)
-		计算机存储补码,运算器补码运算   -128没有反码,补码与原码一致
-		有符号数没有-0的表示方式,-0表示-(2^最高位次方-1),例如1位则表示-1,2位则表示-2
+		计算机只有加法运算器,计算机存储补码,运算器补码运算
+		正数补码与原码一致 负数补码符号位不变,其余位取反加1 -2^(n-1)没有反码,补码与原码一致
+		N位有符号整数范围是1000..0->0111..1
 	PROTO&TAG
 		一个tag由序号+类型构成,写入到BUFFER时,每7位作为一个字节,小于0x80的字节是最后一个字节
 	字节对齐
