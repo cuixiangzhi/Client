@@ -331,6 +331,15 @@ lua
 					   resume可以传递参数作为初始化参数或者yield的返回值
 				yield 只会出现在协程函数内部,yield可以传参数作为resume的返回值
 				running 当前正在执行的协同程序
+	变量定义位置
+		全局表	      	LuaState.l_gt
+		注册表 	      	LuaState.l_G.l_registry
+		基础类型元表    LuaState.l_G.mt
+		基础元函数名字 	LuaState.l_G.tmnames
+		字符串哈希表    LuaState.l_G.strt
+		GC对象
+		函数LocVar 		Proto.localvars
+		函数UpVar       Proto.upvalues存储名字,LClosure.upvals存储具体变量(new时赋值,具体指在LuaState.openupval)
 ShaderForUnity
 	定义shader名字,用于Shader.Find
 	Shader "" 
