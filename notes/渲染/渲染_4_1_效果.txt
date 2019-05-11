@@ -1,0 +1,149 @@
+场景
+    阴影
+        ShadowMap
+            原理:1.以实时灯光位置作为视点,渲染一张深度纹理
+                    生成过程: 
+                        顶点shader计算深度
+                            o.pos = UnityObjectToClipPos(v.vertex);
+                            o.depth = o.pos.zw
+                        像素shader记录深度(因为有差值)
+                            float depth = o.depth.x / o.depth.y
+                            fixed4 depth_color = EncodeFloatRGBA(depth)
+                 2.接受阴影的物体从模型空间转换到灯光空间,和深度图作比较,大于深度图中的深度则为阴影
+                    计算过程
+                        顶点shader计算深度
+                            objectToLightProj = mul(worldToLightProj,unity_ObjectToWorld);
+                            o.proj = mul(objectToLightProj,v.vertex);
+                            o.depth = o.proj.zw
+                        像素shader比较深度
+                            fixed4 depth_texture_color = tex2Dproj(_DepthTexture,o.proj);
+                            float depth_texture = DecodeFloatRGBA(depth_texture_color);
+                            float depth_current = o.depth.x / o.depth.y
+                            if(depth_texture < depth_current) 阴影
+        Projector
+            原理:1.以实时灯光位置作为视点,渲染一张透明纹理
+                    生成过程:
+                        顶点shader只计算坐标
+                        像素shader直接返回不透明颜色
+                        生成的纹理的alpha值大于0表示阴影,等于0表示不是阴影
+                 2.把纹理投影到场景内,类似于幻灯片投影到墙上一样
+                    计算过程:
+                        顶点shader计算当前顶点的投影纹理齐次坐标
+                            sproj = mul(_Projector,v.vertex);
+                        像素shader采样然后插值计算alpha进行混合 Blend DstColor Zero 正片叠底
+                            uv齐次 = UNITY_PROJ_COORD(sproj);
+                            alpha = tex2DProj(_ShadowTex,uv齐次).a
+                            uv = uv齐次.xy / uv齐次.w;
+                            float2 factor = abs(uv4.xy / uv4.w - float2(0.5,0.5));
+                            if(factor.x <= 0.5 && factor.y <= 0.5)
+                            {
+                                //首先把阴影的范围限制在投影纹理UV之内,然后计算UV和边界的距离插值处理渐变效果(用距离边界最小的值算)
+                                float minFactorDis = 0.5 - max(factor.x,factor.y)
+                                float dist = 1 - clamp((_ShadowGradient - minFactorDis),0,_ShadowGradient) / _ShadowGradient;
+                                color *= (1 - _ShadowFactor * alpha * dist);
+                            }
+    天空
+        原理
+            实时渲染中非常远的物体,大小几乎不会随着摄像机的移动而变化
+            天空盒是一个由六个面的纹理构成的一个立方体即CubeMap,上下左右前后分别对应一张纹理
+            摄像机始终处于立方体中心
+            生成一个与远平面大小相同的MESH,渲染这个MESH时根据中心点指向顶点的向量计算出与CudeMap的交点,取出纹理像素值
+            纹理映射
+                第一步:根据最大维确定纹理图
+                第二步:其它两个维度除以最大维度,缩放到[-1,1]
+                第三步:通过2n+0.5把纹理坐标映射到[0,1]之内
+        实现
+            o.pos = mul(UNITY_MATRIX_MVP,v.vertex);
+            o.pos.z = o.pos.w 让顶点始终处于远平面
+            o.texcoord = o.pos.xyz
+            color = texCUBE(_SKYTEX,o.texcoord)
+    昼夜
+    水面
+        波纹
+            原理:UV动画,屏幕每个像素的UV坐标以中心点为圆心,向圆外偏移,根据距离中心点的距离和偏移的时间计算偏移程度
+            顶点shader: 
+                普通的vertex变换和uv赋值
+            像素shader:
+                首先计算出圆心指向当前UV的向量(x方向乘以宽高比,确保波纹是圆形的) 
+                    dv = i.uv - fixed2(0.5,0.5) * (_ScreenParams.x/_ScreenParams.y,1)
+                    offset = |dv|
+                然后计算波纹震动程度
+                    factor = a*sin(w)  
+                    a是振幅(偏移在0.05左右效果不错),a和offset相关时可以限制边界处幅度,例如a=(1-offset)*0.1
+                    w是震频(单位时间内的震动次数),w和时间相关,例如w=频率*(passedTime+offset*3)
+                接着计算波纹波动范围
+                    波动的中心 center = moveSpeed*passedTime
+                    波动的范围 range
+                    波动的偏移 offsetFactor = clamp(range-abs(center-offset),0,1) / range,避免波动范围内的明显的边界
+                    波动的比例 factor = factor * offsetFactor
+                最后计算扩散后的UV坐标 uv = uv + dv * factor
+        流动
+            原理:法线贴图UV动画
+    草树
+    云雾
+    石头
+    木头
+    建筑
+    地面
+    镜子
+    玻璃
+角色
+    描边
+        法线外扩方案
+            原理:使用两个Pass,一个渲染正面,一个渲染背面,背面的顶点沿着法线方向偏移一定距离
+            缺点:如果边缘有比较明显的棱角,描边会不连贯
+            背面Pass
+                Cull Front
+                ZWrite Off
+                顶点shader
+                    在模型空间和世界空间进行变换会沿着各个方向扩大一圈
+                    在视图空间下可以控制顶点沿着XY方向扩大
+                    法线变换矩阵是顶点变换矩阵的逆转置矩阵
+                    o.vertex = mul(UNITY_MATRIX_MV,v.vertex)
+                    float3x3 viewNormal = mul((float3x3)UNITY_MATRIX_IT_MV,v.normal)
+                    o.vertex.xy = o.vertex.xy + viewNormal * outline
+                    o.vertex = mul(UNITY_MATRIX_P,o.vertex)
+                像素shader
+                    返回描边颜色即可,因为内部会被正面PASS覆盖
+            正面PASS
+                Cull Back
+                正常渲染即可
+        后处理方案
+            原理:通过RT生成描边图,然后叠加到正常渲染的图上去
+                1.生成纯色图片
+                2.模糊算法对纯色图片进行模糊
+                3.模糊图片减去纯色可得到边缘色的图片
+                4.叠加到正常的图上
+            实现
+                OnPreRender渲染纯色图片
+                    camera.cullingmask = outline_mask
+                    camera.targetTexture = render_texture
+                    camera.renderwithshader(outline_shader_pre,"")
+                    shader直接返回纯色
+                OnRenderImage模糊纯色图片
+                    首先模糊纯色图片
+                        Graphics.Blit(render_texture,temp1)
+                        Graphics.Blit(temp1,temp2,outline_shader,0) 水平模糊
+                        Graphics.Blit(temp2,temp1,outline_shader,1) 垂直模糊
+                    此时原图为render_texture,模糊图片为temp1
+                        Graphics.Blit(source,destination,outline_shader,2) 模糊颜色减去纯色
+                    shader分为3个pass
+                        pass0和pass1使用高斯模糊算法,加权平均得出颜色
+                        pass2执行相减和叠加操作
+                        tex2D(MAIN,o.uv)+saturate(tex2D(BLUR)-tex2D(SRC))
+    头发
+    身体
+    眼睛
+    脸部
+    武器
+特效
+    广告牌
+后期
+    边缘检测
+    高斯模糊
+    运动模糊
+    景深
+    Bloom
+    屏幕水波
+卡通
+半透

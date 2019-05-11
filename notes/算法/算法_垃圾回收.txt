@@ -1,0 +1,47 @@
+基本算法有四种
+    mark-sweep          双色标记清除算法 三色标记清除算法
+    mark-compact        标记压缩算法
+    reference counting  引用计数算法
+    流行的算法一般是上述几种算法组合而成
+lua-mark-sweep 三色标记清除算法
+    white状态 待访问状态,对象还没有被垃圾回收器的标记过程访问到,白色分为current white(新对象) 和 other white(老对象),sweep之前会交换两个white
+    gray状态  待扫描状态,对象已被垃圾回收器访问到,但是对象本身对于其它对象的引用还没有遍历访问
+    black状态 已扫描状态,对象已被访问,已遍历对象本身对其他对象的引用
+    算法流程(一次性执行)
+        1.将root集合(全局表、注册表、全局表的环境表、GCRoot)引用到的对象从white设置为gray,并加入到gc.gray集合内
+        2.循环(gc.gray集合不空)
+            从gc.gray集合移除一个对象,将其设置为black状态
+            循环(遍历该对象引用到的对象)
+                被引用对象处于white状态,则修改为gray,加入gray集合
+        3.修改current white为other white
+        4.循环(所有对象)
+            该对象为other white则回收,current white是GC SWEEP阶段产生的新对象
+            否则改为current white状态
+    算法流程(增量执行)
+        第三步加入一个计算上限,超出则跳出循环
+        跳出后存在的问题
+            已扫描black对象重新引用了一个white对象
+                解决办法: 加入barrier,监控所有引用变化
+                    1.将white对象改为gray,加入到gray列表内,GC进了一步
+                    2.将black对象改为gray,加入到gray列表内,GC退了一步
+    lua有9种变量类型 nil bool lightuserdata number string table function userdata thread
+        gc对象
+            GCObject,是一个单链表,table通过key和value引用其它对象,function通过upvalue引用其它对象
+            table新建,标记为white,直接加入单链表
+            string新建,首先查找g->strt.hash是否存在与其hash相同的string,有则取出该string,检查是否为死对象,是则改为current white
+            upval新建,upval是对已有对象的引用,不是新数据
+                如果该对象是灰色的,如果当前处于trace阶段,把该对象标记为black,执行barrier操作,否则将其标记为白色
+            userdata创建
+                标记为白色,加入到g->mainthread后,也就是gc链表thread对象后面,前面都是thread内对象
+        gcbarrier
+            如果当前对象是黑色,值是白色,则执行barrier操作,如果处于mark阶段,markv否则把当前对象标记为白色确保不会被sweep
+        gc阶段
+            gc_pause:init状态,第1步
+            gc_propagate:trace状态,第2步
+            atomic:trace upval weak userdata
+            sweep-string:清理string
+            sweep:清理其它
+            sweep-finalize:清理userdata,执行元表__gc
+            marked:状态标记,bit0 bit1均为白色状态, bit2为黑色状态 bit3为userdata释放结束或者table包含弱引用k bit4table包含弱引用v bit5不可被回收 bit6
+            currentwhite:标记bit0和bit1哪个表示currwhite,哪个是otherwhite,新建的value被置为currwhite
+

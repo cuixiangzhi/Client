@@ -1,0 +1,67 @@
+表示
+	二维物体
+		直线段、折线、曲线段、多边形区域
+	三维物体
+		空间直线段、折线、曲线段、多边形、曲面片
+	数据模型
+		几何体的顶点信息罗列出来,以数据文件形式存在
+		线框模型
+			轮廓线的集合,没有表面信息,不适于真实感显示
+		表面模型
+			由面构成的,每个面由N个顶点定义
+		实体模型
+			几何信息、拓扑信息
+		过程模型
+			粒子系统:生成规则
+	建模方法
+		软件建模,美术手工制作
+		设备建模,3D扫描仪扫描三维物体建模,3个方向探针检测?
+		图像建模,IBMR技术通过二维图像技术恢复场景的三维几何结构 计算机视觉
+	八叉树、体素
+引擎模型
+	MeshFilter
+		mesh当前模型的mesh信息,读取后会导致mesh内存翻倍,因为是一个单独的实例
+		sharedMesh当前模型共享的mesh信息,引用传递
+	Mesh
+		isReadable:打开时会同时在内存和显存里保持两份mesh内存,运行时不读取尽量不打开,节省内存
+		vertices数组定义了所有的顶点信息
+		triangles定义每个三角面的三个顶点的顶点数组下标,长度为3的整数倍
+		normals定义了每个顶点的法线信息
+		colors数组定义了每个顶点的颜色信息
+		uv..uv8定义了每个顶点的uv坐标
+	Render
+		物体渲染信息的组件基类
+		castShadows_receiveShadows_shadowCastingMode        阴影计算时是否参与计算、阴影模式
+		lightmapIndex_lightmapScaleOffset 					静态光照图的信息(第几张、UV偏移、UV大小)
+		realtimeLightmapIndex_realtimeLightmapScaleOffset 	实时光照图的信息
+		sortingLayerID_sortingLayerName_sortingOrder 		同一个摄像机相同类型(透明、不透明)渲染顺序 camera>z>sortingLayer>sortingOrder		
+		sharedMesh 		共享网格信息,打开读选项才可以读取,共享读取不会生成单独实例
+		sharedMaterial  共享材质信息
+	MeshRender
+		普通物体渲染组件
+	SkinMeshRender
+		带骨骼物体渲染组件
+		bones_bindPos  骨骼列表_顶点变换矩阵
+		sharedMesh.boneWeight 顶点绑定骨骼和变换权重,每个顶点最多4根骨骼
+	ParticleSystemRenderer
+		粒子系统渲染组件
+	正反面
+		背面剔除是指三角面法线与摄像机朝向点乘结果大于0,则为背面,即看不见这个面
+		一般建模后的模型面都是正面,即逆时针缠绕的顶点顺序定义,这样背面剔除就是反面剔除
+		开启背面消隐
+			glEnable(GL_CULL_FACE);
+			glCullFace(GL_FRONT|GL_BACK|GL_FRONT_AND_BACK);
+			glDisable(GL_CULL_FACE);
+实体模型
+	每一个对象都是一个Entity
+	Entity组织结构
+		1.Mesh组件,主网格
+		2.SubEntity组件,子网格
+	SubEntity组织结构
+		1.SubMesh组件
+	Mesh组织结构
+		1.SubMesh组件,包含了组成这个Mesh的所有子网格
+	SubMesh组织结构
+		1.Material组件,包含了渲染该网格所需的材质信息
+		2.VertexData组件,包含了顶点的所有数据
+

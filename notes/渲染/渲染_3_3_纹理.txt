@@ -1,0 +1,22 @@
+Albedo
+AmbientOcclusion
+Metalness
+NormalMap
+    原理
+        T:切线 B:副切线 N:法线
+        1.光照计算时需要用法线来体现出物体表面的凹凸感
+        2.通过一张纹理来存储每个像素点的法线来减少面数增加凹凸细节
+        3.法线贴图存储的法线是切线空间下的一个向量,以TBN表示
+            施密特正交化 normalize(T - dot(T, N) * N)
+        4.法线贴图存储的RGB范围是[0,1],而法线范围是[-1,1],因此存储法线和解析法线需要一个转换公式 
+          rgb=normal*0.5+0.5 normal=rgb*2-1 法线贴图法线不会偏移Z轴太远,因此法线贴图都是偏蓝色的
+          对应CGINC内的UnpackNormal函数
+CubeMap
+    原理
+        1.由六个面组成的立方体纹理,分别表示六个方向的观察结果
+        2.根据视点方向和法线求出反射方向reflect,通过反射向量在纹理中采样得出反射结果
+        3.根据视点方向和法线求出折射方向refract,通过折射向量在纹理中采样得出折射结果
+GrabScreen
+    通过 GrabPass {"_Texture"} 可以获取当前屏幕的渲染结果并保存到_Texture内
+RenderTexture
+    渲染纹理,包含一个ColorBuffer和一个DepthBuffer,DepthBuffer包含16位depth和8位stencil
